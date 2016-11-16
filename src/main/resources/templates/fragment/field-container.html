@@ -1,0 +1,57 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<th:block th:if="${field.sequence}">
+    <th:block th:each="value,status : ${attribute?.values}">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group" th:with="errors=${@verificationService.getErrors(verification, 'attributes.__${field.name}__[__${status.index}__]', locale)}"
+                th:classappend="${!errors.empty}? has-error">
+
+                    <div class="input-group input-group-sm" th:with="index=${status.index}">
+
+                        <!-- Actual input field -->
+                        <th:block th:replace="${input}" />
+
+                        <div class="input-group-btn">
+                            <th:block th:if="${buttons}">
+                                <th:block th:replace="${buttons}" />
+                            </th:block>
+                            <button formmethod="post"
+                                    th:disabled="${status.index == 0}?: _"
+                                    th:formaction="@{/fragments/edit(up=${field.name},index=${status.index})}"
+                                    class="btn btn-default">
+                                <i class="glyphicon glyphicon-arrow-up"></i>
+                            </button>
+                            <button formmethod="post"
+                                    th:disabled="${status.index >= attribute.values.size()-1}?: _"
+                                    th:formaction="@{/fragments/edit(down=${field.name},index=${status.index})}"
+                                    class="btn btn-default">
+                                <i class="glyphicon glyphicon-arrow-down"></i>
+                            </button>
+                            <button formmethod="post"
+                                    th:formaction="@{/fragments/edit(remvalue=${field.name},index=${status.index})}"
+                                    class="btn btn-default">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </th:block>
+</th:block>
+
+<th:block th:unless="${field.sequence}">
+    <div class="input-group input-group-sm" th:with="index=${0}">
+        <!-- Actual input field -->
+        <th:block th:replace="${input}" />
+        <th:block th:if="${buttons}">
+            <div class="input-group-btn">
+                <th:block th:replace="${buttons}"/>
+            </div>
+        </th:block>
+    </div>
+</th:block>
+
+</html>
