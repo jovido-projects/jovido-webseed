@@ -1,11 +1,10 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 
-<th:block th:if="${field.sequence}">
-    <th:block th:each="value,status : ${attribute?.values}">
+<th:block th:if="${field.constraint.maxValues > 1}">
+    <th:block th:each="payload,status : ${attribute?.payloads}">
         <div class="row">
             <div class="col-xs-12">
-                <div class="form-group" th:with="errors=${@verificationService.getErrors(verification, 'attributes.__${field.name}__[__${status.index}__]', locale)}"
-                th:classappend="${!errors.empty}? has-error">
+                <div class="form-group">
 
                     <div class="input-group input-group-sm" th:with="index=${status.index}">
 
@@ -23,7 +22,7 @@
                                 <i class="glyphicon glyphicon-arrow-up"></i>
                             </button>
                             <button formmethod="post"
-                                    th:disabled="${status.index >= attribute.values.size()-1}?: _"
+                                    th:disabled="${status.index >= attribute.payloads.size()-1}?: _"
                                     th:formaction="@{/fragments/edit(down=${field.name},index=${status.index})}"
                                     class="btn btn-default">
                                 <i class="glyphicon glyphicon-arrow-down"></i>
@@ -42,7 +41,7 @@
     </th:block>
 </th:block>
 
-<th:block th:unless="${field.sequence}">
+<th:block th:unless="${field.constraint.maxValues > 1}">
     <div class="input-group input-group-sm" th:with="index=${0}">
         <!-- Actual input field -->
         <th:block th:replace="${input}" />
