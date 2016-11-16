@@ -18,13 +18,36 @@
                         <input class="form-control" type="text" th:field="*{fragment.revisionId}">
                     </div>
 
-                    <th:block th:each="field : ${fragment.type.fields.values()}">
 
-                        <th:block th:with="attribute=${fragment.getAttribute(field)}">
-                            <th:block th:replace="fragment/field/text" />
-                        </th:block>
+                    <!-- Tabs -->
+                    <div>
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation"
+                                th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
+                                th:classappend="${fieldGroup.name == 'basics'}? active">
+                                <a th:href="'#' + ${fieldGroup.name}" aria-controls="home" role="tab" data-toggle="tab">
+                                    <span th:text="#{${fragment.type.name} + . + ${fieldGroup.name}}">#</span>
+                                </a>
+                            </li>
+                        </ul>
 
-                    </th:block>
+
+                        <div class="tab-content">
+                            <div role="tabpanel"
+                                 th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
+                                 th:id="${fieldGroup.name}"
+                                 class="tab-pane"
+                                 th:classappend="${fieldGroup.name == 'basics'}? active">
+                                <br />
+                                <th:block  th:each="field : ${fieldGroup?.fields?.values()}">
+                                    <th:block th:with="attribute=${fragment.getAttribute(field)}">
+                                        <th:block th:replace="fragment/field/text" />
+                                    </th:block>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabs End -->
 
 
                 </div>

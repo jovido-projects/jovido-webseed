@@ -1,6 +1,7 @@
 package biz.jovido.webseed.service.content.xml
 
 import biz.jovido.webseed.model.content.Field
+import biz.jovido.webseed.model.content.FieldGroup
 import biz.jovido.webseed.model.content.FragmentType
 import biz.jovido.webseed.model.content.Structure
 import biz.jovido.webseed.model.content.constraint.AlphanumericConstraint
@@ -12,6 +13,7 @@ import org.apache.commons.digester3.Rule
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import org.xml.sax.Attributes
 
 /**
@@ -82,8 +84,8 @@ class XmlStructureReader implements StructureReader {
 
                         digester.addObjectCreate(it, Field)
                         digester.addSetProperties(it,
-                                ['name', 'constraint'] as String[],
-                                ['name', null] as String[])
+                                ['name', 'constraint', 'group'] as String[],
+                                ['name', null, null] as String[])
                         digester.addRule(it, new Rule() {
                             @Override
                             void begin(String namespace, String name, Attributes attributes) throws Exception {
@@ -92,6 +94,20 @@ class XmlStructureReader implements StructureReader {
                                 def constraintName = attributes.getValue('constraint')
                                 def constraint = structure.getConstraint(constraintName)
                                 field.constraint = constraint
+
+                                def fragmentType = digester.peek(1) as FragmentType
+                                def fieldGroupName = attributes.getValue('group')
+                                if (!StringUtils.isEmpty(fieldGroupName)) {
+                                    def fieldGroup = fragmentType.fieldGroups.get(fieldGroupName)
+                                    if (fieldGroup == null) {
+                                        fieldGroup = new FieldGroup()
+                                        fieldGroup.name = fieldGroupName
+                                        fieldGroup.fragmentType = fragmentType
+                                    }
+                                    fieldGroup.putField(field)
+                                }
+
+                                return
                             }
                         })
                         digester.addSetNext(it, 'putField', Field.name)

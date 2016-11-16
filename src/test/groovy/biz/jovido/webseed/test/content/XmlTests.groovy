@@ -47,8 +47,11 @@ class XmlTests {
 
     <fragmentTypes>
         <fragmentType name="basicPage">
-            <field name="title" constraint="simpleText" />
-            <field name="subtitle" constraint="simpleText" />
+            <field name="title" constraint="simpleText" group="basics" />
+            <field name="subtitle" constraint="simpleText" group="basics" />
+            <field name="field1" constraint="simpleText" group="group2" />
+            <field name="field2" constraint="simpleText" group="group2" />
+            <field name="field3" constraint="simpleText" group="group3" />
         </fragmentType>
     </fragmentTypes>
 
@@ -71,8 +74,8 @@ class XmlTests {
 
     <fragmentTypes>
         <fragmentType name="basicPage">
-            <field name="title" constraint="simpleText" />
-            <field name="subtitle" constraint="optionalText" />
+            <field name="title" constraint="simpleText" group="basics" />
+            <field name="subtitle" constraint="optionalText" group="basics" />
         </fragmentType>
     </fragmentTypes>
 

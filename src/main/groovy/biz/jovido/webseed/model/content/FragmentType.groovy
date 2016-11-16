@@ -64,6 +64,7 @@ class FragmentType {
         }
     }
 
+    @Deprecated
     void putField(String name, Constraint constraint) {
         assert !StringUtils.isEmpty(name)
 
@@ -73,5 +74,24 @@ class FragmentType {
 //        TODO Remove existing field first
 
         putField(field)
+    }
+
+    @OneToMany(mappedBy = 'fragmentType',
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
+    @MapKey(name = 'name')
+//    @OrderColumn(name = 'ordinal')
+    protected final Map<String, FieldGroup> fieldGroups = new LinkedHashMap<>()
+
+    Map<String, FieldGroup> getFieldGroups() {
+        Collections.unmodifiableMap(fieldGroups)
+    }
+
+    void putFieldGroup(FieldGroup fieldGroup) {
+        assert fieldGroup != null
+
+        fieldGroup.@fragmentType = this
+        fieldGroups.put(fieldGroup.name, fieldGroup)
     }
 }
