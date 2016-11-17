@@ -1,4 +1,4 @@
-package biz.jovido.webseed.web.content.response
+package biz.jovido.webseed.web.content
 
 import biz.jovido.webseed.model.content.Structure
 import com.fasterxml.jackson.core.JsonGenerator

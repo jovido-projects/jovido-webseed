@@ -1,7 +1,6 @@
 package biz.jovido.webseed.web.content
 
 import biz.jovido.webseed.service.content.StructureService
-import biz.jovido.webseed.web.content.response.StructureResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping

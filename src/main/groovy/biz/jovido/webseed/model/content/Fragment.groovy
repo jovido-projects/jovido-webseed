@@ -58,7 +58,7 @@ class Fragment {
     @Column(name = 'revision_id', unique = true)
     String revisionId
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = 'history_id', nullable = false, updatable = false)
     FragmentHistory history
 

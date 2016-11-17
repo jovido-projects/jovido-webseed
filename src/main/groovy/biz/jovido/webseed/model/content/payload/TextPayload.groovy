@@ -1,5 +1,7 @@
 package biz.jovido.webseed.model.content.payload
 
+import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.*
 
 /**
@@ -14,25 +16,27 @@ class TextPayload extends LocalizablePayload<String> {
             joinColumns = @JoinColumn(name = 'payload_id'))
     @MapKeyColumn(name = 'language_tag')
     @Column(name = 'value')
-    Map<Locale, String> values = new HashMap<>()
+    Map<Locale, String> localizedValues = new HashMap<>()
 
     @Override
     String getValue(Locale locale) {
-        values.get(locale)
+        localizedValues.get(locale)
     }
 
     @Override
     void setValue(Locale locale, String localizedValue) {
-        values.put(locale, localizedValue)
+        localizedValues.put(locale, localizedValue)
     }
 
     @Override
-    Map<Locale, String> getValue() {
-        values
+    String getValue() {
+        def locale = LocaleContextHolder.locale
+        localizedValues.get(locale)
     }
 
     @Override
-    void setValue(Map<Locale, String> value) {
-        values = value
+    void setValue(String value) {
+        def locale = LocaleContextHolder.locale
+        localizedValues.put(locale, value)
     }
 }

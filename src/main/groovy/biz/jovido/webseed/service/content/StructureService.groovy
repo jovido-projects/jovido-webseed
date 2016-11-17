@@ -120,6 +120,10 @@ class StructureService {
         fragmentType
     }
 
+    FragmentType getFragmentType(Long id) {
+        fragmentTypeRepository.findOne(id)
+    }
+
     FragmentType getFragmentType(Structure structure, String name) {
         def fragmentType = fragmentTypeRepository.findByStructureAndName(structure, name)
 

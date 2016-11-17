@@ -1,5 +1,6 @@
 package biz.jovido.webseed.config
 
+import biz.jovido.webseed.web.content.FragmentFormArgumentResolver
 import groovy.transform.CompileStatic
 import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
@@ -7,7 +8,9 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.ViewResolver
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.messageresolver.IMessageResolver
 import org.thymeleaf.spring4.SpringTemplateEngine
@@ -24,13 +27,19 @@ import org.thymeleaf.templateresolver.ITemplateResolver
 //@EnableSpringHttpSession
 @CompileStatic
 @Configuration
-class ThymeleafDefaultConfiguration implements ApplicationContextAware {
+class ThymeleafDefaultConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext
 
     @Override
     void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext
+    }
+
+    @Override
+    void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        def fragmentFormArgumentResolver = applicationContext.getBean(FragmentFormArgumentResolver)
+        argumentResolvers.add(fragmentFormArgumentResolver)
     }
 
     @Bean

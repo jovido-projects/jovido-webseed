@@ -1,43 +1,36 @@
 <html xmlns:th="//www.thymeleaf.org" xmlns:field="//github.com/grundner" th:remove="tag"
       th:replace="page(body=~{::body})">
-<th:block th:fragment="body" th:with="fragment=${form.fragment}">
+<th:block th:fragment="body" th:with="fragment=${fragmentForm.fragment}">
 
 
-    <form th:object="${form}">
+    <form th:object="${fragmentForm}">
+
+        <input type="hidden" th:field="*{fieldGroupName}">
+        <input type="hidden" th:field="*{fragment.id}">
+        <input type="hidden" th:field="*{fragment.type}">
+        <input type="hidden" th:field="*{fragment.history}">
+
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
 
-                    <div class="form-group">
-                        <label th:text="#{fragment.id}">#</label>
-                        <input class="form-control" type="text" th:field="*{fragment.id}">
-                    </div>
-
-                    <div class="form-group">
-                        <label th:text="#{fragment.revisionId}">#</label>
-                        <input class="form-control" type="text" th:field="*{fragment.revisionId}">
-                    </div>
-
-
+                    <h1>Fragment</h1>
                     <!-- Tabs -->
                     <div>
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation"
-                                th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
-                                th:classappend="${fieldGroup.name == 'basics'}? active">
+
+                        <ul class="nav nav-tabs responsive">
+                            <li th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
+                                th:classappend="${fieldGroup.name == fragmentForm.fieldGroupName}? active">
                                 <a th:href="'#' + ${fieldGroup.name}" aria-controls="home" role="tab" data-toggle="tab">
                                     <span th:text="#{${fragment.type.name} + . + ${fieldGroup.name}}">#</span>
                                 </a>
                             </li>
                         </ul>
-
-
-                        <div class="tab-content">
-                            <div role="tabpanel"
-                                 th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
+                        <div class="tab-content responsive">
+                            <div th:each="fieldGroup : ${fragment.type?.fieldGroups?.values()}"
                                  th:id="${fieldGroup.name}"
                                  class="tab-pane"
-                                 th:classappend="${fieldGroup.name == 'basics'}? active">
+                                 th:classappend="${fieldGroup.name == fragmentForm.fieldGroupName}? active">
                                 <br />
                                 <th:block  th:each="field : ${fieldGroup?.fields?.values()}">
                                     <th:block th:with="attribute=${fragment.getAttribute(field)}">
@@ -46,10 +39,12 @@
                                 </th:block>
                             </div>
                         </div>
+
                     </div>
                     <!-- Tabs End -->
 
 
+                    <button th:formaction="@{save}" formmethod="post" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>

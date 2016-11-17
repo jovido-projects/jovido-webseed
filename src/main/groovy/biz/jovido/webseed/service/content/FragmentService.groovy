@@ -44,7 +44,7 @@ class FragmentService {
 
         if (history == null) {
             history = new FragmentHistory()
-            history = fragmentHistoryRepository.save(history)
+//            history = fragmentHistoryRepository.save(history)
         }
 
         assert history != null
@@ -69,6 +69,11 @@ class FragmentService {
         createFragment(fragmentType, null)
     }
 
+    Fragment createFragment(Long fragmentTypeId) {
+        def fragmentType = structureService.getFragmentType(fragmentTypeId)
+        createFragment(fragmentType, null)
+    }
+
     Fragment getFragment(String id, String revisionId) {
         def fragmentKey = new Fragment.FragmentKey()
         fragmentKey.id = id
@@ -85,12 +90,7 @@ class FragmentService {
         fragmentRepository.save(fragment)
     }
 
-    Attribute getAttribute(Fragment fragment, String fieldName) {
-        def type = fragment.type
-        def field = type.getField(fieldName)
-        if (field == null) {
-            throw new RuntimeException("Unexpected field [$fieldName]")
-        }
+    Attribute getAttribute(Fragment fragment, Field field) {
         def attribute = fragment.getAttribute(field)
         if (attribute == null) {
             attribute = new Attribute()
@@ -102,8 +102,17 @@ class FragmentService {
         attribute
     }
 
-    Object getValue(Attribute attribute, int index, Locale locale) {
-        def payload = attribute.getPayload(index)
+    Attribute getAttribute(Fragment fragment, String fieldName) {
+        def type = fragment.type
+        def field = type.getField(fieldName)
+        if (field == null) {
+            throw new RuntimeException("Unexpected field [$fieldName]")
+        }
+
+        getAttribute(fragment, field)
+    }
+
+    Object getValue(Payload<?> payload, Locale locale) {
         if (payload instanceof LocalizablePayload) {
             return payload.getValue(locale)
         } else {
@@ -111,8 +120,25 @@ class FragmentService {
         }
     }
 
+    Object getValue(Payload<?> payload) {
+        getValue(payload, Locale.default)
+    }
+
+    Object getValue(Attribute attribute, int index, Locale locale) {
+        def payload = attribute.getPayload(index)
+        getValue(payload, locale)
+    }
+
+    Object getValue(Attribute attribute, int index) {
+        getValue(attribute, index, Locale.default)
+    }
+
     Object getValue(Attribute attribute, Locale locale) {
         getValue(attribute, 0, locale)
+    }
+
+    Object getValue(Attribute attribute) {
+        getValue(attribute, Locale.default)
     }
 
     Object getValue(Fragment fragment, String fieldName, int index, Locale locale) {
@@ -120,8 +146,16 @@ class FragmentService {
         getValue(attribute, index, locale)
     }
 
+    Object getValue(Fragment fragment, String fieldName, int index) {
+        getValue(fragment, fieldName, index, Locale.default)
+    }
+
     Object getValue(Fragment fragment, String fieldName, Locale locale) {
         getValue(fragment, fieldName, 0, locale)
+    }
+
+    Object getValue(Fragment fragment, String fieldName) {
+        getValue(fragment, fieldName, Locale.default)
     }
 
     protected Payload<?> createPayload(Constraint constraint) {
@@ -160,8 +194,16 @@ class FragmentService {
         }
     }
 
+    void setValue(Attribute attribute, int index, Object value) {
+        setValue(attribute, index, Locale.default, value)
+    }
+
     void setValue(Attribute attribute, Locale locale, Object value) {
         setValue(attribute, 0, locale, value)
+    }
+
+    void setValue(Attribute attribute, Object value) {
+        setValue(attribute, Locale.default, value)
     }
 
     void setValue(Fragment fragment, String fieldName, int index, Locale locale, Object value) {
@@ -169,7 +211,15 @@ class FragmentService {
         setValue(attribute, index, locale, value)
     }
 
+    void setValue(Fragment fragment, String fieldName, int index, Object value) {
+        setValue(fragment, fieldName, index, Locale.default, value)
+    }
+
     void setValue(Fragment fragment, String fieldName, Locale locale, Object value) {
         setValue(fragment, fieldName, 0, locale, value)
+    }
+
+    void setValue(Fragment fragment, String fieldName, Object value) {
+        setValue(fragment, fieldName, Locale.default, value)
     }
 }

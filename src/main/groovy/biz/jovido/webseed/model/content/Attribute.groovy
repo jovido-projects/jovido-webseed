@@ -11,7 +11,7 @@ import javax.persistence.*
 @Table(name = 'attribute')
 @Entity
 @CompileStatic
-class Attribute {
+class Attribute implements List<Payload<?>> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +26,7 @@ class Attribute {
 
     @OneToMany(mappedBy = 'attribute', cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderColumn(name = 'ordinal')
+    @Delegate
     final List<Payload<?>> payloads = new ArrayList<>()
 
     Payload<?> getPayload(int index) {
@@ -49,8 +50,4 @@ class Attribute {
 
         payloads.set(index, payload)
     }
-
-//    Object getValue(int index) {
-//        getPayload(index)?.value
-//    }
 }
