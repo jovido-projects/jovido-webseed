@@ -1,10 +1,20 @@
-<html xmlns:th="//www.thymeleaf.org" xmlns:field="//github.com/grundner" th:remove="tag"
+<html xmlns:th="http://www.thymeleaf.org"
+      th:remove="tag"
       th:replace="page(body=~{::body})">
-<th:block th:fragment="body" th:with="fragment=${fragmentForm.fragment}">
+<th:block th:fragment="body">
 
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Merkt sich das ausgewählte Tab und speichert es in FragmentForm#fieldGroupName
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var tab = $(e.target);
+                var area = tab.attr('aria-controls');
+                $("#fieldGroupName").val(area);
+            })
+        });
+    </script>
 
-    <form th:object="${fragmentForm}">
-
+    <form th:with="fragment=${form.fragment}" th:object="${form}" method="post">
         <input type="hidden" th:field="*{fieldGroupName}">
         <input type="hidden" th:field="*{fragment.id}">
         <input type="hidden" th:field="*{fragment.type}">
@@ -12,43 +22,67 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
-
+                <div class="col-sm-12">
                     <h1>Fragment</h1>
-                    <!-- Tabs -->
-                    <div>
 
-                        <ul class="nav nav-tabs responsive">
-                            <li th:each="fieldGroup : ${fragment.type.fieldGroups.values()}"
-                                th:classappend="${fieldGroup.name == fragmentForm.fieldGroupName}? active">
-                                <a th:href="'#' + ${fieldGroup.name}" aria-controls="home" role="tab" data-toggle="tab">
-                                    <span th:text="#{${fragment.type.name} + . + ${fieldGroup.name}}">#</span>
+                    <!-- Breadcrumbs -->
+                    <ol class="breadcrumb">
+                        <li th:each="editor : ${editorManager.editors}"
+                            th:classappend="${editor == editorManager.currentEditor}? active : _">
+                            <a th:href="@{edit(editor=${editor.id})}" th:text="${editor.id}">Editor name</a>
+                        </li>
+
+                        <!--<li class="active" th:text="${editorManager.currentEditor.id}">Current editor</li>-->
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container" >
+            <div class="row">
+                <div class="col-sm-8">
+
+                    <div th:with="fragmentType=${fragment.type}">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs">
+                            <li th:each="fieldGroup : ${fragmentType.fieldGroups.values()}" th:classappend="${fieldGroup.name == form.fieldGroupName}? active : _">
+                                <a th:href="'#' + ${fieldGroup.name}"
+                                   th:aria-controls="${fieldGroup.name}"
+                                   data-toggle="tab">
+                                    <span th:text="${fieldGroup.name}">#</span>
                                 </a>
                             </li>
                         </ul>
-                        <div class="tab-content responsive">
-                            <div th:each="fieldGroup : ${fragment.type?.fieldGroups?.values()}"
-                                 th:id="${fieldGroup.name}"
-                                 class="tab-pane"
-                                 th:classappend="${fieldGroup.name == fragmentForm.fieldGroupName}? active">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div th:each="fieldGroup : ${fragmentType.fieldGroups.values()}"
+                                 class="tab-pane" th:classappend="${fieldGroup.name == form.fieldGroupName}? active : _"
+                                 th:id="${fieldGroup.name}">
+
                                 <br />
-                                <th:block  th:each="field : ${fieldGroup?.fields?.values()}">
-                                    <th:block th:with="attribute=${fragment.getAttribute(field)}">
-                                        <th:block th:replace="fragment/field/text" />
-                                    </th:block>
-                                </th:block>
+                                <th:block th:replace="fragment/field-group" />
                             </div>
                         </div>
-
                     </div>
-                    <!-- Tabs End -->
+                </div>
+                <div class="col-sm-4">
 
+                </div>
+            </div> <!-- row -->
+        </div> <!-- container -->
 
-                    <button th:formaction="@{save}" formmethod="post" class="btn btn-primary">Save</button>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <button class="btn btn-primary"
+                            th:formaction="@{save}"
+                            formmethod="post">
+                        <span th:text="#{fragment.form.save}">Save</span>
+                    </button>
                 </div>
             </div>
         </div>
     </form>
-
 
 </th:block>

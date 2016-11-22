@@ -5,6 +5,7 @@ import biz.jovido.webseed.model.content.FragmentType
 import biz.jovido.webseed.model.content.Structure
 import biz.jovido.webseed.model.content.constraint.AlphanumericConstraint
 import biz.jovido.webseed.model.content.constraint.NumericConstraint
+import biz.jovido.webseed.model.content.constraint.ReferenceConstraint
 import biz.jovido.webseed.repository.content.ConstraintRepository
 import biz.jovido.webseed.repository.content.FragmentTypeRepository
 import biz.jovido.webseed.repository.content.StructureRepository
@@ -69,9 +70,9 @@ class StructureService {
             case 'numeric':
                 constraint = new NumericConstraint()
                 break
-//            case 'reference'
-//                constraint =
-//                break
+            case 'reference':
+                constraint = new ReferenceConstraint()
+                break
             default:
                 throw new IllegalArgumentException("Unexpected type [$type]")
         }

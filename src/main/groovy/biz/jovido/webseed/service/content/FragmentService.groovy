@@ -2,15 +2,20 @@ package biz.jovido.webseed.service.content
 
 import biz.jovido.webseed.model.content.*
 import biz.jovido.webseed.model.content.constraint.AlphanumericConstraint
+import biz.jovido.webseed.model.content.constraint.ReferenceConstraint
 import biz.jovido.webseed.model.content.payload.LocalizablePayload
+import biz.jovido.webseed.model.content.payload.ReferencePayload
 import biz.jovido.webseed.model.content.payload.TextPayload
 import biz.jovido.webseed.repository.content.FragmentHistoryRepository
 import biz.jovido.webseed.repository.content.FragmentRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.convert.ConversionService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.StringUtils
 
 /**
  *
@@ -30,6 +35,9 @@ class FragmentService {
 
     @Autowired
     StructureService structureService
+
+    @Autowired
+    ConversionService conversionService
 
     FragmentService(FragmentHistoryRepository fragmentHistoryRepository,
                     FragmentRepository fragmentRepository,
@@ -82,10 +90,26 @@ class FragmentService {
         fragmentRepository.findOne(fragmentKey)
     }
 
+    void applyDefaults(Fragment fragment) {
+        fragment.type.fields.values().each { field ->
+            def constraint = field.constraint
+            for (int i = 0; i < constraint.minValues; i++) {
+                setValue(fragment, field.name, i, Locale.GERMAN, null)
+            }
+        }
+    }
+
     @Transactional
     Fragment saveFragment(Fragment fragment) {
-        if (fragment.id == null) {
+        if (StringUtils.isEmpty(fragment.id)) {
             fragment.id = identifierService.getNextIdValue('fragment')
+        }
+        if (fragment.history == null) {
+            fragment.history = new FragmentHistory()
+        }
+        def revisionId = fragment.revisionId
+        if (StringUtils.isEmpty(revisionId)) {
+            fragment.revisionId = "1"
         }
         fragmentRepository.save(fragment)
     }
@@ -165,6 +189,9 @@ class FragmentService {
             case AlphanumericConstraint:
                 payload = new TextPayload()
                 break
+            case ReferenceConstraint:
+                payload = new ReferencePayload()
+                break
             default:
                 throw new IllegalArgumentException()
         }
@@ -187,9 +214,15 @@ class FragmentService {
 
     void setValue(Attribute attribute, int index, Locale locale, Object value) {
         def payload = getPayload(attribute, index) as Payload<Object>
+
         if (payload instanceof LocalizablePayload) {
             payload.setValue(locale, value)
         } else {
+
+            if (payload instanceof ReferencePayload) {
+                value = conversionService.convert(value, FragmentHistory)
+            }
+
             payload.value = value
         }
     }
@@ -221,5 +254,47 @@ class FragmentService {
 
     void setValue(Fragment fragment, String fieldName, Object value) {
         setValue(fragment, fieldName, Locale.default, value)
+    }
+
+//    Other:
+
+    void copyValues(Attribute source, Attribute target) {
+        for (int i = 0; i < source.size(); i++) {
+            def value = getValue(source, i)
+            setValue(target, i, value)
+        }
+    }
+
+    void copyAttributes(Fragment source, Fragment target) {
+        source.type.fields.values().each { field ->
+            def sourceAttribute = getAttribute(source, field)
+            def targetAttribute = getAttribute(target, field)
+            copyValues(sourceAttribute, targetAttribute)
+        }
+    }
+
+    void copyFragment(Fragment source, Fragment target) {
+        BeanUtils.copyProperties(source, target, "attributes")
+        copyAttributes(source, target)
+    }
+
+    void addValue(Attribute attribute, Object value) {
+        def n = attribute.payloads.size()
+        setValue(attribute, n, value)
+    }
+
+    Payload<?> removePayload(Attribute attribute, int index) {
+        attribute.removePayload(index)
+    }
+
+    Object removeValue(Attribute attribute, int index) {
+        attribute.removeValue(index)
+    }
+
+    void swapValues(Attribute attribute, int a, int b) {
+        def valueA = getValue(attribute, a)
+        def valueB = getValue(attribute, b)
+        attribute.setValue(b, valueA)
+        attribute.setValue(a, valueB)
     }
 }

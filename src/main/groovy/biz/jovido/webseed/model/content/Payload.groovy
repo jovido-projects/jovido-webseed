@@ -1,5 +1,8 @@
 package biz.jovido.webseed.model.content
 
+import biz.jovido.webseed.model.content.payload.LocalizablePayload
+import biz.jovido.webseed.model.content.payload.ReferencePayload
+
 import javax.persistence.*
 
 /**
@@ -26,4 +29,14 @@ abstract class Payload<T> {
     @Transient
     abstract T getValue()
     abstract void setValue(T value)
+
+    @Transient
+    boolean isReference() {
+        ReferencePayload.isAssignableFrom(this.class)
+    }
+
+    @Transient
+    boolean isLocalizable() {
+        LocalizablePayload.isAssignableFrom(this.class)
+    }
 }

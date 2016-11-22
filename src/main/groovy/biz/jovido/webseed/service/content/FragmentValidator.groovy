@@ -1,18 +1,17 @@
 package biz.jovido.webseed.service.content
 
 import biz.jovido.webseed.model.content.Fragment
-import biz.jovido.webseed.validation.Messages
-import biz.jovido.webseed.validation.MessagesAwareValidator
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
+import org.springframework.validation.SmartValidator
 
 /**
  *
  * @author Stephan Grundner
  */
 @Component
-class FragmentValidator implements MessagesAwareValidator {
+class FragmentValidator implements SmartValidator {
 
     @Override
     boolean supports(Class<?> clazz) {
@@ -20,12 +19,7 @@ class FragmentValidator implements MessagesAwareValidator {
     }
 
     @Override
-    void validate(Object target, Messages messages) {
-
-    }
-
-    @Override
-    void validate(Object target, Errors errors) {
+    void validate(Object target, Errors errors, Object... validationHints) {
         def fragment = (Fragment) target
 
         fields: for (def field :  fragment.type.fields.values()) {
@@ -54,4 +48,8 @@ class FragmentValidator implements MessagesAwareValidator {
         }
     }
 
+    @Override
+    void validate(Object target, Errors errors) {
+        validate(target, errors, [] as Object[])
+    }
 }

@@ -3,10 +3,13 @@ package biz.jovido.webseed.web.content
 import biz.jovido.webseed.model.content.Field
 import biz.jovido.webseed.model.content.Fragment
 import biz.jovido.webseed.service.content.FragmentService
+import biz.jovido.webseed.service.content.StringToFragmentHistoryConverter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.MethodParameter
 import org.springframework.core.convert.converter.ConverterRegistry
 import org.springframework.stereotype.Component
+import org.springframework.util.ObjectUtils
+import org.springframework.web.bind.ServletRequestDataBinder
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.annotation.ModelAttributeMethodProcessor
@@ -50,7 +53,7 @@ class FragmentFormArgumentResolver implements HandlerMethodArgumentResolver {
 
         fragment = fragmentService.createFragment(fragmentTypeId)
         fragment.type.fields.each { String fieldName, Field field ->
-            def values = request.getParameterValues("fragment.attributes[$fieldName].value")
+            def values = request.getParameterValues("fragment.attributes[$fieldName]")
             values.eachWithIndex { String value, int i ->
                 fragmentService.setValue(fragment, fieldName, i, value)
             }
@@ -67,10 +70,17 @@ class FragmentFormArgumentResolver implements HandlerMethodArgumentResolver {
 
         def converterRegistry = (ConverterRegistry) binder.conversionService
         converterRegistry.addConverter(new FieldNameToFieldConverter(binder))
+        converterRegistry.addConverter(new StringToFragmentHistoryConverter(fragmentService))
 
-//        binder.addValidators(fragmentFormValidator)
+        if (!ObjectUtils.isEmpty(binder.target)) {
+            if (!mavContainer.isBindingDisabled(name)) {
+                ((ServletRequestDataBinder) binder).bind(request)
+            }
+        }
 
+        binder.addValidators(fragmentFormValidator)
         binder.validate()
+
         def bindingResult = binder.bindingResult
         def bindingResultModel = bindingResult.model
         mavContainer.removeAttributes(bindingResultModel)

@@ -22,14 +22,13 @@ import org.springframework.transaction.annotation.Transactional
 @RunWith(SpringRunner)
 @SpringBootTest(classes = ModelTestConfiguration)
 @TestPropertySource("classpath:application-test.properties")
-class XmlTests {
+class NextXmlTests {
 
     @Autowired StructureService structureService
     @Autowired FragmentService fragmentService
     @Autowired XmlStructureReader structureReader
 
-    private static final XML1_REVISION_ID = "1.0"
-    private static final XML2_REVISION_ID = "2.0"
+    private static final XML1_REVISION_ID = "3.0"
 
     def xml1 ="""\
 <structure revisionId="$XML1_REVISION_ID">
@@ -39,43 +38,28 @@ class XmlTests {
             <minValues>1</minValues>
             <maxValues>1</maxValues>
         </constraint>
-        <alphanumericConstraint name="simpleText">
+        <constraint name="featureItemRef" multiline="true" type="reference">
             <minValues>1</minValues>
-            <maxValues>3</maxValues>
-        </alphanumericConstraint>
-    </constraints>
-
-    <fragmentTypes>
-        <fragmentType name="basicPage">
-            <field name="title" constraint="simpleText" group="basics" />
-            <field name="subtitle" constraint="simpleText" group="basics" />
-            <field name="field1" constraint="simpleText" group="group2" />
-            <field name="field2" constraint="simpleText" group="group2" />
-            <field name="field3" constraint="simpleText" group="group3" />
-        </fragmentType>
-    </fragmentTypes>
-
-</structure>
-"""
-
-    def xml2 ="""\
-<structure revisionId="$XML2_REVISION_ID">
-
-    <constraints>
-        <constraint name="optionalText" multiline="false" type="alphanumeric">
-            <minValues>0</minValues>
-            <maxValues>1</maxValues>
+            <maxValues>99</maxValues>
         </constraint>
-        <alphanumericConstraint name="simpleText">
+        <alphanumericConstraint name="shortText">
             <minValues>1</minValues>
-            <maxValues>2</maxValues>
+            <maxValues>99</maxValues>
         </alphanumericConstraint>
     </constraints>
 
     <fragmentTypes>
+        <fragmentType name="featureItem">
+            <field name="title" constraint="shortText" group="default" />
+            <field name="subtitle" constraint="shortText" group="default" />
+            <field name="icon" constraint="shortText" group="default" />
+        </fragmentType>
         <fragmentType name="basicPage">
-            <field name="title" constraint="simpleText" group="basics" />
-            <field name="subtitle" constraint="optionalText" group="basics" />
+            <field name="title" constraint="shortText" group="default" />
+            <field name="subtitle" constraint="shortText" group="default" />
+            <field name="text" constraint="longText" group="default" />
+
+            <field name="featureItems" constraint="featureItemRef" group="features" />
         </fragmentType>
     </fragmentTypes>
 
@@ -95,15 +79,6 @@ class XmlTests {
         structure1 = structureService.saveStructure(structure1)
         Assert.assertNotNull(structure1)
         Assert.assertEquals(structure1.revisionId, XML1_REVISION_ID)
-
-        def structure2 = structureReader.readStructure(
-                new InputStreamResource(
-                        new ByteArrayInputStream(
-                                xml2.bytes)))
-
-        structure2 = structureService.saveStructure(structure2)
-        Assert.assertNotNull(structure2)
-        Assert.assertEquals(structure2.revisionId, XML2_REVISION_ID)
 
         Assert.assertNull(null)
     }

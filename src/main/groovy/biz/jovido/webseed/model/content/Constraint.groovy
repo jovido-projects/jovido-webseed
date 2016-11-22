@@ -20,9 +20,6 @@ abstract class Constraint {
     Long id
 
     @ManyToOne
-//    @JoinColumns([
-//            @JoinColumn(name = 'structure_id', referencedColumnName = 'id'),
-//            @JoinColumn(name = 'structure_revision_id', referencedColumnName = 'revision_id')])
     @JoinColumn(name = 'structure_id')
     Structure structure
 

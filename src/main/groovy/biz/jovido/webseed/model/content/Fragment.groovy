@@ -84,12 +84,15 @@ class Fragment {
         attributes.get(field)
     }
 
-    Attribute getAttribute(String fieldName) {
-        attributes.values().find { it.field?.name == fieldName }
-    }
-
     void putAttribute(Attribute attribute) {
         attributes.put(attribute.field, attribute)
+        attribute.@fragment = this
+    }
+
+    void removeAttribute(Attribute attribute) {
+        if (attributes.remove(attribute.field, attribute)) {
+            attribute.@fragment = null
+        }
     }
 
     @CreatedDate

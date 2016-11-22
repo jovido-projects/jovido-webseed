@@ -1,33 +1,92 @@
 package biz.jovido.webseed.web.content
 
+import biz.jovido.webseed.model.content.Fragment
+import biz.jovido.webseed.model.content.payload.ReferencePayload
 import biz.jovido.webseed.service.content.FragmentService
-import biz.jovido.webseed.validation.BindingMessages
+import biz.jovido.webseed.service.content.StringToFragmentHistoryConverter
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
+import org.springframework.validation.Errors
 import org.springframework.web.bind.WebDataBinder
-import org.springframework.web.bind.annotation.InitBinder
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.context.request.RequestContextHolder
-import org.springframework.web.context.request.ServletRequestAttributes
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
-
-import javax.servlet.http.HttpServletRequest
 
 /**
  *
  * @author Stephan Grundner
  */
+@SessionAttributes(['editorManager'])
 @Controller
 class FragmentController {
 
+    static class Editor {
+
+        final String id
+        FragmentForm form
+
+        void setForm(FragmentForm form) {
+            this.form = form
+        }
+
+        ReferencePayload referringPayload
+
+        Editor(String id) {
+            this.id = id
+        }
+    }
+
+    static class EditorManager {
+
+        static int count = 0
+
+        Editor currentEditor
+        Stack<Editor> editors = new Stack<>()
+
+        Editor createEditor() {
+//            def id = Long.toString(System.nanoTime(), 36)
+            def id = Integer.toString(count++)
+            currentEditor = new Editor(id)
+            editors.push(currentEditor)
+        }
+
+        void setCurrentEditor(Editor currentEditor) {
+            def position = editors.indexOf(currentEditor)
+            if (position >= 0) {
+                def n = (editors.size() - position - 1)
+                for (int i = 0; i < n; i++) {
+                    editors.pop()
+                }
+            } else {
+                throw new IllegalArgumentException()
+            }
+
+            this.currentEditor = currentEditor
+        }
+
+        Editor getEditor(String id) {
+            def editor = editors.find { it.id == id }
+
+            editor
+        }
+
+        Editor reset() {
+            count = 0
+            currentEditor = null
+            editors.clear()
+
+            createEditor()
+        }
+    }
+
     static abstract class FormProcessingHandler {
 
-        void onSuccess() {}
+        void onSuccess(ModelAndView modelAndView) {}
+
+        void onFailure(ModelAndView modelAndView) {}
     }
 
     protected final FragmentService fragmentService
@@ -37,10 +96,16 @@ class FragmentController {
         this.fragmentService = fragmentService
     }
 
+    @ModelAttribute('editorManager')
+    EditorManager editorManager() {
+        new EditorManager()
+    }
+
     @InitBinder
     void initBinder(WebDataBinder binder) {
         def cs = (ConfigurableConversionService) binder.conversionService
         cs.addConverter(new FieldNameToFieldConverter(binder))
+        cs.addConverter(new StringToFragmentHistoryConverter(fragmentService))
     }
 
     @RequestMapping(path = '/fragment', produces = ['application/json'])
@@ -52,57 +117,174 @@ class FragmentController {
         new FragmentResponse(fragment)
     }
 
-    @RequestMapping(path = '/create')
-    String create(@RequestParam(name = 'type', required = true) String fragmentTypeName,
-                  Model model) {
-
+    FragmentForm createForm(Fragment fragment) {
         def form = new FragmentForm()
-        def fragment = fragmentService.createFragment(fragmentTypeName)
-
-        fragment.type.fields.values().each { field ->
-            def constraint = field.constraint
-            for (int i = 0; i < constraint.minValues; i++) {
-                fragmentService.setValue(fragment, field.name, i, Locale.GERMAN, null)
-            }
-        }
+        form.fragment = fragment
 
         def fieldGroups = fragment.type.fieldGroups.values()
         form.fieldGroupName = fieldGroups.empty ? '' : fieldGroups.first().name
-        form.fragment = fragment
 
-        model.addAttribute('fragmentForm', form)
+        form
+    }
+
+    @RequestMapping(path = 'fragment/create')
+    String create(@ModelAttribute('editorManager') EditorManager editorManager,
+                  @RequestParam(name = 'type') String fragmentTypeName,
+                  Model model) {
+
+        def editor = editorManager.reset()
+
+        def fragment = fragmentService.createFragment(fragmentTypeName)
+        fragmentService.applyDefaults(fragment)
+        def form = createForm(fragment)
+        editor.form = form
+        model.addAttribute('form', form)
 
         "fragment/form"
     }
 
-    protected ModelAndView processForm(FragmentForm form, BindingResult bindingResult, FormProcessingHandler handler) {
-        def result = new ModelAndView()
-        result.addObject('form', form)
+    @RequestMapping(path = 'fragment/edit')
+    String edit(@ModelAttribute('editorManager') EditorManager editorManager,
+                  @RequestParam(name = 'editor') String editorId,
+                  Model model) {
 
-        HttpServletRequest request = null
-        def requestAttributes = RequestContextHolder.requestAttributes
-        if (requestAttributes instanceof ServletRequestAttributes) {
-            request = requestAttributes.request
-        }
+        def editor = editorManager.getEditor(editorId)
+        editorManager.currentEditor = editor
+        model.addAttribute('form', editor.form)
 
-        result.viewName = "fragment/form"
-
-        if (bindingResult.hasErrors()) {
-//            TODO On errors...
-        }
-
-        handler?.onSuccess()
-
-        result
+        "fragment/form"
     }
 
-    @RequestMapping('/save')
-//    ModelAndView save(FragmentForm form, BindingResult bindingResult) {
-    ModelAndView save(FragmentForm form, BindingMessages bindingMessages) {
-        processForm(form, bindingMessages, new FormProcessingHandler() {
+    protected ModelAndView processForm(FragmentForm form, Errors bindingResult, EditorManager editorManager, FormProcessingHandler handler) {
+        def modelAndView = new ModelAndView()
+
+        modelAndView.addObject('form', form)
+        modelAndView.viewName = "fragment/form"
+
+        if (bindingResult.hasErrors()) {
+            handler.onFailure(modelAndView)
+            return modelAndView
+        }
+
+        def editor = editorManager.currentEditor
+        BeanUtils.copyProperties(form, editor.form, 'fragment')
+        fragmentService.copyFragment(form.fragment, editor.form.fragment)
+
+        handler?.onSuccess(modelAndView)
+
+        modelAndView
+    }
+
+    @RequestMapping('fragment/extend')
+    ModelAndView createAndAssign(@ModelAttribute('editorManager') EditorManager editorManager,
+                                 @RequestParam(name = 'field') String fieldName,
+                                 @RequestParam(name = 'index') int index,
+                                 @RequestParam(name = 'type') String fragmentTypeName,
+                          FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
             @Override
-            void onSuccess() {
-                println "Juhu :)"
+            void onSuccess(ModelAndView modelAndView) {
+
+                def currentFragment = form.fragment
+                def currentAttribute = fragmentService.getAttribute(currentFragment, fieldName)
+                def referringPayload = currentAttribute.getPayload(index) as ReferencePayload
+
+                def newFragment = fragmentService.createFragment(fragmentTypeName)
+                fragmentService.applyDefaults(newFragment)
+                def newForm = createForm(newFragment)
+
+                def editor = editorManager.createEditor()
+                editor.referringPayload = referringPayload
+                editor.form = newForm
+
+                modelAndView.addObject('form', newForm)
+            }
+        })
+    }
+
+    @RequestMapping('fragment/addvalue')
+    ModelAndView addValue(@ModelAttribute('editorManager') EditorManager editorManager,
+                          @RequestParam(name = 'field') String fieldName,
+                          FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
+            @Override
+            void onSuccess(ModelAndView modelAndView) {
+                def editor = editorManager.currentEditor
+                def fragment = editor.form.fragment
+                def attribute = fragmentService.getAttribute(fragment, fieldName)
+                fragmentService.addValue(attribute, null)
+//                modelAndView.viewName = "redirect:edit?editor=${editor.id}"
+                modelAndView.addObject('form', editor.form)
+            }
+        })
+    }
+
+    @RequestMapping('fragment/remvalue')
+    ModelAndView removeValue(@ModelAttribute('editorManager') EditorManager editorManager,
+                          @RequestParam(name = 'field') String fieldName,
+                          @RequestParam(name = 'index') int index,
+                          FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
+            @Override
+            void onSuccess(ModelAndView modelAndView) {
+                def editor = editorManager.currentEditor
+                def fragment = editor.form.fragment
+                def attribute = fragmentService.getAttribute(fragment, fieldName)
+                fragmentService.removeValue(attribute, index)
+//                modelAndView.viewName = "redirect:edit?editor=${editor.id}"
+                modelAndView.addObject('form', editor.form)
+            }
+        })
+    }
+
+    @RequestMapping('fragment/valueup')
+    ModelAndView moveValueUp(@ModelAttribute('editorManager') EditorManager editorManager,
+                             @RequestParam(name = 'field') String fieldName,
+                             @RequestParam(name = 'index') int index,
+                             FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
+            @Override
+            void onSuccess(ModelAndView modelAndView) {
+                def editor = editorManager.currentEditor
+                def fragment = editor.form.fragment
+                def attribute = fragmentService.getAttribute(fragment, fieldName)
+                fragmentService.swapValues(attribute, index, index - 1)
+//                modelAndView.viewName = "redirect:edit?editor=${editor.id}"
+                modelAndView.addObject('form', editor.form)
+            }
+        })
+    }
+
+    @RequestMapping('fragment/valuedown')
+    ModelAndView moveValueDown(@ModelAttribute('editorManager') EditorManager editorManager,
+                             @RequestParam(name = 'field') String fieldName,
+                             @RequestParam(name = 'index') int index,
+                             FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
+            @Override
+            void onSuccess(ModelAndView modelAndView) {
+                def editor = editorManager.currentEditor
+                def fragment = editor.form.fragment
+                def attribute = fragmentService.getAttribute(fragment, fieldName)
+                fragmentService.swapValues(attribute, index, index + 1)
+//                modelAndView.viewName = "redirect:edit?editor=${editor.id}"
+                modelAndView.addObject('form', editor.form)
+            }
+        })
+    }
+
+    @RequestMapping('fragment/save')
+    ModelAndView save(@ModelAttribute('editorManager') EditorManager editorManager,
+                      FragmentForm form, BindingResult bindingResult) {
+        processForm(form, bindingResult, editorManager, new FormProcessingHandler() {
+            @Override
+            void onSuccess(ModelAndView modelAndView) {
+                def editor = editorManager.currentEditor
+                def fragment = editor.form.fragment
+
+                fragmentService.saveFragment(fragment)
+
+                modelAndView.addObject('form', editor.form)
             }
         })
     }

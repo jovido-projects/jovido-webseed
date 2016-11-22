@@ -1,4 +1,4 @@
-package biz.jovido.webseed.service.content.xml
+package biz.jovido.webseed.service.content
 
 import biz.jovido.webseed.model.content.Field
 import biz.jovido.webseed.model.content.FieldGroup

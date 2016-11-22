@@ -20,6 +20,16 @@ class Attribute implements List<Payload<?>> {
     @ManyToOne
     Fragment fragment
 
+//    void setFragment(Fragment fragment) {
+//        this.fragment?.@attributes?.remove(field, this)
+//
+//        if (fragment != null) {
+//            fragment.@attributes.put(field, this)
+//        }
+//
+//        this.fragment = fragment
+//    }
+
     @ManyToOne(targetEntity = Field, fetch = FetchType.EAGER)
     @JoinColumn(name = 'field_id')
     Field field
@@ -49,5 +59,35 @@ class Attribute implements List<Payload<?>> {
         }
 
         payloads.set(index, payload)
+    }
+
+    Object getValue(int index) {
+        getPayload(index)?.value
+    }
+
+    void setValue(int index, Object value) {
+        def payload = getPayload(index) as Payload<?>
+        payload?.setValue(value)
+    }
+
+    Object getValue() {
+        getValue(0)
+    }
+
+    void setValue(Object value) {
+        setValue(0, value)
+    }
+
+    Payload<?> removePayload(int index) {
+        def payload = payloads.remove(index)
+        payload?.attribute = null
+
+        payload
+    }
+
+    Object removeValue(int index) {
+        def payload = removePayload(index)
+
+        payload?.value
     }
 }

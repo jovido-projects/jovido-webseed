@@ -12,8 +12,8 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
-import javax.persistence.OneToOne
 import javax.persistence.Table
+import javax.persistence.Transient
 import javax.persistence.UniqueConstraint
 
 /**
@@ -79,6 +79,11 @@ class Field {
 
     protected void setOrdinal(int ordinal) {
         this.ordinal = ordinal
+    }
+
+    @Transient
+    boolean isSequence() {
+        constraint.maxValues > 1
     }
 
     @Override
