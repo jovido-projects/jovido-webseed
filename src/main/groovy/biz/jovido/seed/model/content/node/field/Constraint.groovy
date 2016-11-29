@@ -1,4 +1,4 @@
-package biz.jovido.seed.model.content.node.type
+package biz.jovido.seed.model.content.node.field
 
 import biz.jovido.seed.model.content.node.fragment.Payload
 
@@ -8,7 +8,7 @@ import javax.persistence.*
  *
  * @author Stephan Grundner
  */
-@Table(name = 'node_type_constraint')
+@Table(name = 'node_field_constraint')
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = 'type')
 @Entity

@@ -1,6 +1,6 @@
 package biz.jovido.seed.model.content.node
 
-import biz.jovido.seed.model.content.node.type.Constraint
+import biz.jovido.seed.model.content.node.field.Constraint
 
 import javax.persistence.*
 

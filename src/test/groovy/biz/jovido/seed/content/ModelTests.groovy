@@ -1,7 +1,7 @@
 package biz.jovido.seed.content
 
 import biz.jovido.seed.service.content.NodeService
-import biz.jovido.seed.util.content.NodeTypeBuilder
+import biz.jovido.seed.util.content.node.TypeBuilder
 import groovy.transform.CompileStatic
 import org.junit.Assert
 import org.junit.Test
@@ -53,7 +53,7 @@ class ModelTests {
     @Test
     @Transactional
     void testAlteringStructure() {
-        def basicPage = new NodeTypeBuilder()
+        def basicPage = new TypeBuilder()
                 .setName('basicPage')
                 .addAlphanumericField('title')
                     .setHtml(true)
@@ -65,7 +65,7 @@ class ModelTests {
 
         contentService.saveType(basicPage)
 
-        basicPage = new NodeTypeBuilder()
+        basicPage = new TypeBuilder()
                 .setName('basicPage')
                 .addAlphanumericField('title')
                     .setHtml(true)

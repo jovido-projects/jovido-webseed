@@ -1,11 +1,11 @@
-package biz.jovido.seed.util.content
+package biz.jovido.seed.util.content.node
 
-import biz.jovido.seed.model.content.node.type.Constraint
+import biz.jovido.seed.model.content.node.field.Constraint
 import biz.jovido.seed.model.content.node.Field
 import biz.jovido.seed.model.content.node.Type
-import biz.jovido.seed.model.content.node.type.constraint.AlphanumericConstraint
-import biz.jovido.seed.model.content.node.type.constraint.NumericConstraint
-import biz.jovido.seed.model.content.node.type.constraint.ReferenceConstraint
+import biz.jovido.seed.model.content.node.field.constraint.AlphanumericConstraint
+import biz.jovido.seed.model.content.node.field.constraint.NumericConstraint
+import biz.jovido.seed.model.content.node.field.constraint.ReferenceConstraint
 import groovy.transform.CompileStatic
 
 /**
@@ -13,15 +13,15 @@ import groovy.transform.CompileStatic
  * @author Stephan Grundner
  */
 @CompileStatic
-class NodeTypeBuilder<B extends NodeTypeBuilder> {
+class TypeBuilder<B extends TypeBuilder> {
 
-    static abstract class FieldBuilder<B extends FieldBuilder> extends NodeTypeBuilder<B> {
+    static abstract class FieldBuilder<B extends FieldBuilder> extends TypeBuilder<B> {
 
-        private final NodeTypeBuilder parent
+        private final TypeBuilder parent
 
         protected abstract Constraint getConstraint()
 
-        protected FieldBuilder(Type type, Field field, NodeTypeBuilder parent) {
+        protected FieldBuilder(Type type, Field field, TypeBuilder parent) {
             super(type, field)
             this.parent = parent
         }
@@ -54,7 +54,7 @@ class NodeTypeBuilder<B extends NodeTypeBuilder> {
             constraint
         }
 
-        AlphanumericFieldBuilder(Type type, Field field, NodeTypeBuilder parent) {
+        AlphanumericFieldBuilder(Type type, Field field, TypeBuilder parent) {
             super(type, field, parent)
 
             constraint = new AlphanumericConstraint()
@@ -84,7 +84,7 @@ class NodeTypeBuilder<B extends NodeTypeBuilder> {
             constraint
         }
 
-        NumericFieldBuilder(Type type, Field field, NodeTypeBuilder parent) {
+        NumericFieldBuilder(Type type, Field field, TypeBuilder parent) {
             super(type, field, parent)
 
             constraint = new NumericConstraint()
@@ -102,7 +102,7 @@ class NodeTypeBuilder<B extends NodeTypeBuilder> {
             constraint
         }
 
-        NodeFieldBuilder(Type type, Field field, NodeTypeBuilder parent) {
+        NodeFieldBuilder(Type type, Field field, TypeBuilder parent) {
             super(type, field, parent)
 
             constraint = new ReferenceConstraint()
@@ -127,12 +127,12 @@ class NodeTypeBuilder<B extends NodeTypeBuilder> {
     private Type type
     private Field field
 
-    NodeTypeBuilder(Type type, Field field) {
+    TypeBuilder(Type type, Field field) {
         this.type = type
         this.field = field
     }
 
-    NodeTypeBuilder() {
+    TypeBuilder() {
         type = new Type()
     }
 

@@ -1,6 +1,6 @@
-package biz.jovido.seed.model.content.node.type.constraint
+package biz.jovido.seed.model.content.node.field.constraint
 
-import biz.jovido.seed.model.content.node.type.Constraint
+import biz.jovido.seed.model.content.node.field.Constraint
 import biz.jovido.seed.model.content.node.fragment.payload.DecimalPayload
 import biz.jovido.seed.model.content.node.fragment.payload.IntegerPayload
 
