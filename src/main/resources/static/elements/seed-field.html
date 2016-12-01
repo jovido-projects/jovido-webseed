@@ -1,0 +1,21 @@
+<link rel="import" href="../js/bower_components/polymer/polymer.html" />
+<dom-module id="seed-field">
+
+<template>
+    <div class="input-group">
+        <input type="text"
+               name="{{name}}"
+               value="{{value}}"
+               class="form-control">
+        <span class="input-group-btn">
+            <content selector="button" />
+        </span>
+    </div>
+
+</template>
+
+<script>
+    Polymer({is: "seed-field"});
+</script>
+
+</dom-module>

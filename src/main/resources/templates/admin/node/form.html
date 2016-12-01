@@ -1,0 +1,104 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="page(body=~{::body})"
+      th:remove="tag">
+<div th:fragment="body" class="container">
+
+<form th:object="${form}" th:with="node=${form.node}" method="post">
+
+    <input type="hidden" th:field="*{locale}">
+    <input type="hidden" th:field="*{node.id}">
+    <input type="hidden" th:field="*{node.type}">
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Fragment</h1>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2 th:text="#{__${node?.type?.name}__}">Title</h2>
+
+            <th:block th:with="fragment=${node.getFragment(form.locale)}">
+
+
+                <!--<div class="form-group row">-->
+                    <!--<label class="col-sm-2 col-form-label">Node ID</label>-->
+                    <!--<div class="col-sm-10">-->
+                        <!--<p class="form-control-static mb-0" th:text="${node.id}">ID</p>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="form-group row">-->
+                    <!--<label class="col-sm-2 col-form-label">Fragment ID</label>-->
+                    <!--<div class="col-sm-10">-->
+                        <!--<p class="form-control-static mb-0" th:text="${fragment.id}">ID</p>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <th:block th:each="field : ${node.type.fields}" th:with="property=${fragment.getProperty(field)}">
+
+                    <!-- Store the list of field (property) names -->
+                    <input type="hidden"
+                           th:name="fragment.properties"
+                           th:value="${property.field.name}"
+                           class="form-control">
+
+                    <!-- Property -->
+                    <div class="card">
+                        <div class="card-header">
+                            <strong th:text="#{__${node.type.name}__.__${property.name}__}">Label</strong>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <th:block th:each="payload,status : ${property.payloads}">
+                                <li class="list-group-item">
+                                    [[${payload}]]
+                                    <th:block th:switch="${payload?.class?.simpleName}">
+                                        <th:block th:case="TextPayload">
+                                            <th:block th:replace="admin/node/text-payload" />
+                                        </th:block>
+                                        <th:block th:case="DatePayload">
+                                            <th:block th:replace="admin/node/date-payload" />
+                                        </th:block>
+                                        <th:block th:case="NodePayload">
+                                            <th:block th:replace="admin/node/node-payload" />
+                                        </th:block>
+                                    </th:block>
+                                </li>
+                            </th:block>
+                            <li class="list-group-item">
+                                <button class="btn btn-secondary"
+                                        th:formaction="@{addvalue(field=${property.field.name})}">
+                                    <i class="fa fa-plus"></i>
+                                    <span>Add</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Property end -->
+
+                </th:block>
+            </th:block>
+
+
+            <button class="btn btn-primary" th:formaction="@{save}">Save</button>
+        </div>
+
+        <div class="col-md-4">
+            <h2>Translations</h2>
+
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-info" th:each="locale : ${availableLocales}">
+                    [[${locale.displayName}]]
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+
+
+</form>
+
+</div>
+</html>

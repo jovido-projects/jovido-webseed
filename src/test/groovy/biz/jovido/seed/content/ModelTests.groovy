@@ -1,7 +1,7 @@
 package biz.jovido.seed.content
 
-import biz.jovido.seed.service.content.NodeService
-import biz.jovido.seed.util.content.node.TypeBuilder
+import biz.jovido.seed.content.service.NodeService
+import biz.jovido.seed.content.service.node.TypeBuilder
 import groovy.transform.CompileStatic
 import org.junit.Assert
 import org.junit.Test
@@ -100,7 +100,7 @@ class ModelTests {
 //        def node = contentService.createNode(type)
 //
 //        type.fields.each { name, field ->
-//            fragmentService.createAttribute(field, node, 1)
+//            nodeService.createAttribute(field, node, 1)
 //        }
 //
 //        contentService.saveFragment(node)
@@ -108,11 +108,11 @@ class ModelTests {
 //
 //    Fragment createAndSaveFragment(Long nodeId, Locale locale, String title) {
 //        def node = contentService.getFragment(nodeId)
-//        def content = fragmentService.createNode(node, locale)
-//        fragmentService.setValue('title', content, TextPayload, title)
-//        fragmentService.setValue('self', content, ReferencePayload, content)
+//        def content = nodeService.createNode(node, locale)
+//        nodeService.setValue('title', content, TextPayload, title)
+//        nodeService.setValue('self', content, ReferencePayload, content)
 //
-//        fragmentService.saveFragment(content)
+//        nodeService.saveFragment(content)
 //    }
 //
 //    @Rollback(true)
@@ -127,13 +127,13 @@ class ModelTests {
 //        def page1_en = createAndSaveFragment(page1.id, Locale.ENGLISH, 'Welcome')
 //        def page1_de = createAndSaveFragment(page1.id, Locale.GERMAN, 'Willkommen')
 //
-//        def titleValue_en = fragmentService.getValue('title', page1_en)
-//        def selfValue_en = fragmentService.getValue('self', page1_en)
+//        def titleValue_en = nodeService.getValue('title', page1_en)
+//        def selfValue_en = nodeService.getValue('self', page1_en)
 //
-//        def titleValue_de = fragmentService.getValue('title', page1_de)
-//        def titleValue_de1 = fragmentService.getValue('title', 1, page1_de)
-//        def titleValue_de2 = fragmentService.getValue('title', 2, page1_de)
-//        def selfValue_de = fragmentService.getValue('self', page1_de)
+//        def titleValue_de = nodeService.getValue('title', page1_de)
+//        def titleValue_de1 = nodeService.getValue('title', 1, page1_de)
+//        def titleValue_de2 = nodeService.getValue('title', 2, page1_de)
+//        def selfValue_de = nodeService.getValue('self', page1_de)
 //
 //        Assert.assertTrue(true)
 //    }
