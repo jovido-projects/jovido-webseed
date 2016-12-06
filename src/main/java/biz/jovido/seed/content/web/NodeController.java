@@ -2,9 +2,9 @@ package biz.jovido.seed.content.web;
 
 import biz.jovido.seed.content.model.Node;
 import biz.jovido.seed.content.model.node.Fragment;
-import biz.jovido.seed.content.model.node.fragment.Payload;
 import biz.jovido.seed.content.model.node.fragment.Property;
 import biz.jovido.seed.content.service.NodeService;
+import biz.jovido.seed.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -39,19 +40,46 @@ public class NodeController {
         return "admin/index";
     }
 
-    @RequestMapping("/admin/node/create")
-    public String create(@RequestParam(name = "type") String typeName, Model model) {
+    @RequestMapping("/admin/node/new")
+    public String create(@RequestParam(name = "structure") String structureName, Model model) {
 
         NodeForm form = new NodeForm();
         form.setLocale(Locale.GERMAN);
 
-        Node node = nodeService.createNode(typeName);
+        Node node = nodeService.createNode(structureName);
         Fragment fragment = nodeService.createFragment(node, form.getLocale());
 
         nodeService.applyDefaults(fragment);
 
-        nodeService.setValue("title", 0, fragment, "Willkommen");
-        nodeService.setValue("title", 1, fragment, "Griaß Di");
+        form.setNode(node);
+
+        model.addAttribute("form", form);
+
+        return "/admin/node/form";
+    }
+
+    @RequestMapping("/admin/node/assignnew")
+    public String createAndAssign(NodeForm referringForm,
+            @RequestParam(name = "structure") String structureName,
+                                  @RequestParam(name = "to-property") Long referringPropertyId,
+                                  @RequestParam(name = "to-index") int referringValueIndex,
+                                  Model model) {
+
+        NodeForm form = new NodeForm();
+
+        form.getReferringValues().addAll(referringForm.getReferringValues());
+
+        form.setLocale(Locale.GERMAN);
+
+        NodeForm.ReferringValue referringValue = new NodeForm.ReferringValue();
+        referringValue.setPropertyId(referringPropertyId);
+        referringValue.setValueIndex(referringValueIndex);
+        form.addReferringValue(referringValue);
+
+        Node node = nodeService.createNode(structureName);
+        Fragment fragment = nodeService.createFragment(node, form.getLocale());
+
+        nodeService.applyDefaults(fragment);
 
         form.setNode(node);
 
@@ -77,31 +105,13 @@ public class NodeController {
         return "/admin/node/form";
     }
 
-    @RequestMapping("/admin/node/remvalue")
-    public String removeValue(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
-
-        Fragment fragment = form.getFragment();
-        Property property = fragment.getProperty(fieldName);
-        int before = property.size();
-        property.removePayload(index);
-        int after = property.size();
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
     @RequestMapping("/admin/node/valueup")
     public String moveValueUp(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
 
         Fragment fragment = form.getFragment();
         Property property = fragment.getProperty(fieldName);
 
-        Payload previousPayload = property.getPayload((int) index - 1);
-        Payload payload = property.getPayload(index);
-
-        property.setPayload(index, previousPayload);
-        property.setPayload((int) index - 1, payload);
+        Collections.swap(property.getValues(), index, index - 1);
 
         model.addAttribute("form", form);
 
@@ -114,11 +124,7 @@ public class NodeController {
         Fragment fragment = form.getFragment();
         Property property = fragment.getProperty(fieldName);
 
-        Payload nextPayload = property.getPayload(index + 1);
-        Payload payload = property.getPayload(index);
-
-        property.setPayload(index, nextPayload);
-        property.setPayload(index + 1, payload);
+        Collections.swap(property.getValues(), index, index + 1);
 
         model.addAttribute("form", form);
 
@@ -130,8 +136,19 @@ public class NodeController {
 
         Fragment fragment = form.getFragment();
         Property property = fragment.getProperty(fieldName);
-        property.setSize(property.size() + 1);
-        nodeService.setValue(fieldName, property.size() - 1, fragment, null);
+        CollectionUtils.increase(property.getValues(), 1);
+
+        model.addAttribute("form", form);
+
+        return "/admin/node/form";
+    }
+
+    @RequestMapping("/admin/node/remvalue")
+    public String removeValue(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
+
+        Fragment fragment = form.getFragment();
+        Property property = fragment.getProperty(fieldName);
+        property.getValues().remove(index);
 
         model.addAttribute("form", form);
 

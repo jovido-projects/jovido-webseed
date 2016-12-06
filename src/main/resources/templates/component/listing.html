@@ -1,0 +1,52 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th th:each="column : ${listing.columns}">
+            <span th:text="${column.name}">Column name</span>
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="item,status : ${listing.page.content}">
+        <td th:each="column : ${listing.columns}">
+            <th:block th:with="cell=${column.cellGenerator.generateCell(listing,column,status.index)}">
+                <th:block th:replace="/component/listing/cell" />
+            </th:block>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <!--<nav aria-label="...">-->
+            <!--<ul class="pagination">-->
+                <!--<li class="page-item disabled">-->
+                    <!--<a class="page-link" href="#" tabindex="-1" aria-label="Previous">-->
+                        <!--<span aria-hidden="true">&laquo;</span>-->
+                        <!--<span class="sr-only">Previous</span>-->
+                    <!--</a>-->
+                <!--</li>-->
+
+                <!--<li class="page-item" th:classappend="${i == page.number}? active : _"-->
+                    <!--th:each="i : ${#numbers.sequence(0, pages - 1)}">-->
+                    <!--<a class="page-link" th:href="@{nodes(page=${i})}"-->
+                       <!--th:text="${i + 1}">#</a>-->
+                <!--</li>-->
+
+                <!--<li class="page-item">-->
+                    <!--<a class="page-link" href="#" aria-label="Next">-->
+                        <!--<span aria-hidden="true">&raquo;</span>-->
+                        <!--<span class="sr-only">Next</span>-->
+                    <!--</a>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</nav>-->
+
+
+    </div>
+</div>
+</html>

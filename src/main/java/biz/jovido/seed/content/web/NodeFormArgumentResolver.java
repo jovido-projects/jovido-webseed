@@ -1,12 +1,16 @@
 package biz.jovido.seed.content.web;
 
+import biz.jovido.seed.content.converter.StringToNodeConverter;
 import biz.jovido.seed.content.model.Node;
 import biz.jovido.seed.content.model.node.Fragment;
+import biz.jovido.seed.content.model.node.Structure;
 import biz.jovido.seed.content.model.node.fragment.Property;
 import biz.jovido.seed.content.service.NodeService;
+import biz.jovido.seed.util.CollectionUtils;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
@@ -33,6 +37,9 @@ public class NodeFormArgumentResolver implements HandlerMethodArgumentResolver {
     @Autowired
     private NodeService nodeService;
 
+    @Autowired
+    private StringToNodeConverter stringToNodeConverter;
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(NodeForm.class);
@@ -43,12 +50,21 @@ public class NodeFormArgumentResolver implements HandlerMethodArgumentResolver {
 
         final HttpServletRequest request = DefaultGroovyMethods.asType(webRequest.getNativeRequest(), HttpServletRequest.class);
 
+        String structureName = ServletRequestUtils.getStringParameter(request, "node.structure.name");
+        Structure structure = nodeService.getStructure(structureName);
+        Node node = nodeService.createNode(structure);
         NodeForm form = new NodeForm();
+        form.setNode(node);
 
         String name = ModelFactory.getNameForParameter(parameter);
         WebDataBinder binder = binderFactory.createBinder(webRequest, form, name);
 //        binder.setAutoGrowNestedPaths(false)
         binder.setDisallowedFields("fragment.properties");
+
+        ConfigurableConversionService conversionService =
+                (ConfigurableConversionService) binder.getConversionService();
+
+        conversionService.addConverter(stringToNodeConverter);
 
         if (!ObjectUtils.isEmpty(binder.getTarget())) {
             if (!mavContainer.isBindingDisabled(name)) {
@@ -57,18 +73,16 @@ public class NodeFormArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         Locale locale = form.getLocale();
-        Node node = form.getNode();
-
         final Fragment fragment = nodeService.createFragment(node, locale);
 
-        String[] fieldNames = ServletRequestUtils.getStringParameters(request, "fragment.properties");
+        String[] fieldNames = ServletRequestUtils
+                .getStringParameters(request, "fragment.properties");
         Arrays.stream(fieldNames).forEach(fieldName -> {
-            String[] values = ServletRequestUtils.getStringParameters(request, "fragment.properties[" + fieldName + "]");
-            Property property = fragment.getProperty(fieldName);
-            property.setSize(values.length);
+            String[] values = ServletRequestUtils
+                    .getStringParameters(request, "fragment.properties[" + fieldName + "]");
             for (int i = 0; i < values.length; i++) {
                 String value = values[i];
-                nodeService.setValue(fieldName, i, fragment, value);
+                nodeService.setValue(fragment, fieldName, i, value);
             }
         });
 

@@ -1,0 +1,96 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="/admin/page(body=~{::body})"
+      th:remove="tag">
+<div th:fragment="body" class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Nodes</h1>
+
+            <ol class="breadcrumb">
+                <!--<li class="breadcrumb-item" th:each="referringValue : *{referringValues}">-->
+                <!--<a href="#">Home</a>-->
+                <!--</li>-->
+
+                <li class="breadcrumb-item active">Nodes</li>
+            </ol>
+        </div>
+    </div>
+
+    <table th:with="nodes=${page.content}" class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                <span>ID</span>
+            </th>
+            <th>
+                <span>Structure</span>
+            </th>
+            <th>
+                <span>Fragments</span>
+            </th>
+            <th>
+                <span>Label</span>
+            </th>
+            <th>
+                <a th:href="@{/admin/node/new?structure=basicPage}" class="btn btn-primary btn-sm pull-right">
+                    <i class="fa fa-plus-square"></i>
+                    <span>Create</span>
+                </a>
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="node : ${nodes}">
+            <td th:text="${node.id}">#</td>
+            <td th:text="${node.structure.name}">#</td>
+            <td th:text="${node.fragmentLocales.size()}">#</td>
+            <td th:text="${@nodeService.getLabel(node, 0)}">#</td>
+            <td>
+
+                <div class="btn-group btn-group-sm pull-right">
+                    <a th:href="@{node/edit(node=${node.id})}" class="btn btn-secondary">
+                        <i class="fa fa-pencil"></i>
+                        <span>Edit</span>
+                    </a>
+                </div>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${i == page.number}? active : _"
+                        th:each="i : ${#numbers.sequence(0, pages - 1)}">
+                        <a class="page-link" th:href="@{nodes(page=${i})}"
+                           th:text="${i + 1}">#</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+
+        </div>
+    </div>
+
+</div>
+</html>

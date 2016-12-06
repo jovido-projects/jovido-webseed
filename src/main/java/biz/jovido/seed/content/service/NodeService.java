@@ -1,28 +1,30 @@
 package biz.jovido.seed.content.service;
 
 import biz.jovido.seed.content.model.Node;
-import biz.jovido.seed.content.model.node.Field;
+import biz.jovido.seed.content.model.node.Bundle;
 import biz.jovido.seed.content.model.node.Fragment;
-import biz.jovido.seed.content.model.node.Type;
-import biz.jovido.seed.content.model.node.field.Constraint;
-import biz.jovido.seed.content.model.node.field.constraint.ReferenceConstraint;
-import biz.jovido.seed.content.model.node.fragment.Payload;
+import biz.jovido.seed.content.model.node.Structure;
 import biz.jovido.seed.content.model.node.fragment.Property;
-import biz.jovido.seed.content.model.node.fragment.payload.NodePayload;
-import biz.jovido.seed.content.model.node.fragment.payload.TextPayload;
+import biz.jovido.seed.content.model.node.structure.Constraints;
+import biz.jovido.seed.content.model.node.structure.Field;
 import biz.jovido.seed.content.repository.NodeRepository;
-import biz.jovido.seed.content.repository.node.NodeTypeRepository;
+import biz.jovido.seed.content.repository.node.PropertyRepository;
+import biz.jovido.seed.content.repository.node.StructureRepository;
+import biz.jovido.seed.util.CollectionUtils;
 import groovy.transform.CompileStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +41,10 @@ public class NodeService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeService.class);
 
     @Autowired
-    private NodeTypeRepository nodeTypeRepository;
+    private StructureRepository structureRepository;
+
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @Autowired
     private NodeRepository nodeRepository;
@@ -47,84 +52,99 @@ public class NodeService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private ConversionService conversionService;
 
-    public Type getType(String name) {
-        return nodeTypeRepository.findByName(name);
+
+    public Structure getStructure(String name) {
+        return structureRepository.findByName(name);
     }
 
-    public Type createType(String name) {
-        assert !StringUtils.isEmpty(name);
-
-        Type type = new Type();
-        type.setName(name);
-
-        return type;
-    }
-
-    public Field addField(String fieldName, Type type) {
+    public Field addField(String fieldName, Structure structure) {
         assert !StringUtils.isEmpty(fieldName);
-        assert type != null;
+        assert structure != null;
 
-        return type.addField(fieldName);
+        return structure.addField(fieldName);
     }
 
-    @Transactional(propagation = Propagation.NESTED)
-    public void removeExistingFields(final Type type, Set<String> fieldNames) {
-        LOG.info("Removing fields " + String.valueOf(fieldNames) + " from type [" + type.getName() + "]");
+    @Transactional
+    public void removeExistingFields(final Structure structure, Set<String> fieldNames) {
+        LOG.info("Removing fields " + String.valueOf(fieldNames) + " from structure [" + structure.getName() + "]");
 
         fieldNames.forEach(fieldName -> {
-            Field field = type.removeField(fieldName);
-            int n = nodeRepository.deletePropertiesByField(field);
+            Field field = structure.removeField(fieldName);
+            List<Property> properties = propertyRepository.findAllByField(field);
+//            int n = nodeRepository.deletePropertiesByField(field);
+            int n = properties.size();
+            properties.stream().forEach( property -> {
+
+//                TODO Test removing properties!
+                property.setField(null);
+                propertyRepository.delete(property);
+            });
+
 
             LOG.info("Removed [" + String.valueOf(n) + "] properties for field [" + fieldName + "]");
         });
     }
 
-    public void addNewFields(final Type type, final Type existingType, Set<String> fieldNames) {
-        LOG.info("Adding new fields " + String.valueOf(fieldNames) + " to type [" + type.getName() + "]");
+    public void addNewFields(final Structure structure, final Structure existingType, Set<String> fieldNames) {
+        LOG.info("Adding new fields " + String.valueOf(fieldNames) + " to structure [" + structure.getName() + "]");
 
         fieldNames.forEach(fieldName -> {
-            Field field = type.getField(fieldName);
+            Field field = structure.getField(fieldName);
             Field newlyAddedField = existingType.addField(fieldName);
-            newlyAddedField.setConstraint(field.getConstraint());
+            newlyAddedField.setConstraints(field.getConstraints());
         });
     }
 
-    public Type saveType(Type type) {
-        Type existingType = nodeTypeRepository.findByName(type.getName());
+    public Structure saveStructure(Structure structure) {
+        Structure existingType = structureRepository.findByName(structure.getName());
         if (existingType != null) {
 
             HashSet<String> newFieldNames = new HashSet<>();
             HashSet<String> remainingFieldNames = new HashSet<>(existingType.getFieldNames());
 
-            type.getFieldNames().forEach(fieldName -> {
+            structure.getFieldNames().forEach(fieldName -> {
                 if (!remainingFieldNames.remove(fieldName)) {
                     newFieldNames.add(fieldName);
                 }
             });
 
             removeExistingFields(existingType, remainingFieldNames);
-            addNewFields(type, existingType, newFieldNames);
+            addNewFields(structure, existingType, newFieldNames);
 
-            return nodeTypeRepository.saveAndFlush(existingType);
+            return structureRepository.saveAndFlush(existingType);
         }
 
-        return nodeTypeRepository.save(type);
+        return structureRepository.save(structure);
     }
 
-    public Node createNode(Type type) {
-        assert type != null;
+    public Node createNode(Structure structure) {
+        assert structure != null;
 
         Node fragment = new Node();
-        fragment.setType(type);
+        fragment.setStructure(structure);
 
         return fragment;
     }
 
-    public Node createNode(String typeName) {
-        Type type = getType(typeName);
+    public Node createNode(String structureName) {
+        Structure structure = getStructure(structureName);
 
-        return createNode(type);
+        return createNode(structure);
+    }
+
+    public boolean isPersistent(Node node) {
+        if (node == null) {
+            return false;
+        }
+
+        return node.getId() != null;
+    }
+
+    public boolean isTransient(Node node) {
+        return !isPersistent(node);
     }
 
     public Node getNode(Long id) {
@@ -132,10 +152,15 @@ public class NodeService {
         return nodeRepository.findById(id);
     }
 
-    public List<Node> getAllNodes(Type type) {
-        return nodeRepository.findAllByType(type);
+    public Page<Node> getAllNodes(Pageable pageable) {
+        return nodeRepository.findAllNodes(pageable);
     }
 
+    public Page<Node> getAllNodes(Structure structure, Pageable pageable) {
+        return nodeRepository.findAllByStructure(structure, pageable);
+    }
+
+    @Transactional
     public Node saveNode(Node node) {
 
         Long nodeId = node.getId();
@@ -146,118 +171,159 @@ public class NodeService {
             return nodeRepository.save(persistentNode);
         }
 
-        return nodeRepository.save(node);
+        if (node.getBundle() == null) {
+            Bundle bundle = new Bundle();
+            entityManager.persist(bundle);
+            node.setBundle(bundle);
+        }
+
+        Node saved = nodeRepository.save(node);
+
+        Assert.notNull(saved);
+
+        Bundle bundle = saved.getBundle();
+        bundle.setCurrent(saved);
+
+        entityManager.persist(bundle);
+
+        return saved;
     }
 
     public Fragment createFragment(Node node, Locale locale) {
+        Assert.notNull(node, "[node] must not be null!");
+        Assert.notNull(locale, "[locale] must not be null!");
+
         final Fragment fragment = new Fragment();
         fragment.setNode(node);
         fragment.setLocale(locale);
 
         node.setFragment(locale, fragment);
 
-        Type type = node.getType();
-        type.getFields().forEach(field -> {
-            Property property = new Property();
-            property.setField(field);
-            property.setFragment(fragment);
+        Structure structure = node.getStructure();
+        Assert.notNull(structure, "[node.structure] must not be null!");
 
-            Property previous = fragment.addProperty(field, property);
-            Assert.isNull(previous);
+        structure.getFields().forEach(field -> {
+
+            Property property = fragment.addProperty(field);
+            Assert.notNull(property);
         });
 
         return fragment;
     }
 
+    public Fragment getDefaultFragment(Node node) {
+        Fragment fragment = node.getFragment(Locale.ROOT);
+        if (fragment == null) {
+            fragment = node.getFragments()
+                    .stream()
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        return fragment;
+    }
+
+    public void setValue(Property property, int index, Object value) {
+        @SuppressWarnings("unchecked")
+        List<Object> values = property.getValues();
+        if (index >= values.size()) {
+            CollectionUtils.resize(values, index + 1);
+        }
+
+        Class<?> sourceType = null;
+        if (value != null) {
+            sourceType = value.getClass();
+        }
+
+        Class targetType = property.getValueClazz();
+
+        if (conversionService.canConvert(sourceType, targetType)) {
+            value = conversionService.convert(value, targetType);
+        }
+
+        values.set(index, value);
+    }
+
+    public <T> T getValue(Property<T> property, int index) {
+        return property.getValues().get(index);
+    }
+
+    public <T> void setValue(Fragment fragment, Field field, int index, T value) {
+        @SuppressWarnings("unchecked")
+        Property<T> property = (Property<T>) fragment.getProperty(field);
+        setValue(property, index, value);
+    }
+
+    public <T> T getValue(Fragment fragment, Field field, int index) {
+        @SuppressWarnings("unchecked")
+        Property<T> property = (Property<T>) fragment.getProperty(field);
+        return getValue(property, index);
+    }
+
+    public void setValue(Fragment fragment, String fieldName, int index, Object value) {
+        @SuppressWarnings("unchecked")
+        Property property = (Property)fragment.getProperty(fieldName);
+        setValue(property, index, value);
+    }
+
+    public <T> T getValue(Fragment fragment, String fieldName, int index) {
+        @SuppressWarnings("unchecked")
+        Property<T> property = (Property<T>) fragment.getProperty(fieldName);
+        return getValue(property, index);
+    }
+
+    public <T> void setValue(Node node, Locale locale, Field field, int index, T value) {
+        Fragment fragment = node.getFragment(locale);
+        setValue(fragment, field, index, value);
+    }
+
+    public <T> T getValue(Node node, Locale locale, Field field, int index) {
+        Fragment fragment = node.getFragment(locale);
+        return getValue(fragment, field, index);
+    }
+
+    public <T> void setValue(Node node, Locale locale, String fieldName, int index, T value) {
+        Fragment fragment = node.getFragment(locale);
+        setValue(fragment, fieldName, index, value);
+    }
+
+    public <T> T getValue(Node node, Locale locale, String fieldName, int index) {
+        Fragment fragment = node.getFragment(locale);
+        return getValue(fragment, fieldName, index);
+    }
+
+    public Object getLabel(Fragment fragment, int index) {
+        Property labelProperty = fragment.getLabelProperty();
+        return getValue(labelProperty, index);
+    }
+
+    public Object getLabel(Node node, Locale locale, int index) {
+        Fragment fragment = node.getFragment(locale);
+        Property labelProperty = fragment.getLabelProperty();
+        return getValue(labelProperty, index);
+    }
+
+    public Object getLabel(Node node, int index) {
+        Fragment fragment = getDefaultFragment(node);
+        Property labelProperty = fragment.getLabelProperty();
+        return getValue(labelProperty, index);
+    }
+
     public void applyDefaults(Fragment fragment) {
         fragment.getProperties().forEach(property -> {
             Field field = property.getField();
-            Constraint constraint = field.getConstraint();
-            int min = constraint.getMinimumNumberOfPayloads();
-            property.setSize(min);
+            Constraints constraints = field.getConstraints();
+            int size = constraints.getMinimumNumberOfValues();
+            CollectionUtils.resize(property.getValues(), size);
         });
     }
 
-    protected Field getField(String fieldName, Fragment fragment) {
-        Node node = fragment.getNode();
-        Type type = node.getType();
-
-        return type.getField(fieldName);
-    }
-
-    public Payload getPayload(Field field, int index, Fragment fragment) {
-        Property property = fragment.getProperty(field);
-        return property.getPayload(index);
-    }
-
-    public void setPayload(Field field, int index, Fragment fragment, Payload payload) {
-        Property property = fragment.getProperty(field);
-        property.setPayload(index, payload);
-    }
-
-    public final Payload getPayload(String fieldName, int index, Fragment fragment) {
-        Field field = getField(fieldName, fragment);
-
-        return getPayload(field, index, fragment);
-    }
-
-    public final void setPayload(String fieldName, int index, Fragment fragment, Payload payload) {
-        Field field = getField(fieldName, fragment);
-        setPayload(field, index, fragment, payload);
-    }
-
-    public Object getValue(Field field, int index, Fragment fragment) {
-        Payload payload = getPayload(field, index, fragment);
-
-        return (payload == null ? null : payload.getValue());
-    }
-
-    public <T> void setValue(Field field, int index, Fragment fragment, Class<Payload<T>> payloadClazz, T value) {
-        Payload<T> payload = BeanUtils.instantiateClass(payloadClazz);
-        payload.setValue(value);
-        setPayload(field, index, fragment, payload);
-    }
-
-    public Object getValue(String fieldName, int index, Fragment fragment) {
-        Field field = getField(fieldName, fragment);
-        Payload payload = getPayload(field, index, fragment);
-        return payload.getValue();
-    }
-
-    public <T> void setValue(String fieldName, int index, Fragment fragment, Class<Payload<T>> payloadClazz, T value) {
-        Field field = getField(fieldName, fragment);
-        setValue(field, index, fragment, payloadClazz, value);
-    }
-
-    protected Class<? extends Payload<?>> getDefaultPayloadClazz(Field field) {
-//        TODO Complete liste of types!!!
-        Constraint constraint = field.getConstraint();
-        if (constraint instanceof ReferenceConstraint) {
-            return NodePayload.class;
-        } else {
-            return TextPayload.class;
+    <T> void copyProperty(Property<T> sourceProperty, Property<T> targetProperty) {
+        List<T> values = sourceProperty.getValues();
+        for (int i = 0; i < values.size(); i++) {
+            T value = getValue(sourceProperty, i);
+            setValue(targetProperty, i, value);
         }
-    }
-
-    public <T> void setValue(String fieldName, int index, Fragment fragment, T value) {
-        Field field = getField(fieldName, fragment);
-        @SuppressWarnings("unchecked")
-        Class<Payload<T>> payloadClazz = (Class<Payload<T>>)getDefaultPayloadClazz(field);
-        setValue(field, index, fragment, payloadClazz, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    void copyProperty(Property sourceProperty, Property targetProperty) {
-        for (int i = 0; i < sourceProperty.size(); i++) {
-            Payload sourcePayload = sourceProperty.getPayload(i);
-            Payload targetPayload = targetProperty.getPayload(i);
-            if (targetPayload == null) {
-                targetPayload = BeanUtils.instantiateClass(sourcePayload.getClass());
-                targetProperty.setPayload(i, targetPayload);
-            }
-            targetPayload.setValue(sourcePayload.getValue());
-        }
-        targetProperty.setSize(sourceProperty.size());
     }
 
     void copyFragment(Fragment sourceFragment, Fragment targetFragment) {
@@ -280,5 +346,14 @@ public class NodeService {
             }
             copyFragment(sourceFragment, targetFragment);
         });
+    }
+
+
+    @PostConstruct
+    private void init() {
+
+//        Object x = nodeRepository.findBlaBla("Bla");
+
+        return;
     }
 }

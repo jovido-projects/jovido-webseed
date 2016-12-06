@@ -3,27 +3,27 @@
 <div class="input-group">
     <input type="text"
            th:name="fragment.properties[__${property.name}__]"
-           th:value="${@nodeService.getValue(property.field, status.index, fragment)}"
+           th:value="${@nodeService.getValue(property, status.index)}"
            class="form-control">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-secondary" th:disabled="${status.index == 0}? disabled : _"
-                                                    th:formaction="@{valueup(
-                                                        field=${property.field.name},
-                                                        index=${status.index})}">
-                                                <i class="fa fa-arrow-up"></i>
-                                            </button>
-                                            <button class="btn btn-secondary" th:disabled="${status.index == property.size() - 1}? disabled : _"
-                                                    th:formaction="@{valuedown(
-                                                        field=${property.field.name},
-                                                        index=${status.index})}">
-                                                <i class="fa fa-arrow-down"></i>
-                                            </button>
-                                            <button class="btn btn-secondary"
-                                                    th:formaction="@{remvalue(
-                                                        field=${property.field.name},
-                                                        index=${status.index})}">
-                                                <i class="fa fa-remove"></i>
-                                            </button>
-                                        </span>
+    <span class="input-group-btn">
+        <button class="btn btn-secondary" th:disabled="${status.index == 0}? disabled : _"
+                th:formaction="@{valueup(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-arrow-up"></i>
+        </button>
+        <button class="btn btn-secondary" th:disabled="${status.index == property.values.size() - 1}? disabled : _"
+                th:formaction="@{valuedown(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-arrow-down"></i>
+        </button>
+        <button class="btn btn-secondary"
+                th:formaction="@{remvalue(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-remove"></i>
+        </button>
+    </span>
 </div>
 </html>

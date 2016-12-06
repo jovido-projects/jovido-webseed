@@ -1,19 +1,18 @@
-package biz.jovido.seed.content.model.node.field.constraint;
+package biz.jovido.seed.content.model.node.structure.constraint;
 
-import biz.jovido.seed.content.model.node.field.Constraint;
-import biz.jovido.seed.content.model.node.fragment.payload.TextPayload;
+import biz.jovido.seed.content.model.node.fragment.property.TextProperty;
+import biz.jovido.seed.content.model.node.structure.Constraints;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * @author Stephan Grundner
  */
-@Table(name = "alphanumeric_constraint")
-@DiscriminatorValue("alphanumeric")
+//@Table(name = "alphanumeric_constraint")
+@DiscriminatorValue("text")
 @Entity
-public class AlphanumericConstraint extends Constraint {
+public class TextConstraints extends Constraints {
 
     private boolean multiline;
     private boolean html;
@@ -42,7 +41,8 @@ public class AlphanumericConstraint extends Constraint {
         this.html = html;
     }
 
-    public AlphanumericConstraint() {
-        addSupportedPayloadType(TextPayload.class);
+    @Deprecated
+    public TextConstraints() {
+        super(TextProperty.class);
     }
 }

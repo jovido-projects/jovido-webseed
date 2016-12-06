@@ -3,6 +3,10 @@ package biz.jovido.seed.content.model.node;
 import biz.jovido.seed.content.converter.LocaleToLanguageTagConverter;
 import biz.jovido.seed.content.model.Node;
 import biz.jovido.seed.content.model.node.fragment.Property;
+import biz.jovido.seed.content.model.node.fragment.property.TextProperty;
+import biz.jovido.seed.content.model.node.structure.Field;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,7 +14,7 @@ import java.util.*;
 /**
  * @author Stephan Grundner
  */
-@Table(name = "node_fragment", uniqueConstraints = @UniqueConstraint(columnNames = {"locale", "node_id"}))
+@Table(name = "fragment", uniqueConstraints = @UniqueConstraint(columnNames = {"locale", "node_id"}))
 @Entity
 public class Fragment {
 
@@ -62,12 +66,12 @@ public class Fragment {
         return Collections.unmodifiableCollection(propertyMapping.values());
     }
 
-    public Property getProperty(Field field) {
+    public Property<?> getProperty(Field field) {
         return propertyMapping.get(field);
     }
 
-    public Property getProperty(String fieldName) {
-        Type type = node.getType();
+    public Property<?> getProperty(String fieldName) {
+        Structure type = node.getStructure();
         Field field = type.getField(fieldName);
 
         return getProperty(field);
@@ -79,14 +83,23 @@ public class Fragment {
     }
 
     public Property addProperty(Field field, int size) {
-        Property property = new Property();
+        Class<? extends Property> propertyClazz = field.getConstraints().getPropertyClazz();
+        Property property = BeanUtils.instantiate(propertyClazz);
         property.setField(field);
         property.setFragment(this);
-        property.setSize(size);
-        return propertyMapping.put(field, property);
+//        property.setSize(size);
+        Property previous = propertyMapping.put(field, property);
+        Assert.isNull(previous);
+
+        return property;
     }
 
     public Property addProperty(Field field) {
         return addProperty(field, 0);
+    }
+
+    public Property<?> getLabelProperty() {
+        Field labelField = node.getStructure().getLabelField();
+        return getProperty(labelField);
     }
 }

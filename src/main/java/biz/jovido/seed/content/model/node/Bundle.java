@@ -1,6 +1,7 @@
 package biz.jovido.seed.content.model.node;
 
 import biz.jovido.seed.content.model.Node;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class Bundle {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "current_node_id", nullable = false)
+    @JoinColumn(name = "current_node_id")
     private Node current;
 
     @OneToMany(mappedBy = "bundle")
@@ -43,5 +44,20 @@ public class Bundle {
 
     public Set<Node> getNodes() {
         return Collections.unmodifiableSet(nodes);
+    }
+
+    public boolean addNode(Node node) {
+        Bundle bundle = node.getBundle();
+        if (bundle == null) {
+            node.setBundle(this);
+        }
+
+        Assert.isTrue(node.getBundle() == this);
+
+        if (current == null) {
+            current = node;
+        }
+
+        return nodes.add(node);
     }
 }

@@ -1,7 +1,7 @@
 package biz.jovido.seed.content
 
 import biz.jovido.seed.content.service.NodeService
-import biz.jovido.seed.content.service.node.TypeBuilder
+import biz.jovido.seed.content.service.node.StructureBuilder
 import groovy.transform.CompileStatic
 import org.junit.Assert
 import org.junit.Test
@@ -53,29 +53,29 @@ class ModelTests {
     @Test
     @Transactional
     void testAlteringStructure() {
-        def basicPage = new TypeBuilder()
+        def basicPage = new StructureBuilder()
                 .setName('basicPage')
                 .addAlphanumericField('title')
                     .setHtml(true)
                     .setMultiline(true)
                     .setMinimumNumberOfItems(1)
                 .addNodeField('self')
-                    .withStructureName('basicPage')
-                .getType()
+                    .withStructure('basicPage')
+                .getStructure()
 
-        contentService.saveType(basicPage)
+        contentService.saveStructure(basicPage)
 
-        basicPage = new TypeBuilder()
+        basicPage = new StructureBuilder()
                 .setName('basicPage')
                 .addAlphanumericField('title')
                     .setHtml(true)
                     .setMultiline(true)
                     .setMinimumNumberOfItems(1)
 //                .addNodeField('self')
-//                    .withStructureName('basicPage')
-                .getType()
+//                    .withStructure('basicPage')
+                .getStructure()
 
-        contentService.saveType(basicPage)
+        contentService.saveStructure(basicPage)
 
         Assert.assertTrue(true)
     }
@@ -86,12 +86,12 @@ class ModelTests {
 //                .addAlphanumericField('title')
 //                    .setHtml(true)
 //                    .setMultiline(true)
-//                    .setMinimumNumberOfPayloads(1)
+//                    .setMinimumNumberOfValues(1)
 //                .addNodeField('self')
-//                    .withStructureName('basicPage')
-//                .getType()
+//                    .withStructure('basicPage')
+//                .getStructure()
 //
-//        contentService.saveType(basicPage)
+//        contentService.saveStructure(basicPage)
 //
 //        basicPage.name
 //    }
@@ -121,7 +121,7 @@ class ModelTests {
 //    void simpleModelTest() {
 //
 //        def basicPageName = createAndSaveBasicPage()
-//        def basicPage = contentService.getType(basicPageName)
+//        def basicPage = contentService.getStructure(basicPageName)
 //        def page1 = createAndSaveNode(basicPage)
 //
 //        def page1_en = createAndSaveFragment(page1.id, Locale.ENGLISH, 'Welcome')

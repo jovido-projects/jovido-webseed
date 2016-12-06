@@ -1,4 +1,39 @@
 <html xmlns:th="//www.thymeleaf.org"
       th:remove="tag">
-node :)
+<input type="hidden"
+       th:name="fragment.properties[__${property.name}__]"
+       th:value="${@nodeService.getValue(property, status.index)?.id}"
+       class="form-control">
+<div class="input-group" th:with="transient=${@nodeService.isTransient(form.node)}">
+    <input type="text" th:value="${property.values.get(status.index)}"
+           class="form-control" disabled>
+    <span class="input-group-btn">
+
+        <button class="btn btn-secondary" th:disabled="${transient}? disabled : _"
+                th:formaction="@{assignnew(
+            structure=${property.field.constraints.allowedStructures[0]},
+            to-property=${property.id},
+            to-index=${status.index})}">
+            <i class="fa fa-file-o"></i>
+        </button>
+        <button class="btn btn-secondary" th:disabled="${status.index == 0}? disabled : _"
+                th:formaction="@{valueup(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-arrow-up"></i>
+        </button>
+        <button class="btn btn-secondary" th:disabled="${status.index == property.values.size() - 1}? disabled : _"
+                th:formaction="@{valuedown(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-arrow-down"></i>
+        </button>
+        <button class="btn btn-secondary"
+                th:formaction="@{remvalue(
+                    field=${property.field.name},
+                    index=${status.index})}">
+            <i class="fa fa-remove"></i>
+        </button>
+    </span>
+</div>
 </html>

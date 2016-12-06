@@ -1,13 +1,13 @@
-package biz.jovido.seed.content.model.node;
+package biz.jovido.seed.content.model.node.structure;
 
-import biz.jovido.seed.content.model.node.field.Constraint;
+import biz.jovido.seed.content.model.node.Structure;
 
 import javax.persistence.*;
 
 /**
  * @author Stephan Grundner
  */
-@Table(name = "node_field", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "type_id"}))
+@Table(name = "field", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "structure_id"}))
 @Entity
 public class Field {
 
@@ -19,15 +19,15 @@ public class Field {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false)
-    private Type type;
+    @JoinColumn(name = "structure_id", nullable = false)
+    private Structure structure;
 
     @Column(nullable = false)
     private int ordinal = 0;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "constraint_id", nullable = false)
-    private Constraint constraint;
+    @JoinColumn(name = "constraints_id", nullable = false)
+    private Constraints constraints;
 
     public Long getId() {
         return id;
@@ -45,12 +45,12 @@ public class Field {
         this.name = name;
     }
 
-    public Type getType() {
-        return type;
+    public Structure getStructure() {
+        return structure;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setStructure(Structure structure) {
+        this.structure = structure;
     }
 
     public int getOrdinal() {
@@ -61,11 +61,11 @@ public class Field {
         this.ordinal = ordinal;
     }
 
-    public Constraint getConstraint() {
-        return constraint;
+    public Constraints getConstraints() {
+        return constraints;
     }
 
-    public void setConstraint(Constraint constraint) {
-        this.constraint = constraint;
+    public void setConstraints(Constraints constraints) {
+        this.constraints = constraints;
     }
 }

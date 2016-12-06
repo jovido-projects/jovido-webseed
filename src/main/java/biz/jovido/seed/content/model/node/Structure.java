@@ -1,14 +1,17 @@
 package biz.jovido.seed.content.model.node;
 
+import biz.jovido.seed.content.model.node.structure.Field;
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 import java.util.*;
 
 /**
  * @author Stephan Grundner
  */
-@Table(name = "node_type")
+@Table(name = "structure")
 @Entity
-public class Type {
+public class Structure {
 
     @Id
     @GeneratedValue
@@ -17,11 +20,14 @@ public class Type {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @MapKeyColumn(name = "name")
-//    @OrderColumn(name = "ordinal")
     @OrderBy("ordinal ASC")
-    protected final Map<String, Field> fieldMapping = new LinkedHashMap<>();
+    private final Map<String, Field> fieldMapping = new LinkedHashMap<>();
+
+    @OneToOne
+    @JoinColumn(name = "label_field_id")
+    private Field labelField;
 
     public Long getId() {
         return id;
@@ -57,7 +63,7 @@ public class Type {
 
         field = new Field();
         field.setName(name);
-        field.setType(this);
+        field.setStructure(this);
         field.setOrdinal(fieldMapping.size());
         Field previous = fieldMapping.put(name, field);
         assert previous == null;
@@ -68,6 +74,19 @@ public class Type {
     public Field removeField(String fieldName) {
         Field field = fieldMapping.remove(fieldName);
 
+        if (field == labelField) {
+            labelField = null;
+        }
+
         return field;
+    }
+
+    public Field getLabelField() {
+        return labelField;
+    }
+
+    public void setLabelField(Field labelField) {
+        Assert.isTrue(getFields().contains(labelField));
+        this.labelField = labelField;
     }
 }

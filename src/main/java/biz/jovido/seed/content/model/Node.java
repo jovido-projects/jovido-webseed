@@ -2,7 +2,9 @@ package biz.jovido.seed.content.model;
 
 import biz.jovido.seed.content.model.node.Bundle;
 import biz.jovido.seed.content.model.node.Fragment;
-import biz.jovido.seed.content.model.node.Type;
+import biz.jovido.seed.content.model.node.Structure;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.util.*;
@@ -29,15 +31,15 @@ import java.util.*;
 //                })
 //})
 @Entity
-public class Node {
+public class Node implements Auditee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Type type;
+    @JoinColumn(name = "structure_id", nullable = false)
+    private Structure structure;
 
     @ManyToOne
     @JoinColumn(name = "bundle_id")
@@ -48,11 +50,20 @@ public class Node {
     private Node parent;
 
     @OneToMany(mappedBy = "parent")
+    @OrderColumn(name = "ordinal")
     private final List<Node> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "node", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKeyColumn(name = "locale")
+    @MapKeyColumn(name = "locale", nullable = false)
     private final Map<Locale, Fragment> fragmentMapping = new HashMap<>();
+
+    @CreatedDate
+    @Column(name = "created")
+    private Date created;
+
+    @LastModifiedDate
+    @Column(name = "last_modified")
+    private Date lastModified;
 
     public Long getId() {
         return id;
@@ -62,12 +73,32 @@ public class Node {
         this.id = id;
     }
 
-    public Type getType() {
-        return type;
+    public Structure getStructure() {
+        return structure;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setStructure(Structure structure) {
+        this.structure = structure;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+
+        if (!bundle.getNodes().contains(this)) {
+            bundle.addNode(this);
+        }
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
+        this.parent = parent;
     }
 
     public List<Node> getChildren() {
@@ -88,5 +119,15 @@ public class Node {
 
     public Fragment setFragment(Locale locale, Fragment fragment) {
         return fragmentMapping.put(locale, fragment);
+    }
+
+    @Override
+    public Date getCreated() {
+        return created;
+    }
+
+    @Override
+    public Date getLastModified() {
+        return lastModified;
     }
 }
