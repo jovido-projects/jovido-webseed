@@ -1,7 +1,7 @@
 package biz.jovido.seed.content.service;
 
 import biz.jovido.seed.content.model.Node;
-import biz.jovido.seed.content.model.node.Bundle;
+import biz.jovido.seed.content.model.NodeBundle;
 import biz.jovido.seed.content.model.node.Fragment;
 import biz.jovido.seed.content.model.node.Structure;
 import biz.jovido.seed.content.model.node.fragment.Property;
@@ -19,7 +19,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -172,7 +171,7 @@ public class NodeService {
         }
 
         if (node.getBundle() == null) {
-            Bundle bundle = new Bundle();
+            NodeBundle bundle = new NodeBundle();
             entityManager.persist(bundle);
             node.setBundle(bundle);
         }
@@ -181,7 +180,7 @@ public class NodeService {
 
         Assert.notNull(saved);
 
-        Bundle bundle = saved.getBundle();
+        NodeBundle bundle = saved.getBundle();
         bundle.setCurrent(saved);
 
         entityManager.persist(bundle);
@@ -338,7 +337,7 @@ public class NodeService {
     }
 
     void copyNode(Node sourceNode, Node targetNode) {
-        sourceNode.getFragmentLocales().forEach(locale -> {
+        sourceNode.getLocales().forEach(locale -> {
             Fragment sourceFragment = sourceNode.getFragment(locale);
             Fragment targetFragment = targetNode.getFragment(locale);
             if (targetFragment == null) {

@@ -1,8 +1,12 @@
 package biz.jovido.seed.system.security.web;
 
-import biz.jovido.seed.component.model.Listing;
 import biz.jovido.seed.system.security.model.User;
 import biz.jovido.seed.system.security.service.UserService;
+import biz.jovido.spring.web.ui.Component;
+import biz.jovido.spring.web.ui.component.Button;
+import biz.jovido.spring.web.ui.component.Table;
+import biz.jovido.spring.web.ui.component.data.Item;
+import biz.jovido.spring.web.ui.component.util.ItemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -11,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -29,12 +35,29 @@ public class UserController {
                        Model model) {
 
         Page<User> page = userService.getAllUsers(index, size);
-        Listing<User> listing = new Listing<>();
-        listing.setPage(page);
-        listing.addColumns("id", "username");
-//        Listing.Column buttonColumn = listing.addColumn("action");
 
-        model.addAttribute("listing", listing);
+        Table table = new Table();
+        Table.Column column1 = table.addColumn("id");
+        Table.Column column2 = table.addColumn("username");
+        Table.Column column4 = table.addColumn("action");
+
+        column4.setAlignment(Table.Alignment.RIGHT);
+        column4.setCellGenerator( (row, columnName) -> {
+            Table.Cell cell = new Table.Cell(row, columnName);
+            Button button = new Button();
+            button.setSize(Component.Size.SMALL);
+            cell.setComponent(button);
+            return cell;
+        });
+
+
+        List<Item> items = page.getContent().stream()
+                .map(ItemUtils::toItem)
+                .collect(Collectors.toList());
+
+        table.setItems(items);
+
+        model.addAttribute("table", table);
 
         return "/admin/security/user/listing";
     }

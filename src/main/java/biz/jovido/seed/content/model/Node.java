@@ -1,13 +1,14 @@
 package biz.jovido.seed.content.model;
 
-import biz.jovido.seed.content.model.node.Bundle;
 import biz.jovido.seed.content.model.node.Fragment;
+import biz.jovido.seed.content.model.node.FragmentBundle;
 import biz.jovido.seed.content.model.node.Structure;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -43,7 +44,7 @@ public class Node implements Auditee {
 
     @ManyToOne
     @JoinColumn(name = "bundle_id")
-    private Bundle bundle;
+    private NodeBundle bundle;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
@@ -53,9 +54,14 @@ public class Node implements Auditee {
     @OrderColumn(name = "ordinal")
     private final List<Node> children = new ArrayList<>();
 
+//    @Deprecated
+//    @OneToMany(mappedBy = "node", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @MapKeyColumn(name = "locale", nullable = false)
+//    private final Map<Locale, Fragment> fragmentMapping = new HashMap<>();
+
     @OneToMany(mappedBy = "node", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKeyColumn(name = "locale", nullable = false)
-    private final Map<Locale, Fragment> fragmentMapping = new HashMap<>();
+    @MapKeyColumn(name = "locale" /*, nullable = false*/)
+    private final Map<Locale, FragmentBundle> fragmentBundleMapping = new HashMap<>();
 
     @CreatedDate
     @Column(name = "created")
@@ -81,15 +87,15 @@ public class Node implements Auditee {
         this.structure = structure;
     }
 
-    public Bundle getBundle() {
+    public NodeBundle getBundle() {
         return bundle;
     }
 
-    public void setBundle(Bundle bundle) {
+    public void setBundle(NodeBundle bundle) {
         this.bundle = bundle;
 
-        if (!bundle.getNodes().contains(this)) {
-            bundle.addNode(this);
+        if (!bundle.getRevisions().contains(this)) {
+            bundle.addRevision(this);
         }
     }
 
@@ -105,20 +111,45 @@ public class Node implements Auditee {
         return Collections.unmodifiableList(children);
     }
 
-    public Set<Locale> getFragmentLocales() {
-        return Collections.unmodifiableSet(fragmentMapping.keySet());
+    public Set<Locale> getLocales() {
+        return Collections.unmodifiableSet(fragmentBundleMapping.keySet());
+    }
+
+    public Collection<FragmentBundle> getFragmentBundles() {
+        return Collections.unmodifiableCollection(fragmentBundleMapping.values());
     }
 
     public Collection<Fragment> getFragments() {
-        return Collections.unmodifiableCollection(fragmentMapping.values());
+        return fragmentBundleMapping.values().stream()
+                .map(FragmentBundle::getCurrent)
+                .collect(Collectors.toList());
+    }
+
+    public FragmentBundle getFragmentBundle(Locale locale) {
+        return fragmentBundleMapping.get(locale);
     }
 
     public Fragment getFragment(Locale locale) {
-        return fragmentMapping.get(locale);
+        return fragmentBundleMapping.entrySet().stream()
+                .filter(e -> e.getKey() == locale)
+                .map(Map.Entry::getValue)
+                .map(FragmentBundle::getCurrent)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public FragmentBundle setFragmentBundle(Locale locale, FragmentBundle fragmentBundle) {
+        return fragmentBundleMapping.put(locale, fragmentBundle);
     }
 
     public Fragment setFragment(Locale locale, Fragment fragment) {
-        return fragmentMapping.put(locale, fragment);
+        FragmentBundle previous = fragmentBundleMapping.put(locale, fragment.getBundle());
+
+        if (previous != null) {
+            return previous.getCurrent();
+        }
+
+        return null;
     }
 
     @Override

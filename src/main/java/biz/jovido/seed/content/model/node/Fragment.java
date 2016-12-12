@@ -3,7 +3,6 @@ package biz.jovido.seed.content.model.node;
 import biz.jovido.seed.content.converter.LocaleToLanguageTagConverter;
 import biz.jovido.seed.content.model.Node;
 import biz.jovido.seed.content.model.node.fragment.Property;
-import biz.jovido.seed.content.model.node.fragment.property.TextProperty;
 import biz.jovido.seed.content.model.node.structure.Field;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
@@ -21,6 +20,10 @@ public class Fragment {
     @Id
     @GeneratedValue
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "bundle_id")
+    private FragmentBundle bundle;
 
     @Column(name = "locale", nullable = false)
     @Convert(converter = LocaleToLanguageTagConverter.class)
@@ -40,6 +43,14 @@ public class Fragment {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public FragmentBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(FragmentBundle bundle) {
+        this.bundle = bundle;
     }
 
     public Locale getLocale() {

@@ -3,21 +3,7 @@
       th:remove="tag">
 <div th:fragment="body" class="container">
 
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Nodes</h1>
-
-            <ol class="breadcrumb">
-                <!--<li class="breadcrumb-item" th:each="referringValue : *{referringValues}">-->
-                <!--<a href="#">Home</a>-->
-                <!--</li>-->
-
-                <li class="breadcrumb-item active">Nodes</li>
-            </ol>
-        </div>
-    </div>
-
-    <th:block th:replace="/component/listing" />
+    <th:block component:replace="${table}" />
 
 </div>
 </html>
