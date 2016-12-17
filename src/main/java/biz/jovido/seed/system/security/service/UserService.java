@@ -24,6 +24,10 @@ public class UserService {
         return userRepository.findAll(new PageRequest(index, size));
     }
 
+    public User getUser(Long id) {
+        return userRepository.findOne(id);
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user);
     }

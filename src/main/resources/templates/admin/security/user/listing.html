@@ -3,7 +3,46 @@
       th:remove="tag">
 <div th:fragment="body" class="container">
 
-    <th:block component:replace="${table}" />
+    <th:block component:replace="${breadcrumb}" />
+
+    <h1>Users</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Username
+            </th>
+            <th style="text-align:right;">
+                <a class="btn btn-sm btn-primary" href="#">
+                    <i class="fa fa-plus"></i>
+                    <span>New User</span>
+                </a>
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="user : ${page.content}">
+            <td>
+                <span th:text="${user.id}">ID</span>
+            </td>
+            <td>
+                <span th:text="${user.username}">Username</span>
+            </td>
+            <td style="text-align:right;">
+                <a th:href="@{/admin/user/edit(id=${user.id})}" class="btn btn-sm btn-secondary">
+                    <i aria-hidden="true" class="fa fa-pencil"></i>
+                    <span>Edit</span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <th:block component:replace="${pager}" />
 
 </div>
 </html>

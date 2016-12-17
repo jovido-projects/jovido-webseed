@@ -1,6 +1,7 @@
 package biz.jovido.seed.content.config;
 
 import biz.jovido.seed.content.web.NodeFormArgumentResolver;
+import biz.jovido.spring.web.ui.component.data.ItemMapArgumentResolver;
 import biz.jovido.spring.web.ui.component.tyhmeleaf.ComponentDialect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,9 @@ public class ThymeleafConfiguration extends WebMvcConfigurerAdapter {
     @Autowired
     private NodeFormArgumentResolver formArgumentResolver;
 
+//    @Autowired
+//    private ItemMapArgumentResolver itemMapArgumentResolver;
+
     @Autowired
     private SpringTemplateEngine templateEngine;
 
@@ -28,6 +32,7 @@ public class ThymeleafConfiguration extends WebMvcConfigurerAdapter {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         assert formArgumentResolver != null;
         argumentResolvers.add(formArgumentResolver);
+        argumentResolvers.add(new ItemMapArgumentResolver());
     }
 
     public NodeFormArgumentResolver getFormArgumentResolver() {
