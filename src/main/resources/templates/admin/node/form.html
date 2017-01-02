@@ -19,6 +19,27 @@
             <div class="form-group">
                 <input class="form-control" type="text" th:field="*{fragment.id}" readonly>
             </div>
+
+
+            <div class="card card-outline-danger" th:if="${#fields.hasAnyErrors()}">
+                <div class="card-block">
+                    <h4 class="card-title">
+                        <span>Errors</span>
+                    </h4>
+                    <p class="card-text">Lorem ipsum.</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item list-group-item-danger" th:each="e : ${#fields.detailedErrors()}">
+                        <th:block th:if="${!e.global}">
+                            <span th:text="#{${e.fieldName}}">The field name</span>
+                        </th:block>
+
+                        <span th:text="${e.message}">The error message</span>
+                    </li>
+                </ul>
+            </div>
+
+
         </div>
     </div>
 

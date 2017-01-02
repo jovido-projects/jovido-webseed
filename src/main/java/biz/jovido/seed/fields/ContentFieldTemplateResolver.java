@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.persistence.EntityManager;
 import java.beans.PropertyDescriptor;
@@ -19,7 +20,7 @@ import java.beans.PropertyDescriptor;
  * @author Stephan Grundner
  */
 @Component
-public class ExtendedBootstrapFieldTemplateResolver extends Bootstrap4FieldTemplateResolver {
+public class ContentFieldTemplateResolver extends Bootstrap4FieldTemplateResolver {
 
     @Autowired
     EntityManager entityManager;
@@ -32,8 +33,6 @@ public class ExtendedBootstrapFieldTemplateResolver extends Bootstrap4FieldTempl
     @Override
     public String resolveFieldTemplate(Class clazz, String propertyName) {
         String template = null;
-
-        PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(clazz, propertyName);
 
         FragmentType fragmentType = FragmentUtils.fragmentType(clazz);
         Attribute attribute = fragmentType.getAttribute(propertyName);

@@ -12,7 +12,6 @@
         <li class="list-group-item" th:each="value,status : *{__${fullPropertyPath}__}">
             <th:block th:each="elementAttribute : ${@fragmentService.getAttributes(attribute.elementType)}">
                 <div field:replace="*{__${fullPropertyPath}__[__${status.index}__].__${elementAttribute.name}__}"></div>
-                <!--[[__${nestedPath}__.__${attribute.name}__]]-->
             </th:block>
 
 

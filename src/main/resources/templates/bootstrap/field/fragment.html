@@ -1,17 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="card card-block">
-    <!--<h4 class="card-title">-->
-        <!--(Text)-->
-    <!--</h4>-->
-    <p class="card-text">
-        [[${propertyName}]]@[[${nestedPath}]]
-    </p>
-    <!--<a href="#" class="card-link">Card link</a>-->
-    <!--<a href="#" class="card-link">Another link</a>-->
-    <th:block th:each="memberName : ${@fragmentService.getContentMemberNames(propertyType)}">
-        [[__${nestedPath}__.__${memberName}__]]
-        <div field:replace="*{__${fullPropertyPath}__.__${memberName}__}"></div>
-    </th:block>
+Arghh
 
 </div>
 </html>
