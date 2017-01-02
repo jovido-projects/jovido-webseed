@@ -1,0 +1,48 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:remove="tag">
+
+<div class="card">
+    <div class="card-header">
+        <strong th:text="#{__${field.declaringClass.name}__.__${field.name}__}">Field Name</strong>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="value,status : *{fragment.__${field.name}__}">
+        <!--<li class="list-group-item" th:each="i : ${#numbers.sequence(0, *{__${field.name}__}.size())}">-->
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-cog"></i>
+                    </div>
+                    <input class="form-control" type="text" readonly="readonly"
+                           th:field="*{fragment.__${field.name}__[__${status.index}__].id}">
+                    <div class="input-group-btn">
+                        <button class="btn btn-secondary" th:formaction="@{create(type=${@fragmentService.getFragmentTypeName(field)})}">
+                            <i class="fa fa-file-o"></i>
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fa fa-arrow-down"></i>
+                        </button>
+                        <button class="btn btn-secondary" th:formaction="@{remvalue(field=${field.name},index=${status.index})}">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <button class="btn btn-secondary"
+                    th:formaction="@{addvalue(field=${field.name})}">
+                <i class="fa fa-plus"></i>
+                <span>Add</span>
+            </button>
+        </li>
+    </ul>
+</div>
+
+</html>

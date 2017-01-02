@@ -1,6 +1,6 @@
 package biz.jovido.seed.content.repository;
 
-import biz.jovido.seed.content.model.Node;
+import biz.jovido.seed.content.model.Fragment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * @author Stephan Grundner
  */
 @Repository
-public interface NodeRepository extends JpaRepository<Node, Long> {
+public interface FragmentRepository extends JpaRepository<Fragment, Long> {
 }

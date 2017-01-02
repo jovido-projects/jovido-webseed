@@ -1,178 +1,110 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.content.model.Node;
-import biz.jovido.seed.content.model.node.Fragment;
-import biz.jovido.seed.content.model.node.fragment.Property;
+import biz.jovido.seed.content.model.Fragment;
+import biz.jovido.seed.content.service.FragmentHandler;
 import biz.jovido.seed.content.service.NodeService;
-import biz.jovido.seed.util.CollectionUtils;
+import biz.jovido.seed.content.util.FragmentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.thymeleaf.spring4.expression.Fields;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javax.validation.Valid;
 
 /**
  * @author Stephan Grundner
  */
-@RequestMapping
 @Controller
+@RequestMapping
 public class NodeController {
 
-    @ModelAttribute("availableLocales")
-    List<Locale> availableLocales(HttpServletRequest request) {
-        return Stream.of("de", "en", "it")
-                .map(Locale::forLanguageTag)
-                .collect(Collectors.toList());
-    }
+    @Autowired
+    private NodeService nodeService;
 
-    @RequestMapping("/admin/")
-    public String index() {
+    @Autowired
+    private ApplicationContext applicationContext;
 
-        return "admin/index";
-    }
+    @RequestMapping("/admin/node/create")
+    public String create(@RequestParam("type") String clazzName, Model model) {
 
-    @RequestMapping("/admin/node/new")
-    public String create(@RequestParam(name = "structure") String structureName, Model model) {
+        Fragment fragment = FragmentUtils.instantiateFragment(clazzName, applicationContext.getClassLoader());
 
-        NodeForm form = new NodeForm();
-        form.setLocale(Locale.GERMAN);
+        FragmentForm form = new FragmentForm();
+        form.setFragment(fragment);
 
-        Node node = nodeService.createNode(structureName);
-        Fragment fragment = nodeService.createFragment(node, form.getLocale());
-
-        nodeService.applyDefaults(fragment);
-
-        form.setNode(node);
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
-    @RequestMapping("/admin/node/assignnew")
-    public String createAndAssign(NodeForm referringForm,
-            @RequestParam(name = "structure") String structureName,
-                                  @RequestParam(name = "to-property") Long referringPropertyId,
-                                  @RequestParam(name = "to-index") int referringValueIndex,
-                                  Model model) {
-
-        NodeForm form = new NodeForm();
-
-        form.getReferringValues().addAll(referringForm.getReferringValues());
-
-        form.setLocale(Locale.GERMAN);
-
-        NodeForm.ReferringValue referringValue = new NodeForm.ReferringValue();
-        referringValue.setPropertyId(referringPropertyId);
-        referringValue.setValueIndex(referringValueIndex);
-        form.addReferringValue(referringValue);
-
-        Node node = nodeService.createNode(structureName);
-        Fragment fragment = nodeService.createFragment(node, form.getLocale());
-
-        nodeService.applyDefaults(fragment);
-
-        form.setNode(node);
-
-        model.addAttribute("form", form);
+//        model.addAttribute("form", form);
+        model.addAttribute(form);
 
         return "/admin/node/form";
     }
 
     @RequestMapping("/admin/node/edit")
-    public String edit(@RequestParam(name = "node") Long nodeId, Model model) {
+    public String create(@RequestParam("id") Long id, Model model) {
 
-        Locale locale = Locale.GERMAN;
-        NodeForm form = new NodeForm();
-        Node node = nodeService.getNode(nodeId);
+        Fragment fragment = nodeService.getFragment(id);
 
-        form.setLocale(locale);
-        form.setNode(node);
+        FragmentForm form = new FragmentForm();
+        form.setFragment(fragment);
 
-//        def fragment = form.fragment
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
-    @RequestMapping("/admin/node/valueup")
-    public String moveValueUp(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
-
-        Fragment fragment = form.getFragment();
-        Property property = fragment.getProperty(fieldName);
-
-        Collections.swap(property.getValues(), index, index - 1);
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
-    @RequestMapping("/admin/node/valuedown")
-    public String moveValueDown(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
-
-        Fragment fragment = form.getFragment();
-        Property property = fragment.getProperty(fieldName);
-
-        Collections.swap(property.getValues(), index, index + 1);
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
-    @RequestMapping("/admin/node/addvalue")
-    public String addValue(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, Model model) {
-
-        Fragment fragment = form.getFragment();
-        Property property = fragment.getProperty(fieldName);
-        CollectionUtils.increase(property.getValues(), 1);
-
-        model.addAttribute("form", form);
-
-        return "/admin/node/form";
-    }
-
-    @RequestMapping("/admin/node/remvalue")
-    public String removeValue(NodeForm form, BindingResult bindingResult, @RequestParam(name = "field") String fieldName, @RequestParam(name = "index") int index, Model model) {
-
-        Fragment fragment = form.getFragment();
-        Property property = fragment.getProperty(fieldName);
-        property.getValues().remove(index);
-
-        model.addAttribute("form", form);
+//        model.addAttribute("form", form);
+        model.addAttribute(form);
 
         return "/admin/node/form";
     }
 
     @RequestMapping("/admin/node/save")
-    public String save(NodeForm form, BindingResult bindingResult, Model model) {
+    public String save(@Valid FragmentForm form, BindingResult bindingResult, Model model) {
 
-        nodeService.saveNode(form.getNode());
+        if (!bindingResult.hasErrors()) {
+            Fragment fragment = nodeService.saveFragment(form.getFragment());
+            form.setFragment(fragment);
+        }
 
-        model.addAttribute("form", form);
+//        model.addAttribute("form", form);
+        model.addAttribute(form);
 
         return "/admin/node/form";
     }
 
-    public NodeService getNodeService() {
-        return nodeService;
+    @RequestMapping("/admin/node/addvalue")
+    public String addValue(FragmentForm form,
+                           @RequestParam(name = "field") String fieldName,
+                           Model model) {
+//        BeanWrapper beanWrapper = new BeanWrapperImpl(form.getFragment());
+//        List<Field> fields = FragmentUtils.getControls(form.getFragment().getClass());
+//        Collection collection = (Collection) beanWrapper.getPropertyValue(fieldName);
+//        collection.add(null);
+
+        Fragment fragment = form.getFragment();
+        FragmentHandler fragmentHandler = nodeService.getFragmentHandler(fragment.getClass());
+        fragmentHandler.addValue(fragment, fieldName, null);
+
+        model.addAttribute(form);
+
+        return "/admin/node/form";
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
+    @RequestMapping("/admin/node/remvalue")
+    public String removeValue(FragmentForm form,
+                              @RequestParam(name = "field") String fieldName,
+                              @RequestParam(name = "index") int index,
+                              Model model) {
+//        BeanWrapper beanWrapper = new BeanWrapperImpl(form.getFragment());
+//        List<Field> fields = FragmentUtils.getControls(form.getFragment().getClass());
+//        List list = (List) beanWrapper.getPropertyValue(fieldName);
+//        list.remove(index);
 
-    @Autowired
-    private NodeService nodeService;
+        Fragment fragment = form.getFragment();
+        FragmentHandler fragmentHandler = nodeService.getFragmentHandler(fragment.getClass());
+        Object removed = fragmentHandler.removeValue(fragment, fieldName, index);
+
+//        model.addAttribute("form", form);
+        model.addAttribute(form);
+
+        return "/admin/node/form";
+    }
 }
