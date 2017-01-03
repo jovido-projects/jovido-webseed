@@ -9,8 +9,8 @@ public interface FragmentHandler {
 
     boolean supportsType(Class<? extends Fragment> fragmentType);
 
-    Object getComponent(Fragment fragment, String propertyName, String nestedPath);
-
     boolean addValue(Fragment fragment, String fieldName, Object value);
     Object removeValue(Fragment fragment, String fieldName, int index);
+
+    boolean movePropertyUp(Fragment fragment, String fieldName, int index);
 }

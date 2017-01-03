@@ -1,6 +1,5 @@
 package biz.jovido.seed.content.service;
 
-import biz.jovido.seed.content.component.ControlFactory;
 import biz.jovido.seed.content.model.Fragment;
 import biz.jovido.seed.content.repository.FragmentRepository;
 import biz.jovido.seed.content.repository.NodeRepository;
@@ -21,14 +20,11 @@ public class NodeService {
     private final Set<FragmentHandler> fragmentHandlers = new LinkedHashSet<>();
 
     @Autowired
-    private ControlFactory fieldFactory;
-
-    @Autowired
     public NodeService(FragmentRepository fragmentRepository, NodeRepository nodeRepository) {
         this.fragmentRepository = fragmentRepository;
         this.nodeRepository = nodeRepository;
 
-        registerFragmentHandler(new GenericFragmentHandler(fieldFactory));
+        registerFragmentHandler(new GenericFragmentHandler());
     }
 
     public Fragment getFragment(Long id) {

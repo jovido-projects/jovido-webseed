@@ -1,0 +1,61 @@
+<html xmlns:th="//www.thymeleaf.org" xmlns:field="http://localhost" th:remove="tag">
+<div class="card">
+
+    <div class="card-block">
+        <h4 class="card-title"
+            th:text="#{__${@contentService.getMessageCode(propertyDescriptor)}__}">List property</h4>
+        <p class="card-text text-muted"
+           th:text="#{__${@contentService.getMessageCode(propertyDescriptor)}__.description}">
+            Lorem ipsum.
+        </p>
+    </div>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="listElement,status : *{__${fullPropertyPath}__}">
+
+            <th:block th:with="listElementType=${@contentService.getListElementType(fragment.class, propertyName)}">
+                <th:block th:each="propertyName : ${@contentService.getContentProperties(listElementType)}">
+                    <!--[[${propertyName}]]-->
+                    <th:block field:replace="*{__${fullPropertyPath}__[__${status.index}__].__${propertyName}__}" />
+                </th:block>
+            </th:block>
+
+            <div class="btn-group btn-group-sm xs pull-right">
+                <button class="btn btn-secondary"
+                   th:classappend="${status.index == 0}? disabled"
+                   th:formaction="@{ptyup(
+                        field=${propertyName},
+                        index=${status.index})}">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <button class="btn btn-secondary"
+                   th:classappend="${status.index == value.size() - 1}? disabled"
+                   th:formaction="@{ptydown(
+                        field=${propertyName},
+                        index=${status.index})}">
+                    <i class="fa fa-arrow-down"></i>
+                </button>
+                <button class="btn btn-danger" th:formaction="@{remvalue(
+                    field=${propertyName},
+                    index=${status.index})}">
+                    <i class="fa fa-trash"></i>
+                    <span>Remove</span>
+                </button>
+            </div>
+
+            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+
+        </li>
+    </ul>
+
+
+    <div class="card-block">
+        <button class="btn btn-secondary" th:formaction="@{/admin/node/addvalue(field=${propertyName})}">
+            Add
+        </button>
+    </div>
+
+
+
+</div>
+</html>

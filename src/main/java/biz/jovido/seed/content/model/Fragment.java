@@ -1,8 +1,6 @@
 package biz.jovido.seed.content.model;
 
 import biz.jovido.seed.content.converter.LocaleToLanguageTagConverter;
-import biz.jovido.seed.content.metamodel.FragmentType;
-import biz.jovido.seed.content.util.FragmentUtils;
 
 import javax.persistence.*;
 import java.util.Locale;
@@ -14,15 +12,11 @@ import java.util.Locale;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Fragment {
 
-    FragmentType getType() {
-        return FragmentUtils.fragmentType(this.getClass());
-    }
-
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne//(optional = false)
     private Node node;
 
     @Convert(converter = LocaleToLanguageTagConverter.class)

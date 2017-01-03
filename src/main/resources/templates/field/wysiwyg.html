@@ -1,7 +1,7 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="form-group" th:classappend="${#fields.hasErrors('__${fullPropertyPath}__')}? has-danger">
     <label th:for="${fullPropertyPath}"
-           th:text="__${fullPropertyPath}__">
+           th:text="#{__${@contentService.getMessageCode(propertyDescriptor)}__}">
         Label
     </label>
     <textarea rows="3" class="form-control"

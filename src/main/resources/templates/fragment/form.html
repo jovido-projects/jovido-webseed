@@ -1,0 +1,71 @@
+<html xmlns:th="//www.thymeleaf.org" xmlns:field="http://localhost"
+      th:replace="/admin/page(body=~{::body})"
+      th:remove="tag">
+<div th:fragment="body" class="container">
+
+
+<form th:object="${fragmentForm}" method="post" th:with="fragment=${fragmentForm.fragment}">
+
+    <div class="row">
+
+        <!--Content properties-->
+        <div class="col-md-8">
+            <h1 th:text="#{${fragment.class.simpleName}}">Fragment type</h1>
+            <p class="text-muted" th:text="#{__${fragment.class.simpleName}__.description}">Lorem ipsum.</p>
+            <th:block th:each="contentProperty : ${@contentService.getContentProperties(fragmentForm?.fragment?.class)}">
+                <th:block field:replace="*{fragment.__${contentProperty}__}" />
+            </th:block>
+        </div>
+
+        <!--Sidebar-->
+        <div class="col-md-4">
+
+            <!--Fragment information-->
+            <input type="hidden" th:field="*{fragment.class.name}">
+            <!--<input type="hidden" th:field="*{fragment.id}">-->
+            <div class="form-group">
+                <input class="form-control" type="text" th:field="*{fragment.id}" readonly>
+            </div>
+
+            <!--Fragment actions-->
+            <div class="list-group">
+                <button th:formaction="@{save}" type="button" class="list-group-item list-group-item-action">
+                    <i class="fa fa-hdd-o"></i>
+                    <span>Save</span>
+                </button>
+            </div>
+
+            <!--Errors-->
+            <div class="card card-outline-danger" th:if="${#fields.hasAnyErrors()}">
+                <div class="card-block">
+                    <h4 class="card-title">
+                        <span>Errors</span>
+                    </h4>
+                    <p class="card-text">Lorem ipsum.</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item list-group-item-danger" th:each="e : ${#fields.detailedErrors()}">
+                        <label th:for="${e.fieldName}">
+                            <th:block th:if="${!e.global}">
+                                <span th:text="#{${e.fieldName}}">The field name</span>
+                            </th:block>
+
+                            <span th:text="${e.message}">The error message</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <button class="btn btn-primary" th:formaction="@{save}">Save</button>
+    <th:block th:if="${fragment.id != null}">
+        <a class="btn btn-secondary" th:href="@{edit(id=${fragment.id})}">Cancel</a>
+    </th:block>
+</form>
+
+</div>
+</html>

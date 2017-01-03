@@ -1,0 +1,11 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div class="form-group" th:classappend="${#fields.hasErrors('__${fullPropertyPath}__')}? has-danger">
+    <label th:for="${fullPropertyPath}"
+           th:text="#{__${@contentService.getMessageCode(propertyDescriptor)}__}">
+        Label
+    </label>
+    <input type="date" class="form-control datepicker"
+           th:id="${fullPropertyPath}"
+           th:field="*{__${fullPropertyPath}__}">
+</div>
+</html>
