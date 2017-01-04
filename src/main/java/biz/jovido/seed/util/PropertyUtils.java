@@ -1,16 +1,13 @@
 package biz.jovido.seed.util;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +15,6 @@ import java.util.Map;
  * @author Stephan Grundner
  */
 public final class PropertyUtils {
-
-    public static <T> T instantiateClass(String className, Class<T> assignableTo, ClassLoader classLoader) {
-        Class<?> clazz = ClassUtils.resolveClassName(className, classLoader);
-        return BeanUtils.instantiateClass(clazz, assignableTo);
-    }
 
     public static <T extends Annotation> T findAnnotation(PropertyDescriptor propertyDescriptor, Class<T> annotationType) {
         Method getter = propertyDescriptor.getReadMethod();

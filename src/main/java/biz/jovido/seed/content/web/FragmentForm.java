@@ -1,6 +1,6 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.content.model.Fragment;
+import biz.jovido.seed.content.domain.Fragment;
 
 import javax.validation.Valid;
 

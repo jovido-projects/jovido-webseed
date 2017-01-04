@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.model;
+package biz.jovido.seed.content.domain;
 
 import biz.jovido.seed.content.converter.LocaleToLanguageTagConverter;
 

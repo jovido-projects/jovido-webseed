@@ -1,8 +1,25 @@
 <html xmlns:th="//www.thymeleaf.org" xmlns:field="http://localhost"
-      th:replace="/admin/page(body=~{::body})"
+      th:replace="page(content=~{::body})"
       th:remove="tag">
-<div th:fragment="body" class="container">
 
+<th:block th:fragment="formactions">
+    <button class="btn btn-secondary" th:formaction="@{create}">
+        <i class="fa fa-file-o"></i>
+        <span>New</span>
+    </button>
+    <button class="btn btn-primary" th:formaction="@{save}">
+        <i class="fa fa-hdd-o"></i>
+        <span>Save</span>
+    </button>
+    <th:block th:if="${fragment.id != null}">
+        <a class="btn btn-danger" th:href="@{edit(id=${fragment.id})}">
+            <i class="fa fa-ban"></i>
+            <span>Cancel</span>
+        </a>
+    </th:block>
+</th:block>
+
+<div th:fragment="body" class="container">
 
 <form th:object="${fragmentForm}" method="post" th:with="fragment=${fragmentForm.fragment}">
 
@@ -20,6 +37,7 @@
         <!--Sidebar-->
         <div class="col-md-4">
 
+            id:[[${fragment.id}]]
             <!--Fragment information-->
             <input type="hidden" th:field="*{fragment.class.name}">
             <!--<input type="hidden" th:field="*{fragment.id}">-->
@@ -28,12 +46,7 @@
             </div>
 
             <!--Fragment actions-->
-            <div class="list-group">
-                <button th:formaction="@{save}" type="button" class="list-group-item list-group-item-action">
-                    <i class="fa fa-hdd-o"></i>
-                    <span>Save</span>
-                </button>
-            </div>
+            <th:block th:replace="~{::formactions}" />
 
             <!--Errors-->
             <div class="card card-outline-danger" th:if="${#fields.hasAnyErrors()}">
@@ -61,10 +74,7 @@
     </div>
 
 
-    <button class="btn btn-primary" th:formaction="@{save}">Save</button>
-    <th:block th:if="${fragment.id != null}">
-        <a class="btn btn-secondary" th:href="@{edit(id=${fragment.id})}">Cancel</a>
-    </th:block>
+    <!--<th:block th:replace="~{::formactions}" />-->
 </form>
 
 </div>

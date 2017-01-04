@@ -5,7 +5,6 @@ import biz.jovido.seed.fields.thymeleaf.FieldsDialect;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.Assert;
-import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
@@ -22,8 +21,6 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import java.beans.PropertyDescriptor;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Stephan Grundner
@@ -39,30 +36,6 @@ public abstract class AbstractFieldProcessor extends AbstractAttributeTagProcess
 
         return value;
     }
-
-//    private static String buildTemplateCacheKey(Class propertyHolderClass, String propertyName) {
-//        return propertyHolderClass.getName() + '#' + propertyName;
-//    }
-//
-//    private final Map<String, String> templateCache = new HashMap<>();
-//
-//    private String resolveTemplate(Class propertyHolderClass, String propertyName) {
-//        String templateCacheKey = buildTemplateCacheKey(propertyHolderClass, propertyName);
-//        String template = templateCache.get(templateCacheKey);
-//
-//        if (StringUtils.isEmpty(template)) {
-//            List<FieldTemplateResolver> fieldResolvers = dialect.getFieldResolvers();
-//            for (FieldTemplateResolver fieldResolver : fieldResolvers) {
-//                template = fieldResolver.resolveFieldTemplate(propertyHolderClass, propertyName);
-//                if (!StringUtils.isEmpty(template)) {
-////                    templateCache.put(templateCacheKey, template);
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return template;
-//    }
 
     @Override
     protected void doProcess(ITemplateContext context,
@@ -137,13 +110,14 @@ public abstract class AbstractFieldProcessor extends AbstractAttributeTagProcess
             structureHandler.setLocalVariable("nestedPath", nestedPath);
             structureHandler.setLocalVariable("propertyName", propertyName);
 
-            Object value = objectWrapper.getPropertyValue(fullPropertyPath);
-            structureHandler.setLocalVariable("value", value);
+//            Object value = objectWrapper.getPropertyValue(fullPropertyPath);
+//            structureHandler.setLocalVariable("value", value);
 //            structureHandler.setLocalVariable("index", index);
-
-            Class propertyType = value != null
-                    ? value.getClass()
-                    : propertyDescriptor.getPropertyType();
+//
+//            Class propertyType = value != null
+//                    ? value.getClass()
+//                    : propertyDescriptor.getPropertyType();
+            Class propertyType = propertyDescriptor.getPropertyType();
             structureHandler.setLocalVariable("propertyType", propertyType);
             structureHandler.setLocalVariable("propertyHolderClass", propertyHolderClass);
             structureHandler.setLocalVariable("propertyDescriptor", propertyDescriptor);

@@ -1,5 +1,6 @@
 package biz.jovido.seed;
 
+import biz.jovido.seed.content.domain.Fragment;
 import biz.jovido.seed.fields.FieldTemplate;
 import biz.jovido.seed.fields.FieldTemplateResolver;
 import biz.jovido.seed.util.PropertyUtils;
@@ -44,6 +45,10 @@ public class DefaultFieldTemplateResolver implements FieldTemplateResolver {
 
                 if (List.class == propertyType) {
                     return "field/list";
+                } else if (Fragment.class.isAssignableFrom(propertyType)) {
+                    return "field/fragment/reference";
+                } else {
+                    template = null;
                 }
             }
         }

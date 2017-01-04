@@ -1,4 +1,4 @@
-<html xmlns:th="//www.thymeleaf.org" xmlns:field="http://localhost" th:remove="tag">
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="card">
 
     <div class="card-block">
@@ -10,15 +10,18 @@
         </p>
     </div>
 
-    <ul class="list-group list-group-flush">
+    <ul class="list-group list-group-flush" th:with="list=*{__${fullPropertyPath}__}">
         <li class="list-group-item" th:each="listElement,status : *{__${fullPropertyPath}__}">
 
-            <th:block th:with="listElementType=${@contentService.getListElementType(fragment.class, propertyName)}">
-                <th:block th:each="propertyName : ${@contentService.getContentProperties(listElementType)}">
-                    <!--[[${propertyName}]]-->
-                    <th:block field:replace="*{__${fullPropertyPath}__[__${status.index}__].__${propertyName}__}" />
-                </th:block>
+            <!--<th:block th:with="propertyType=${@contentService.getListElementType(fragment.class, propertyName)}">-->
+                <!--<th:block th:replace="~{field/entity}" />-->
+            <!--</th:block>-->
+            <th:block th:with="propertyType=${listElement.class}">
+                <th:block th:replace="~{field/fragment}" />
             </th:block>
+
+
+
 
             <div class="btn-group btn-group-sm xs pull-right">
                 <button class="btn btn-secondary"
@@ -29,7 +32,7 @@
                     <i class="fa fa-arrow-up"></i>
                 </button>
                 <button class="btn btn-secondary"
-                   th:classappend="${status.index == value.size() - 1}? disabled"
+                   th:classappend="${status.index == list.size() - 1}? disabled"
                    th:formaction="@{ptydown(
                         field=${propertyName},
                         index=${status.index})}">
@@ -50,9 +53,25 @@
 
 
     <div class="card-block">
-        <button class="btn btn-secondary" th:formaction="@{/admin/node/addvalue(field=${propertyName})}">
-            Add
-        </button>
+        <!--<button class="btn btn-secondary" th:formaction="@{/admin/node/addvalue(field=${propertyName})}">-->
+            <!--Add-->
+        <!--</button>-->
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item"
+                        th:each="t : ${@contentService.getContentTypes(propertyDescriptor)}"
+                        th:formaction="@{/admin/node/addvalue(
+                            property=${propertyName},
+                            type=${t.name})}">
+                    <span th:text="${t}">Action</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 
 

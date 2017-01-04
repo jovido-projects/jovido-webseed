@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.model;
+package biz.jovido.seed.content.domain;
 
 import javax.persistence.*;
 import java.util.*;

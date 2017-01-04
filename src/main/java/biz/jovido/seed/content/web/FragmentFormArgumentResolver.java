@@ -1,9 +1,16 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.content.model.Fragment;
+import biz.jovido.seed.content.converter.StringToFragmentConverterFactory;
 import biz.jovido.seed.content.service.FragmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -17,12 +24,16 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
  */
 public class FragmentFormArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FragmentFormArgumentResolver.class);
 
     private final FragmentService fragmentService;
 
@@ -42,36 +53,34 @@ public class FragmentFormArgumentResolver implements HandlerMethodArgumentResolv
 
         FragmentForm form = new FragmentForm();
 
-        String fragmentClassName = ServletRequestUtils.getStringParameter(request, "fragment.class.name");
-        try {
-            Class fragmentClass = Class.forName(fragmentClassName);
-            form.setFragment(BeanUtils.instantiateClass(fragmentClass, Fragment.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        List<String> classNameParameterNames = request.getParameterMap()
+                .keySet().stream()
+                .sorted((x, y) -> Integer.compare(x.length(), y.length()))
+                .filter(name -> name.endsWith(".class.name"))
+                .collect(Collectors.toList());
+
+        BeanWrapper formWrapper = new BeanWrapperImpl(form);
+        for (String parameterName : classNameParameterNames) {
+            String propertyName = parameterName.replace(".class.name", "");
+            String className = ServletRequestUtils.getStringParameter(request, parameterName);
+            ClassLoader classLoader = fragmentService.getApplicationContext().getClassLoader();
+            Class<?> clazz = ClassUtils.resolveClassName(className, classLoader);
+            Object value = BeanUtils.instantiate(clazz);
+            formWrapper.setPropertyValue(propertyName, value);
         }
 
         String name = ModelFactory.getNameForParameter(parameter);
         WebDataBinder binder = binderFactory.createBinder(webRequest, form, name);
-//        binder.setAutoGrowNestedPaths(false);
-//        binder.setDisallowedFields("fragment");
 
-//        Map<String, String[]> parameters = request.getParameterMap();
-//        List<Field> fields = ContentUtils.getFields(form.getFragment().getClass());
-//        for (Field field : fields) {
-//            String path = "fragment." + field.getName();
-////            if (FragmentUtils.isFragmentField(field)) {
-////                binder.setDisallowedFields(path + "*");
-////            } else if (FragmentUtils.isFragmentCollectionField(field)) {
-////                binder.setDisallowedFields(path + "*");
-////
-////                List<String> parameterNames = parameters.keySet().stream()
-////                        .filter(key -> key.startsWith(path))
-////                        .collect(Collectors.toList());
-////
-////                parameterNames.toString();
-//////                TODO Bind manually!
-////            }
-//        }
+        ConversionService conversionService = binder.getConversionService();
+        if (conversionService instanceof ConfigurableConversionService) {
+            StringToFragmentConverterFactory stringToFragmentConverterFactory =
+                    fragmentService.getStringToFragmentConverterFactory();
+            ((ConfigurableConversionService) conversionService)
+                    .addConverterFactory(stringToFragmentConverterFactory);
+        } else {
+            throw new RuntimeException("Unable to register additional converters");
+        }
 
         if (!ObjectUtils.isEmpty(binder.getTarget())) {
             if (!mavContainer.isBindingDisabled(name)) {
@@ -80,7 +89,6 @@ public class FragmentFormArgumentResolver implements HandlerMethodArgumentResolv
         }
 
         if (parameter.hasParameterAnnotation(Valid.class)) {
-//            TODO Validate form!
             binder.validate();
         }
 
