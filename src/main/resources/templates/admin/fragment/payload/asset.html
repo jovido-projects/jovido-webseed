@@ -1,0 +1,22 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<input type="hidden" class="form-control"
+       th:field="*{currentForm.fragment.attributes[__${field.name}__].payloads[__${payloadItr.index}__].value.id}">
+
+
+<div class="form-group">
+    <div class="input-group">
+
+        <input type="text" class="form-control" th:value="${payload.value?.fileName}" disabled>
+
+        <span class="input-group-btn">
+            <label class="btn btn-default btn-file">
+                <i class="fa fa-upload"></i>
+                <input type="file" name="asset" hidden="hidden"
+                       th:formaction="@{upload(
+                       field=${field.name},
+                       index=${payloadItr.index})}">
+            </label>
+            <th:block th:replace="admin/fragment/payload-buttons"/>
+        </span>
+    </div>
+</div>

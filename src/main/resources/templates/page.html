@@ -10,45 +10,125 @@
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
     <!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.standalone.css">-->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/css/jquery.treegrid.css">
+
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
-    <!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.de.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/js/jquery.treegrid.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/js/jquery.treegrid.bootstrap3.js"></script>
-    <script src="//cdn.ckeditor.com/4.6.0/standard/ckeditor.js"></script>
+    <!--<script src="//cdn.ckeditor.com/4.6.0/standard/ckeditor.js"></script>-->
 
-    <script src="/js/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="/elements/foo-bar.html" />
-    <link rel="import" href="/elements/seed-field.html" />
+
+    <!-- include summernote css/js-->
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.3/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.3/summernote.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('.datepicker').datepicker({
-                clearBtn: true,
-                orientation: 'auto',
-                language: '[[${#locale?.toLanguageTag()}]]',
-                format: 'dd.mm.yyyy',
-                autoclose: true
-            });
-            $('.tree').treegrid();
-            // fakewaffle.responsiveTabs();
+    function saveScrollTop() {
+        var scrollTop = $(window).scrollTop();
+        sessionStorage.setItem("window.scrollTop", scrollTop);
+    }
+
+    function loadScrollTop() {
+        var scrollTop = sessionStorage.getItem("window.scrollTop");
+        $(window).scrollTop(scrollTop);
+    }
+
+    $(document).ready(function() {
+        loadScrollTop();
+
+        $('.datepicker').datepicker({
+            clearBtn: true,
+            orientation: 'auto',
+            language: '[[${#locale?.toLanguageTag()}]]',
+            format: 'dd.mm.yyyy',
+            autoclose: true
         });
+
+        $('.summernote').summernote({
+            lang: 'de-DE',
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['mybutton', ['removevalue']]],
+            popover: {air: []}
+        });
+
+
+        $('.btn-file').change(function() {
+            var form = $(this).closest('form');
+            var input = $(this).children('input[type="file"]');
+            var formaction = input.attr('formaction');
+            form.attr('action', formaction);
+            form.attr('enctype', 'multipart/form-data');
+            form.submit();
+        });
+
+        $("form").on("submit", saveScrollTop);
+        $('body').bind('beforeunload',saveScrollTop);
+    });
     </script>
-    <style structure="text/css">
+    <style type="text/css">
         html{position:relative;min-height:100%;}
         body,h1,h2,h3{font-family: "Valera Round;", sans-serif;}
         footer{padding-top:25px;padding-bottom:25px;}
+
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+
+
+        .note-editor.note-frame {
+            _border:none;
+            border-color: #ddd;
+            _margin:-15px -15px 0 -15px;
+        }
+
+        .modal-dialog{
+            overflow-y: initial !important
+        }
+        .modal-body{
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
+<!--<th:block th:replace="admin/menu" />-->
+<!--<p>&nbsp;</p>-->
 <th:block th:replace="${content}" />
 <footer class="container">
     <div class="row">

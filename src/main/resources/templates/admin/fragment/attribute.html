@@ -1,0 +1,39 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<!--<input type="text" th:field="*{fields[__${field.name}__].name}">-->
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-tag" th:if="${field.label}"></i>
+        <span th:text="#{__${structure.name}__.__${field.name}__}">Field Name</span>
+    </div>
+    <ul class="list-group list-group-flush">
+
+        <li class="list-group-item" th:each="payload,payloadItr : ${attribute?.payloads}">
+
+            <!--<input type="hidden" th:name="fragment.attributes[__${field.name}__].payloads[__${payloadItr.index}__].ordinal" th:value="${payloadItr.index}">-->
+
+            <th:block th:switch="${payload?.class?.simpleName}">
+                <th:block th:case="'TextPayload'">
+                    <th:block th:replace="admin/fragment/payload/text" />
+                </th:block>
+                <th:block th:case="'FragmentPayload'">
+                    <th:block th:replace="admin/fragment/payload/fragment" />
+                </th:block>
+                <th:block th:case="'AssetPayload'">
+                    <th:block th:replace="admin/fragment/payload/asset" />
+                </th:block>
+            </th:block>
+        </li>
+
+        <li class="list-group-item" th:if="${attribute.payloads.size() < field.capacity}">
+            <button class="btn btn-default"
+                    th:formaction="@{append-value(
+                    field=${field.name})}">
+                <i class="fa fa-plus"></i>
+                Add <span th:text="#{__${structure.name}__.__${field.name}__}">Field Name</span>
+            </button>
+        </li>
+    </ul>
+</div>
+</html>
