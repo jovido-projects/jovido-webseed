@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -30,25 +29,25 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/admin/fragments")
 @SessionAttributes("fragmentViewState")
-public class FragmentFormController {
+public class FragmentAdminController {
 
     @Autowired
     private FragmentService fragmentService;
 
     @ModelAttribute("fragmentViewState")
-    protected FragmentViewState fragmentViewState() {
-        return new FragmentViewState();
+    protected FragmentAdminViewState fragmentViewState() {
+        return new FragmentAdminViewState();
     }
 
     @RequestMapping(path = "create")
-    protected String create(@ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String create(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                             BindingResult bindingResult,
                             @RequestParam(name = "structure") String structureName,
                             @RequestParam(name = "locale") Locale locale,
                             RedirectAttributes redirectAttributes) {
 
         viewState.reset();
-        FragmentForm form = new FragmentForm();
+        FragmentAdminForm form = new FragmentAdminForm();
         Fragment fragment = fragmentService.createFragment(structureName, locale);
         form.setFragment(fragment);
         viewState.putForm(form);
@@ -59,32 +58,32 @@ public class FragmentFormController {
     }
 
     @RequestMapping(path = "show")
-    protected String show(@ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String show(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                           BindingResult bindingResult,
                           @RequestParam(name = "form") String formId) {
 
-        FragmentForm form = viewState.getForm(formId);
+        FragmentAdminForm form = viewState.getForm(formId);
         viewState.setCurrentForm(form);
 
         return "admin/fragment/form";
     }
 
     @RequestMapping(path = "create-dependent")
-    protected String createDependent(@ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String createDependent(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                      BindingResult bindingResult,
                                      @RequestParam(name = "structure") String structureName,
                                      @RequestParam(name = "attribute", required = false) String attributeName,
                                      @RequestParam(name = "index", required = false) int valueIndex,
                                      RedirectAttributes redirectAttributes) {
 
-        FragmentForm currentForm = viewState.getCurrentForm();
+        FragmentAdminForm currentForm = viewState.getCurrentForm();
 
-        FragmentForm.Origin origin = new FragmentForm.Origin();
+        FragmentAdminForm.Origin origin = new FragmentAdminForm.Origin();
         origin.setAttributeName(attributeName);
         origin.setValueIndex(valueIndex);
         origin.setForm(currentForm);
 
-        FragmentForm dependentForm = new FragmentForm();
+        FragmentAdminForm dependentForm = new FragmentAdminForm();
         dependentForm.setOrigin(origin);
         viewState.putForm(dependentForm);
 
@@ -97,12 +96,12 @@ public class FragmentFormController {
     }
 
     @RequestMapping(path = "edit")
-    protected String edit(@ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String edit(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                           BindingResult bindingResult,
                           @RequestParam(name = "fragment") Long fragmentId,
                           RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = new FragmentForm();
+        FragmentAdminForm form = new FragmentAdminForm();
         Fragment fragment = fragmentService.getFragment(fragmentId);
         form.setFragment(fragment);
         viewState.putForm(form);
@@ -113,21 +112,21 @@ public class FragmentFormController {
     }
 
     @RequestMapping(path = "edit-dependent")
-    protected String editDependent(@ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String editDependent(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                    BindingResult bindingResult,
                                    @RequestParam(name = "attribute", required = false) String attributeName,
                                    @RequestParam(name = "index", required = false) int valueIndex,
                                    RedirectAttributes redirectAttributes) {
 
 
-        FragmentForm currentForm = viewState.getCurrentForm();
+        FragmentAdminForm currentForm = viewState.getCurrentForm();
 
-        FragmentForm.Origin origin = new FragmentForm.Origin();
+        FragmentAdminForm.Origin origin = new FragmentAdminForm.Origin();
         origin.setAttributeName(attributeName);
         origin.setValueIndex(valueIndex);
         origin.setForm(currentForm);
 
-        FragmentForm dependentForm = new FragmentForm();
+        FragmentAdminForm dependentForm = new FragmentAdminForm();
         dependentForm.setOrigin(origin);
         viewState.putForm(dependentForm);
 
@@ -143,12 +142,12 @@ public class FragmentFormController {
     }
 
     @RequestMapping("append-value")
-    protected String appendValue(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String appendValue(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                  BindingResult bindingResult,
                                  @RequestParam(name = "field") String fieldName,
                                  RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
         Fragment fragment = form.getFragment();
         Attribute attribute = fragment.getAttribute(fieldName);
         List<Payload<?>> payloads = attribute.getPayloads();
@@ -161,13 +160,13 @@ public class FragmentFormController {
     }
 
     @RequestMapping("move-value-up")
-    protected String moveValueUp(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String moveValueUp(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                  BindingResult bindingResult,
                                  @RequestParam(name = "field") String fieldName,
                                  @RequestParam(name = "index") int index,
                                  RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
         Fragment fragment = form.getFragment();
         Attribute field = fragment.getAttribute(fieldName);
         List<Payload<?>> payloads = field.getPayloads();
@@ -178,13 +177,13 @@ public class FragmentFormController {
     }
 
     @RequestMapping("move-value-down")
-    protected String moveValueDown(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String moveValueDown(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                    BindingResult bindingResult,
                                    @RequestParam(name = "field") String fieldName,
                                    @RequestParam(name = "index") int index,
                                    RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
         Fragment fragment = form.getFragment();
         Attribute field = fragment.getAttribute(fieldName);
         List<Payload<?>> payloads = field.getPayloads();
@@ -195,13 +194,13 @@ public class FragmentFormController {
     }
 
     @RequestMapping("remove-value")
-    protected String removeValue(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String removeValue(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                  BindingResult bindingResult,
                                  @RequestParam(name = "field") String fieldName,
                                  @RequestParam(name = "index") int index,
                                  RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
         Fragment fragment = form.getFragment();
         Attribute field = fragment.getAttribute(fieldName);
         List<Payload<?>> payloads = field.getPayloads();
@@ -212,11 +211,11 @@ public class FragmentFormController {
     }
 
     @RequestMapping("save")
-    protected String save(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String save(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.fragmentViewState", bindingResult);
@@ -229,9 +228,9 @@ public class FragmentFormController {
         fragment = fragmentService.save(fragment);
         form.setFragment(fragment);
 
-        FragmentForm.Origin origin = form.getOrigin();
+        FragmentAdminForm.Origin origin = form.getOrigin();
         if (origin != null) {
-            FragmentForm originForm = origin.getForm();
+            FragmentAdminForm originForm = origin.getForm();
             Fragment originFragment = originForm.getFragment();
             Attribute attribute = originFragment.getAttribute(origin.getAttributeName());
             FragmentPayload payload = (FragmentPayload) attribute.getPayloads().get(origin.getValueIndex());
@@ -247,16 +246,16 @@ public class FragmentFormController {
     }
 
     @RequestMapping("discard")
-    protected String discard(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String discard(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
 
-        FragmentForm.Origin origin = form.getOrigin();
+        FragmentAdminForm.Origin origin = form.getOrigin();
         if (origin != null) {
             viewState.removeForm(form);
-            FragmentForm originForm = origin.getForm();
+            FragmentAdminForm originForm = origin.getForm();
             redirectAttributes.addAttribute("form", originForm.getId());
             return "redirect:show";
         }
@@ -266,14 +265,14 @@ public class FragmentFormController {
     }
 
     @RequestMapping("upload")
-    protected String upload(@Valid @ModelAttribute("fragmentViewState") FragmentViewState viewState,
+    protected String upload(@Valid @ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                             BindingResult bindingResult,
                             @RequestParam(name = "field") String fieldName,
                             @RequestParam(name = "index") int index,
                             @RequestParam(name = "asset") MultipartFile multipartFile,
                             RedirectAttributes redirectAttributes) throws IOException {
 
-        FragmentForm form = viewState.getCurrentForm();
+        FragmentAdminForm form = viewState.getCurrentForm();
         Fragment fragment = form.getFragment();
         AssetPayload payload = PayloadUtils.getPayload(fragment, fieldName, index);
         Asset asset = payload.getValue();

@@ -6,33 +6,33 @@ import java.util.Map;
 /**
  * @author Stephan Grundner
  */
-public class FragmentViewState {
+public class FragmentAdminViewState {
 
-    private final Map<String, FragmentForm> forms = new LinkedHashMap<>();
+    private final Map<String, FragmentAdminForm> forms = new LinkedHashMap<>();
 
-    private FragmentForm currentForm;
+    private FragmentAdminForm currentForm;
 
 //    private Map<String, FragmentForm> getForms() {
 //        return Collections.unmodifiableMap(forms);
 //    }
 
-    public FragmentForm getForm(String id) {
+    public FragmentAdminForm getForm(String id) {
         return forms.get(id);
     }
 
-    public FragmentForm getCurrentForm() {
+    public FragmentAdminForm getCurrentForm() {
         return currentForm;
     }
 
-    public void setCurrentForm(FragmentForm currentForm) {
+    public void setCurrentForm(FragmentAdminForm currentForm) {
         this.currentForm = currentForm;
     }
 
-    public FragmentForm putForm(FragmentForm form) {
+    public FragmentAdminForm putForm(FragmentAdminForm form) {
         return forms.put(form.getId(), form);
     }
 
-    public boolean removeForm(FragmentForm form) {
+    public boolean removeForm(FragmentAdminForm form) {
         return forms.remove(form.getId(), form);
     }
 

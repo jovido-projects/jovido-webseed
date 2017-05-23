@@ -7,19 +7,19 @@ import java.util.UUID;
 /**
  * @author Stephan Grundner
  */
-public class FragmentForm implements Form {
+public class FragmentAdminForm implements Form {
 
     public static class Origin {
 
-        private FragmentForm form;
+        private FragmentAdminForm form;
         private String attributeName;
         private int valueIndex;
 
-        public FragmentForm getForm() {
+        public FragmentAdminForm getForm() {
             return form;
         }
 
-        public void setForm(FragmentForm form) {
+        public void setForm(FragmentAdminForm form) {
             this.form = form;
         }
 

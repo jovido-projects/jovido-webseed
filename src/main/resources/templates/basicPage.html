@@ -1,0 +1,13 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="/page(content=~{::body})"
+      th:remove="tag">
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 th:text="${fragment.attributes[title].payloads[0].value}">Title</h1>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

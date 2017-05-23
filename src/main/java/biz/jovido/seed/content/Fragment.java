@@ -33,6 +33,9 @@ public class Fragment {
     @MapKey(name = "name")
     private final Map<String, Attribute> attributes = new HashMap<>();
 
+    @OneToOne(mappedBy = "fragment", cascade = CascadeType.ALL)
+    private Alias alias;
+
     public Long getId() {
         return id;
     }
@@ -75,6 +78,17 @@ public class Fragment {
 
     public void setAttribute(String name, Attribute attribute) {
         attributes.put(name, attribute);
+    }
+
+    public Alias getAlias() {
+        return alias;
+    }
+
+    public void setAlias(Alias alias) {
+        if (alias != null) {
+            alias.setFragment(this);
+        }
+        this.alias = alias;
     }
 
 //    public Structure getStructure() {
