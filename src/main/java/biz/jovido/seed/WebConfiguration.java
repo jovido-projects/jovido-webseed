@@ -1,5 +1,6 @@
 package biz.jovido.seed;
 
+import biz.jovido.seed.content.AliasRequestMapping;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -13,6 +14,7 @@ import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
@@ -27,6 +29,15 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    @Bean
+    public AliasRequestMapping aliasRequestMapping() {
+        AliasRequestMapping requestMapping = new AliasRequestMapping();
+        requestMapping.setOrder(0);
+
+
+        return requestMapping;
     }
 
     @Bean

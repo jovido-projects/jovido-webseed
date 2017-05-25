@@ -3,9 +3,7 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.LocaleConverter;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -33,8 +31,11 @@ public class Fragment {
     @MapKey(name = "name")
     private final Map<String, Attribute> attributes = new HashMap<>();
 
-    @OneToOne(mappedBy = "fragment", cascade = CascadeType.ALL)
-    private Alias alias;
+//    @OneToOne(mappedBy = "fragment", cascade = CascadeType.ALL)
+//    private Alias alias;
+
+    @OneToMany(mappedBy = "fragment", cascade = CascadeType.ALL)
+    private final Set<Alias> aliases = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -80,22 +81,16 @@ public class Fragment {
         attributes.put(name, attribute);
     }
 
-    public Alias getAlias() {
-        return alias;
+    public Set<Alias> getAliases() {
+        return Collections.unmodifiableSet(aliases);
     }
 
-    public void setAlias(Alias alias) {
-        if (alias != null) {
+    public boolean addAlias(Alias alias) {
+        if (aliases.add(alias)) {
             alias.setFragment(this);
+            return true;
         }
-        this.alias = alias;
-    }
 
-//    public Structure getStructure() {
-//        if (bundle != null) {
-//            return bundle.getStructure();
-//        }
-//
-//        return null;
-//    }
+        return false;
+    }
 }

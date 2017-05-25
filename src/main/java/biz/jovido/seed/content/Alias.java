@@ -8,7 +8,7 @@ import javax.persistence.*;
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"path", "domain_id"}))
+@Table(name = "saila", uniqueConstraints = @UniqueConstraint(columnNames = {"domain_id", "path"}))
 public class Alias {
 
     @Id
@@ -21,7 +21,7 @@ public class Alias {
 
     private String path;
 
-    @ManyToOne
+    @OneToOne
     private Fragment fragment;
 
     public Long getId() {

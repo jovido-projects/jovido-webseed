@@ -8,6 +8,8 @@ import biz.jovido.seed.content.payload.AssetPayload;
 import biz.jovido.seed.content.payload.DatePayload;
 import biz.jovido.seed.content.payload.FragmentPayload;
 import biz.jovido.seed.content.payload.TextPayload;
+import biz.jovido.seed.hostname.Domain;
+import biz.jovido.seed.hostname.DomainService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.auditing.AuditingHandler;
@@ -19,6 +21,7 @@ import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * @author Stephan Grundner
@@ -37,6 +40,12 @@ public class FragmentService {
 
     @Autowired
     private AuditingHandler auditingHandler;
+
+    @Autowired
+    private DomainService domainService;
+
+    @Autowired
+    private AliasService aliasService;
 
     Bundle createBundle(String structureName) {
         Assert.notNull(structureName, "[structureName] must not be null");
@@ -77,6 +86,18 @@ public class FragmentService {
                 }
             }
         });
+
+        List<Domain> domains = domainService.getDomains();
+        Set<Alias> aliases = fragment.getAliases();
+        for (Domain domain : domains) {
+            Alias alias = aliasService.findByDomain(aliases, domain);
+            if (alias == null) {
+                alias = new Alias();
+                alias.setDomain(domain);
+                alias.setPath(";)");
+                fragment.addAlias(alias);
+            }
+        }
     }
 
     public Class<? extends Payload<?>> getPayloadClass(Class<? extends Field> fieldClass) {
