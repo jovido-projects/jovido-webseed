@@ -1,6 +1,6 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.hostname.Domain;
+import biz.jovido.seed.Domain;
 
 import javax.persistence.*;
 
@@ -8,14 +8,14 @@ import javax.persistence.*;
  * @author Stephan Grundner
  */
 @Entity
-@Table(name = "saila", uniqueConstraints = @UniqueConstraint(columnNames = {"domain_id", "path"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"domain_id", "path"}))
 public class Alias {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "domain_id")
     private Domain domain;
 

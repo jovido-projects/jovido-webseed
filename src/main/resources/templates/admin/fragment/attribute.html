@@ -5,7 +5,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <i class="fa fa-tag" th:if="${field.label}"></i>
-        <span th:text="#{__${structure.name}__.__${field.name}__}">Field Name</span>
+        <span th:text="#{__${type.name}__.__${field.name}__}">Field Name</span>
     </div>
     <ul class="list-group list-group-flush">
 
@@ -19,8 +19,8 @@
                 <th:block th:case="'TextPayload'">
                     <th:block th:replace="admin/fragment/payload/text" />
                 </th:block>
-                <th:block th:case="'FragmentPayload'">
-                    <th:block th:replace="admin/fragment/payload/fragment" />
+                <th:block th:case="'BundlePayload'">
+                    <th:block th:replace="admin/fragment/payload/bundle" />
                 </th:block>
                 <th:block th:case="'AssetPayload'">
                     <th:block th:replace="admin/fragment/payload/asset" />
@@ -33,7 +33,7 @@
                     th:formaction="@{append-value(
                     field=${field.name})}">
                 <i class="fa fa-plus"></i>
-                Add <span th:text="#{__${structure.name}__.__${field.name}__}">Field Name</span>
+                Add <span th:text="#{__${type.name}__.__${field.name}__}">Field Name</span>
             </button>
         </li>
     </ul>

@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * @author Stephan Grundner
  */
@@ -14,4 +12,6 @@ public interface FragmentRepository extends JpaRepository<Fragment, Long> {
 
     @Query("from Payload p where p.id = ?1")
     Payload<?> findPayloadById(Long id);
+
+//    Fragment findByLocaleAndPath()
 }

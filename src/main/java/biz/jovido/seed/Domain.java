@@ -1,6 +1,5 @@
-package biz.jovido.seed.hostname;
+package biz.jovido.seed;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,14 +14,13 @@ public class Domain {
     @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
     private String name;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

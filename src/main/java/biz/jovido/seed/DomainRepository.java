@@ -1,4 +1,4 @@
-package biz.jovido.seed.hostname;
+package biz.jovido.seed;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

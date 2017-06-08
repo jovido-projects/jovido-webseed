@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.content.payload.AssetPayload;
-import biz.jovido.seed.content.payload.FragmentPayload;
+import biz.jovido.seed.content.payload.BundlePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -42,13 +42,13 @@ public class FragmentAdminController {
     @RequestMapping(path = "create")
     protected String create(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                             BindingResult bindingResult,
-                            @RequestParam(name = "structure") String structureName,
+                            @RequestParam(name = "type") String typeName,
                             @RequestParam(name = "locale") Locale locale,
                             RedirectAttributes redirectAttributes) {
 
         viewState.reset();
         FragmentAdminForm form = new FragmentAdminForm();
-        Fragment fragment = fragmentService.createFragment(structureName, locale);
+        Fragment fragment = fragmentService.createFragment(typeName, locale);
         form.setFragment(fragment);
         viewState.putForm(form);
         viewState.setCurrentForm(form);
@@ -71,7 +71,7 @@ public class FragmentAdminController {
     @RequestMapping(path = "create-dependent")
     protected String createDependent(@ModelAttribute("fragmentViewState") FragmentAdminViewState viewState,
                                      BindingResult bindingResult,
-                                     @RequestParam(name = "structure") String structureName,
+                                     @RequestParam(name = "type") String typeName,
                                      @RequestParam(name = "attribute", required = false) String attributeName,
                                      @RequestParam(name = "index", required = false) int valueIndex,
                                      RedirectAttributes redirectAttributes) {
@@ -88,7 +88,7 @@ public class FragmentAdminController {
         viewState.putForm(dependentForm);
 
         Locale locale = currentForm.getFragment().getLocale();
-        Fragment fragment = fragmentService.createFragment(structureName, locale);
+        Fragment fragment = fragmentService.createFragment(typeName, locale);
         dependentForm.setFragment(fragment);
 
         redirectAttributes.addAttribute("form", dependentForm.getId());
@@ -132,8 +132,9 @@ public class FragmentAdminController {
 
         Fragment fragment = currentForm.getFragment();
         Attribute attribute = fragment.getAttribute(attributeName);
-        FragmentPayload payload = (FragmentPayload) attribute.getPayloads().get(valueIndex);
-        Fragment dependentFragment = payload.getValue();
+        BundlePayload payload = (BundlePayload) attribute.getPayloads().get(valueIndex);
+
+        Fragment dependentFragment = payload.getValue().getFragment();
         fragmentService.applyDefaults(dependentFragment);
         dependentForm.setFragment(dependentFragment);
 
@@ -233,8 +234,8 @@ public class FragmentAdminController {
             FragmentAdminForm originForm = origin.getForm();
             Fragment originFragment = originForm.getFragment();
             Attribute attribute = originFragment.getAttribute(origin.getAttributeName());
-            FragmentPayload payload = (FragmentPayload) attribute.getPayloads().get(origin.getValueIndex());
-            payload.setValue(fragment);
+            BundlePayload payload = (BundlePayload) attribute.getPayloads().get(origin.getValueIndex());
+            payload.setValue(fragment.getBundle());
 
             redirectAttributes.addAttribute("form", originForm.getId());
             return "redirect:show";

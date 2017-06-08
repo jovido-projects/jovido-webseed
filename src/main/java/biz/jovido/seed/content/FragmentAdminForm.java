@@ -67,12 +67,12 @@ public class FragmentAdminForm implements Form {
 
     public String getTitle() {
         if (fragment != null) {
-            String structureName = fragment.getBundle().getStructureName();
+            String typeName = fragment.getBundle().getTypeName();
             Long fragmentId = fragment.getId();
             if (fragmentId != null) {
-                return String.format("%s:%d", structureName, fragmentId);
+                return String.format("%s:%d", typeName, fragmentId);
             } else {
-                return String.format("new:%s", structureName);
+                return String.format("new:%s", typeName);
             }
         }
         return null;

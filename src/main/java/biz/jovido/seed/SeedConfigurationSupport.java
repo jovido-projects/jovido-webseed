@@ -1,7 +1,7 @@
 package biz.jovido.seed;
 
 import biz.jovido.seed.content.FragmentService;
-import biz.jovido.seed.content.StructureService;
+import biz.jovido.seed.content.TypeService;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -33,7 +33,7 @@ public class SeedConfigurationSupport extends WebMvcConfigurerAdapter implements
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        StructureService structureService = applicationContext.getBean(StructureService.class);
+        TypeService structureService = applicationContext.getBean(TypeService.class);
         FragmentService fragmentService = applicationContext.getBean(FragmentService.class);
 //        argumentResolvers.add(new FragmentFormArgumentResolver(structureService, fragmentService));
     }

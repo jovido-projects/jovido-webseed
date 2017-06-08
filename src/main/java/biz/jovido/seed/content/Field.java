@@ -5,18 +5,18 @@ package biz.jovido.seed.content;
  */
 public abstract class Field {
 
-    private Structure structure;
+    private Type type;
 
     private final String name;
     private int capacity = Integer.MAX_VALUE;
     private int minimumNumberOfValues = 1;
 
-    public Structure getStructure() {
-        return structure;
+    public Type getType() {
+        return type;
     }
 
-    void setStructure(Structure structure) {
-        this.structure = structure;
+    void setType(Type type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -40,7 +40,7 @@ public abstract class Field {
     }
 
     public boolean isLabel() {
-        return name.equals(structure.getLabel());
+        return name.equals(type.getLabel());
     }
 
     public Field(String name) {

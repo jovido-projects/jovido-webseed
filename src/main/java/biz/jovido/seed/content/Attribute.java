@@ -53,7 +53,7 @@ public class Attribute {
 
 //    public Field getField() {
 //        if (fragment != null) {
-//            Structure structure = fragment.getStructure();
+//            Structure structure = fragment.getType();
 //            if (structure != null) {
 //                return structure.getField(name);
 //            }

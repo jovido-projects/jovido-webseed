@@ -1,15 +1,14 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.DomainService;
 import biz.jovido.seed.content.field.AssetField;
 import biz.jovido.seed.content.field.DateField;
 import biz.jovido.seed.content.field.FragmentField;
 import biz.jovido.seed.content.field.TextField;
 import biz.jovido.seed.content.payload.AssetPayload;
+import biz.jovido.seed.content.payload.BundlePayload;
 import biz.jovido.seed.content.payload.DatePayload;
-import biz.jovido.seed.content.payload.FragmentPayload;
 import biz.jovido.seed.content.payload.TextPayload;
-import biz.jovido.seed.hostname.Domain;
-import biz.jovido.seed.hostname.DomainService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.auditing.AuditingHandler;
@@ -21,7 +20,6 @@ import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @author Stephan Grundner
@@ -30,7 +28,7 @@ import java.util.Set;
 public class FragmentService {
 
     @Autowired
-    private StructureService structureService;
+    private TypeService typeService;
 
     @Autowired
     private BundleRepository bundleRepository;
@@ -44,17 +42,21 @@ public class FragmentService {
     @Autowired
     private DomainService domainService;
 
-    @Autowired
-    private AliasService aliasService;
-
-    Bundle createBundle(String structureName) {
-        Assert.notNull(structureName, "[structureName] must not be null");
+    Bundle createBundle(Type type, Locale locale) {
+        Assert.notNull(type, "[type] must not be null");
 
         Bundle bundle = new Bundle();
-        bundle.setStructureName(structureName);
-//        bundle.setStructureProvider(structureService);
+        bundle.setTypeName(type.getName());
+        bundle.setLocale(locale);
 
         return bundle;
+    }
+
+    Bundle createBundle(String typeName, Locale locale) {
+        Assert.hasLength(typeName, "[typeName] must not be empty");
+
+        Type type = typeService.getType(typeName);
+        return createBundle(type, locale);
     }
 
     Bundle saveBundle(Bundle bundle) {
@@ -64,9 +66,8 @@ public class FragmentService {
     public void applyDefaults(Fragment fragment) {
         Bundle bundle = fragment.getBundle();
 
-        String structureName = bundle.getStructureName();
-        Structure structure = structureService.getStructure(structureName);
-        structure.getFieldNames().forEach( name -> {
+        Type type = typeService.getType(bundle.getTypeName());
+        type.getFieldNames().forEach( name -> {
             Attribute attribute = fragment.getAttribute(name);
             if (attribute == null) {
                 attribute = new Attribute();
@@ -75,7 +76,7 @@ public class FragmentService {
                 fragment.setAttribute(name, attribute);
             }
 
-            Field field = structure.getField(name);
+            Field field = type.getField(name);
             List<Payload<?>> payloads = attribute.getPayloads();
             int requiredNumberOfValues = field.getMinimumNumberOfValues() - payloads.size();
             if (requiredNumberOfValues > 0) {
@@ -86,25 +87,13 @@ public class FragmentService {
                 }
             }
         });
-
-        List<Domain> domains = domainService.getDomains();
-        Set<Alias> aliases = fragment.getAliases();
-        for (Domain domain : domains) {
-            Alias alias = aliasService.findByDomain(aliases, domain);
-            if (alias == null) {
-                alias = new Alias();
-                alias.setDomain(domain);
-                alias.setPath(";)");
-                fragment.addAlias(alias);
-            }
-        }
     }
 
     public Class<? extends Payload<?>> getPayloadClass(Class<? extends Field> fieldClass) {
         if (fieldClass.isAssignableFrom(TextField.class)) {
             return TextPayload.class;
         } else if (fieldClass.isAssignableFrom(FragmentField.class)) {
-            return FragmentPayload.class;
+            return BundlePayload.class;
         } else if (fieldClass.isAssignableFrom(DateField.class)) {
             return DatePayload.class;
         } else if (fieldClass.isAssignableFrom(AssetField.class)) {
@@ -121,29 +110,28 @@ public class FragmentService {
 
     public Payload<?> createPayload(Fragment fragment, String fieldName) {
         Bundle bundle = fragment.getBundle();
-        String structureName = bundle.getStructureName();
-        Structure structure = structureService.getStructure(structureName);
-        Field field = structure.getField(fieldName);
+        String typeName = bundle.getTypeName();
+        Type type = typeService.getType(typeName);
+        Field field = type.getField(fieldName);
         Class<? extends Payload<?>> payloadClass = getPayloadClass(field);
         return BeanUtils.instantiate(payloadClass);
     }
 
-    Fragment createFragment(Bundle bundle, Locale locale) {
+    Fragment createFragment(Bundle bundle) {
         Fragment fragment = new Fragment();
         fragment.setBundle(bundle);
-        fragment.setLocale(locale);
 
         applyDefaults(fragment);
 
         return fragment;
     }
 
-    Fragment createFragment(String structureName, Locale locale) {
-        Bundle bundle = createBundle(structureName);
-        return createFragment(bundle, locale);
+    Fragment createFragment(String typeName, Locale locale) {
+        Bundle bundle = createBundle(typeName, locale);
+        return createFragment(bundle);
     }
 
-    public  Fragment getFragment(Long id) {
+    public Fragment getFragment(Long id) {
         Fragment fragment = fragmentRepository.findOne(id);
         if (fragment != null) {
             applyDefaults(fragment);
@@ -153,7 +141,7 @@ public class FragmentService {
     }
 
     @Transactional
-    public List<Fragment> findbyText(String text) {
+    public List<Fragment> findByText(String text) {
         return fragmentRepository.findAll();
     }
 
@@ -183,11 +171,11 @@ public class FragmentService {
         return saved;
     }
 
-    public Structure getStructure(Fragment fragment) {
+    public Type getType(Fragment fragment) {
         Bundle bundle = fragment.getBundle();
         if (bundle != null) {
-            String structureName = bundle.getStructureName();
-            return structureService.getStructure(structureName);
+            String typeName = bundle.getTypeName();
+            return typeService.getType(typeName);
         }
 
         return null;
@@ -195,9 +183,9 @@ public class FragmentService {
 
     @Transactional
     public Attribute getLabelAttribute(Fragment fragment) {
-        Structure structure = getStructure(fragment);
-        if (structure != null) {
-            String label = structure.getLabel();
+        Type type = getType(fragment);
+        if (type != null) {
+            String label = type.getLabel();
             return fragment.getAttribute(label);
         }
 

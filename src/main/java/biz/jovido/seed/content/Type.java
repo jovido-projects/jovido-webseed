@@ -5,9 +5,10 @@ import java.util.*;
 /**
  * @author Stephan Grundner
  */
-public class Structure {
+public class Type {
 
     private final String name;
+
     private String label;
 
     private final Map<String, Field> fields = new LinkedHashMap<>();
@@ -39,24 +40,24 @@ public class Structure {
     public Field putField(Field field) {
         Field replaced = fields.put(field.getName(), field);
         if (replaced != null) {
-            replaced.setStructure(null);
+            replaced.setType(null);
         }
 
-        field.setStructure(this);
+        field.setType(this);
 
         return replaced;
     }
 
     public boolean removeField(Field field) {
         if (fields.remove(field.getName(), field)) {
-            field.setStructure(null);
+            field.setType(null);
             return true;
         }
 
         return false;
     }
 
-    public Structure(String name) {
+    public Type(String name) {
         this.name = name;
     }
 }

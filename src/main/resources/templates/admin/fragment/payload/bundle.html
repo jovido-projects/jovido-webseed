@@ -13,7 +13,7 @@
             <button class="btn btn-default"
                     th:disabled="${payload.id == null} ? disabled : _"
                     th:formaction="@{create-dependent(
-                    structure=basicPage,
+                    type=basicPage,
                     attribute=${attribute.name},
                     index=${payloadItr.index})}">
                 <i class="fa fa-plus"></i>

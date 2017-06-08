@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.hostname.Domain;
-import biz.jovido.seed.hostname.DomainService;
+import biz.jovido.seed.Domain;
+import biz.jovido.seed.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
@@ -17,9 +17,6 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
     private DomainService domainService;
 
     @Autowired
-    private AliasService aliasService;
-
-    @Autowired
     private AliasForwardController aliasForwardController;
 
     @Override
@@ -27,10 +24,10 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
         Domain domain = domainService.getDomain(request);
         if (domain != null) {
             String path = request.getServletPath();
-            Alias alias = aliasService.getAlias(domain, path);
-            if (alias != null) {
-                return new HandlerExecutionChain(aliasForwardController);
-            }
+//            Alias alias = aliasService.getAlias(domain, path);
+//            if (alias != null) {
+//                return new HandlerExecutionChain(aliasForwardController);
+//            }
         }
 
         return null;

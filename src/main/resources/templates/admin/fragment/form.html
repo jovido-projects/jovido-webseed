@@ -18,7 +18,7 @@
           th:with="
           form=*{currentForm},
           fragment=*{currentForm.fragment},
-          structure=${@structureService.getStructure(fragment.bundle.structureName)}">
+          type=${@typeService.getType(fragment.bundle.typeName)}">
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -49,17 +49,19 @@
         <div class="row">
             <div class="col-md-8">
 
-                <div class="form-group" th:each="alias,aliasItr : *{currentForm.fragment.aliases}">
-                    <label>Path</label>
-                    <input type="text" class="form-control" th:field="*{currentForm.fragment.aliases[__${aliasItr.index}__].path}">
-                </div>
-
-                <th:block th:each="field : ${structure?.fields}"
+                <th:block th:each="field : ${type?.fields}"
                           th:with="attribute=${fragment.getAttribute(field.name)}">
                     <th:block th:replace="admin/fragment/attribute" />
                 </th:block>
             </div>
             <div class="col-md-4">
+
+                <div th:if="${#fields.hasAnyErrors()}">
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">...</p>
+                </div>
+                <div th:if="${#fields.hasGlobalErrors()}">
+                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">...</p>
+                </div>
 
                 <table class="table table-sm">
                     <tbody>
@@ -74,15 +76,10 @@
                         <td th:text="${fragment?.id}">#</td>
                     </tr>
 
-                    <tr>
-                        <th>Revision</th>
-                        <td th:text="${fragment?.revision}">#</td>
-                    </tr>
-
-                    <tr>
-                        <th>Structure</th>
-                        <td th:text="${structure?.name}">#</td>
-                    </tr>
+                    <!--<tr>-->
+                        <!--<th>Structure</th>-->
+                        <!--<td th:text="${type?.name}">#</td>-->
+                    <!--</tr>-->
 
                     <tr>
                         <th>Locale</th>
@@ -122,6 +119,17 @@
                     </tbody>
                 </table>
 
+                <h2>Domains</h2>
+                <ul class="form-group" >
+                    <li th:each="domain,domainItr : ${@domainService.domains}" th:text="${domain.name}">Domain</li>
+                </ul>
+
+                <!--<div class="form-group">-->
+                    <!--<label>-->
+                        <!--<span>Path</span>-->
+                    <!--</label>-->
+                    <!--<input type="text" class="form-control" th:field="*{currentForm.fragment.path}">-->
+                <!--</div>-->
 
             </div>
 

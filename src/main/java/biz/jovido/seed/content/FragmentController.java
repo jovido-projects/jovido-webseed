@@ -1,12 +1,10 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.hostname.Domain;
-import biz.jovido.seed.hostname.DomainService;
+import biz.jovido.seed.DomainService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +16,6 @@ public class FragmentController {
 
     private final FragmentService fragmentService;
     private final DomainService domainService;
-    private final AliasService aliasService;
 
 //    @RequestMapping(path = "/{locale:[a-z]+}/{alias:.*}")
 //    String index(@PathVariable("locale") Locale locale,
@@ -33,7 +30,7 @@ public class FragmentController {
 //        return "";
 //    }
 
-    @RequestMapping(path = "/fragment", params = {"id", "!alias"})
+    @RequestMapping(path = "/fragment", params = {"id", "!path"})
     String getById(@RequestParam(name = "id") Long id, Model model) {
         Fragment fragment = fragmentService.getFragment(id);
         model.addAttribute("fragment", fragment);
@@ -42,27 +39,27 @@ public class FragmentController {
             model.addAttribute(name, attribute.getPayloads().get(0));
         });
 
-        Structure structure = fragmentService.getStructure(fragment);
+        Type structure = fragmentService.getType(fragment);
 
         return structure.getName();
     }
 
-    @RequestMapping(path = "/fragment", params = {"alias", "!id"})
-    String getByAlias(@RequestParam(name = "alias") String path,
+    @RequestMapping(path = "/fragment", params = {"path", "!id"})
+    String getByPath(@RequestParam(name = "path") String path,
                       HttpServletRequest request, Model model) {
 
         String serverName = request.getServerName();
 
-        Domain domain = domainService.getDomain(serverName);
-        Alias alias = aliasService.getAlias(domain, path);
-        Fragment fragment = alias.getFragment();
+//        Domain domain = domainService.getDomain(serverName);
+//        Alias alias = aliasService.getAlias(domain, path);
+//        Fragment fragment = alias.getFragment();
 
-        return getById(fragment.getId(), model);
+//        return getById(fragment.getId(), model);
+        return null;
     }
 
-    public FragmentController(FragmentService fragmentService, DomainService domainService, AliasService aliasService) {
+    public FragmentController(FragmentService fragmentService, DomainService domainService) {
         this.fragmentService = fragmentService;
         this.domainService = domainService;
-        this.aliasService = aliasService;
     }
 }
