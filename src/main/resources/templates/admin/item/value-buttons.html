@@ -1,0 +1,17 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<button class="btn btn-default"
+        th:disabled="${payloadItr.index == 0} ? disabled : _"
+        th:formaction="@{move-value-up(property=${property.name},index=${payloadItr.index})}">
+    <i class="fa fa-arrow-up"></i>
+</button>
+<button class="btn btn-default"
+        th:disabled="${payloadItr.index == property.values.size() - 1} ? disabled : _"
+        th:formaction="@{move-value-down(property=${property.name},index=${payloadItr.index})}">
+    <i class="fa fa-arrow-down"></i>
+</button>
+<button class="btn btn-default"
+        th:disabled="${property.values.size() <= attribute.required} ? disabled : _"
+        th:formaction="@{remove-value(property=${property.name},index=${payloadItr.index})}">
+    <i class="fa fa-trash"></i>
+</button>
+</html>

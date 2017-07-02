@@ -1,0 +1,125 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="/page(content=~{::body})"
+      th:remove="tag">
+
+<div th:fragment="body" class="container">
+    <form th:object="${itemAdministration}" method="post" th:with="item=*{editor.item}">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <p>&nbsp;</p>
+
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">Item <span>0</span></li>
+                </ol>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-8">
+
+                <h2>
+                    <span th:text="${item?.bundle?.structure?.name}">Title</span>
+                </h2>
+
+                <th:block th:each="property,propertyItr : ${item.properties}">
+                    <div class="panel panel-default" th:with="attribute=${property.attribute}">
+                        <div class="panel-heading">
+                            <span th:text="${property.name}">Attribute Name</span>
+                        </div>
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" th:each="payload,payloadItr : ${property.payloads}">
+                                    <th:block th:switch="${payload.class.simpleName}">
+                                        <th:block th:case="'TextPayload'">
+                                            <th:block th:replace="admin/item/text-value" />
+                                        </th:block>
+                                        <th:block th:case="'ItemPayload'">
+                                            <th:block th:replace="admin/item/item-value" />
+                                        </th:block>
+                                    </th:block>
+                                </li>
+
+                                <li class="list-group-item" th:if="${property.values.size() < attribute.capacity}">
+                                    <div class="btn-group">
+                                        <button class="btn btn-default" th:formaction="@{append-value(property=${property.name})}">
+                                            <i class="fa fa-plus"></i>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+
+
+
+
+
+
+
+                    </div>
+                </th:block>
+
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" th:formaction="@{save}">
+                        <i class="fa fa-floppy-o"></i>
+                        Save
+                    </button>
+                    <button class="btn btn-danger"  th:formaction="@{delete}" disabled="disabled">
+                        <i class="fa fa-trash"></i>
+                        Delete
+                    </button>
+                    <a class="btn btn-default" th:href="@{load(item=${item.id})}" th:disabled="${item?.id == null} ? disabled : _">
+                        <i class="fa fa-undo"></i>
+                        Undo
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+
+                <h2>
+                    <span>&nbsp;</span>
+                </h2>
+
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>
+                            <span th:text="${item?.id}">ID</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Revision</th>
+                        <td>
+                            <span th:text="${item?.revision}">Locale</span>
+                            <button class="btn btn-default btn-xs pull-right">
+                                Create new Revision
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Locale</th>
+                        <td>
+                            <span th:text="${item?.bundle?.locale?.displayName}">Locale</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="form-group">
+                    <label>Path</label>
+                    <input type="text" class="form-control" th:field="*{editor.item.path}">
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+</html>
