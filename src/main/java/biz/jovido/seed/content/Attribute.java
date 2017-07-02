@@ -1,27 +1,25 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-public class Attribute {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Attribute {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(optional = false)
-    private Fragment fragment;
+    private Structure structure;
 
     private String name;
 
-    @OneToMany(mappedBy = "attribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("ordinal")
-    private final List<Payload<?>> payloads = new ArrayList<>();
+    private int capacity;
+    private int required;
 
     public Long getId() {
         return id;
@@ -31,12 +29,12 @@ public class Attribute {
         this.id = id;
     }
 
-    public Fragment getFragment() {
-        return fragment;
+    public Structure getStructure() {
+        return structure;
     }
 
-    public void setFragment(Fragment fragment) {
-        this.fragment = fragment;
+    /* public */ void setStructure(Structure structure) {
+        this.structure = structure;
     }
 
     public String getName() {
@@ -47,18 +45,27 @@ public class Attribute {
         this.name = name;
     }
 
-    public List<Payload<?>> getPayloads() {
-        return payloads;
+    public int getCapacity() {
+        return capacity;
     }
 
-//    public Field getField() {
-//        if (fragment != null) {
-//            Structure structure = fragment.getType();
-//            if (structure != null) {
-//                return structure.getField(name);
-//            }
-//        }
-//
-//        return null;
-//    }
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getRequired() {
+        return required;
+    }
+
+    public void setRequired(int required) {
+        this.required = required;
+    }
+
+    public abstract Payload createPayload();
+
+    public Attribute(String name) {
+        this.name = name;
+    }
+
+    public Attribute() {}
 }

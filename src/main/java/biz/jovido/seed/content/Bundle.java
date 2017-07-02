@@ -9,40 +9,35 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"fragment_id"})})
 public class Bundle {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(name = "type_name", updatable = false)
-    private String typeName;
+    @ManyToOne(optional = false)
+    private Structure structure;
 
+    @Column(name = "language_tag")
     @Convert(converter = LocaleConverter.class)
-    @Column(updatable = false)
     private Locale locale;
 
-//    @OneToOne
-//    @JoinColumn(name = "published_fragment_id")
-//    private Fragment published;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Item draft;
 
     @OneToOne
-    @JoinColumn(name = "fragment_id")
-    private Fragment fragment;
-
-//    private Map<Locale, Fragment> fragments;
+    private Item published;
 
     public Long getId() {
         return id;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public Structure getStructure() {
+        return structure;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setStructure(Structure structure) {
+        this.structure = structure;
     }
 
     public Locale getLocale() {
@@ -53,11 +48,19 @@ public class Bundle {
         this.locale = locale;
     }
 
-    public Fragment getFragment() {
-        return fragment;
+    public Item getDraft() {
+        return draft;
     }
 
-    public void setFragment(Fragment fragment) {
-        this.fragment = fragment;
+    public void setDraft(Item draft) {
+        this.draft = draft;
+    }
+
+    public Item getPublished() {
+        return published;
+    }
+
+    public void setPublished(Item published) {
+        this.published = published;
     }
 }

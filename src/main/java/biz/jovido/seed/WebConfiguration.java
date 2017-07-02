@@ -1,27 +1,18 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.AliasRequestMapping;
-import org.apache.tomcat.util.http.LegacyCookieProcessor;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.session.MapSessionRepository;
-import org.springframework.session.SessionRepository;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Stephan Grundner
  */
 @Configuration
+@Deprecated
 public class WebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -31,23 +22,22 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
         this.applicationContext = applicationContext;
     }
 
-    @Bean
-    public AliasRequestMapping aliasRequestMapping() {
-        AliasRequestMapping requestMapping = new AliasRequestMapping();
-        requestMapping.setOrder(0);
+//    @Autowired
+//    private SpringTemplateEngine templateEngine;
 
-
-        return requestMapping;
+    @PostConstruct
+    void init() {
+//        templateEngine.addDialect(new biz.grundner.spring.web.component.tyhmeleaf.ComponentDialect());
     }
 
-    @Bean
-    public FilterRegistrationBean openSessionInViewFilter() {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        OpenEntityManagerInViewFilter filter = new OpenEntityManagerInViewFilter();
-        registrationBean.setFilter(filter);
-        registrationBean.setOrder(5);
-        return registrationBean;
-    }
+//    @Bean
+//    public AliasRequestMapping aliasRequestMapping() {
+//        AliasRequestMapping requestMapping = new AliasRequestMapping();
+//        requestMapping.setOrder(0);
+//
+//
+//        return requestMapping;
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -56,28 +46,22 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
 
 //        OrganizationDetector organizationDetector = applicationContext.getBean(OrganizationDetector.class);
 //        registry.addInterceptor(organizationDetector);
-        registry.addInterceptor(new HttpSessionAliasPublisher());
+//        registry.addInterceptor(new HttpSessionAliasPublisher());
     }
 
-    @Bean
-    public SessionRepository<?> sessionRepository() {
-        return new MapSessionRepository();
-    }
-
-    @Bean
-    public EmbeddedServletContainerCustomizer customizer() {
-        return container -> {
-            if (container instanceof TomcatEmbeddedServletContainerFactory) {
-                TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
-                tomcat.addContextCustomizers(context -> context.setCookieProcessor(new LegacyCookieProcessor()));
-            }
-        };
-    }
-
-    @Bean
-    TemplateEngine templateEngine(SpringTemplateEngine templateEngine) {
-
-        templateEngine.setEnableSpringELCompiler(true);
-        return templateEngine;
-    }
+//    @Bean
+//    public EmbeddedServletContainerCustomizer customizer() {
+//        return container -> {
+//            if (container instanceof TomcatEmbeddedServletContainerFactory) {
+//                TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+//                tomcat.addContextCustomizers(context -> context.setCookieProcessor(new LegacyCookieProcessor()));
+//            }
+//        };
+//    }
+//
+//    @Bean
+//    TemplateEngine templateEngine(SpringTemplateEngine templateEngine) {
+//        templateEngine.setEnableSpringELCompiler(true);
+//        return templateEngine;
+//    }
 }

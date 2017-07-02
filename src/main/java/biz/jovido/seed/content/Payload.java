@@ -7,14 +7,16 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "kind")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "ordinal"}))
 public abstract class Payload<T> {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
-    private Attribute attribute;
+    @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
+    private Property property;
 
     private int ordinal;
 
@@ -22,16 +24,12 @@ public abstract class Payload<T> {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Property getProperty() {
+        return property;
     }
 
-    public Attribute getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
+    /* public */ void setProperty(Property property) {
+        this.property = property;
     }
 
     public int getOrdinal() {
@@ -43,6 +41,5 @@ public abstract class Payload<T> {
     }
 
     public abstract T getValue();
-
     public abstract void setValue(T value);
 }

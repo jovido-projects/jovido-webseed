@@ -10,15 +10,15 @@ import javax.persistence.Entity;
 @Entity
 public class TextPayload extends Payload<String> {
 
-    private String value;
+    private String text;
 
     @Override
     public String getValue() {
-        return value;
+        return text;
     }
 
     @Override
     public void setValue(String value) {
-        this.value = value;
+        text = value;
     }
 }

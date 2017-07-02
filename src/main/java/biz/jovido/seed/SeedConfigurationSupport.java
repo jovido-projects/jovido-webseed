@@ -1,18 +1,19 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.FragmentService;
-import biz.jovido.seed.content.TypeService;
+import biz.jovido.seed.content.DefaultViewNameResolver;
+import biz.jovido.seed.content.ViewNameResolver;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.session.MapSessionRepository;
+import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -22,7 +23,7 @@ import java.util.List;
 @EnableJpaRepositories("biz.jovido.seed")
 @EnableJpaAuditing
 @EnableSpringHttpSession
-public class SeedConfigurationSupport extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+public class SeedConfigurationSupport implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -31,10 +32,30 @@ public class SeedConfigurationSupport extends WebMvcConfigurerAdapter implements
         this.applicationContext = applicationContext;
     }
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        TypeService structureService = applicationContext.getBean(TypeService.class);
-        FragmentService fragmentService = applicationContext.getBean(FragmentService.class);
-//        argumentResolvers.add(new FragmentFormArgumentResolver(structureService, fragmentService));
+    @Bean
+    public AliasRequestMapping aliasRequestMapping() {
+        AliasRequestMapping requestMapping = new AliasRequestMapping();
+        requestMapping.setOrder(0);
+        return requestMapping;
     }
+
+    @Bean
+    public ViewNameResolver viewNameResolver() {
+        return new DefaultViewNameResolver();
+    }
+
+    @Bean
+    public FilterRegistrationBean openSessionInViewFilter() {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        OpenEntityManagerInViewFilter filter = new OpenEntityManagerInViewFilter();
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(5);
+        return registrationBean;
+    }
+
+    @Bean
+    public SessionRepository<?> sessionRepository() {
+        return new MapSessionRepository();
+    }
+
 }
