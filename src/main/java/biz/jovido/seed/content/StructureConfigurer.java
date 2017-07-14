@@ -3,13 +3,10 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public interface StructureConfigurer {
+public abstract class StructureConfigurer {
 
-//    StructureConfigurer setName(String name);
-    StructureConfigurer setRevision(int revision);
+    public abstract TextAttributeConfigurer addTextAttribute(String fieldName);
+    public abstract FragmentAttributeConfigurer addFragmentAttribute(String fieldName);
 
-    TextAttributeConfigurer addTextAttribute(String name);
-    ItemAttributeConfigurer addItemAttribute(String name);
-
-    Structure build(StructureService structureService);
+    public abstract Structure getStructure();
 }

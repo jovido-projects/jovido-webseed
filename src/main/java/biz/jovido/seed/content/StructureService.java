@@ -1,12 +1,14 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.utils.QueryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Stephan Grundner
@@ -14,37 +16,60 @@ import javax.persistence.TypedQuery;
 @Service
 public class StructureService {
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    private int activeRevision;
+    private Map<String, Integer> activeRevisions = new ConcurrentHashMap<>();
 
-    public int getActiveRevision() {
-        return activeRevision;
+    public int getActiveStructureRevision(String name) {
+        Integer revision = activeRevisions.get(name);
+        return revision == null ? 0 : revision;
     }
 
-    public void setActiveRevision(int activeRevision) {
-        this.activeRevision = activeRevision;
+    public void setActiveStructureRevision(String name, int revision) {
+        activeRevisions.put(name, revision);
     }
 
-    public Structure findStructureById(Long id) {
-        return entityManager.find(Structure.class, id);
-    }
-
-    public Structure findStructureByName(String name, int revision) {
-        TypedQuery<Structure> query = entityManager.createQuery(
-                "from Structure where name = ? and revision = ?", Structure.class);
+    public Structure getStructure(String name, int revision) {
+        TypedQuery<Structure> query = entityManager.createQuery("from Structure where name = ? and revision = ?",
+                Structure.class);
         query.setParameter(1, name);
         query.setParameter(2, revision);
         return QueryUtils.getSingleResult(query);
     }
 
-    public Structure findActiveStructureByName(String name) {
-        return findStructureByName(name, getActiveRevision());
+    public Structure getActiveStructure(String name) {
+        int revision = getActiveStructureRevision(name);
+        return getStructure(name, revision);
+    }
+
+    public void setActiveStructure(Structure structure) {
+        int revision = structure.getRevision();
+        String name = structure.getName();
+        setActiveStructureRevision(name, revision);
+    }
+
+    public Set<String> getAllStructureNames() {
+        return activeRevisions.keySet();
+    }
+
+    @Transactional
+    public StructureConfigurer getStructureConfiguration(String name, int revision) {
+        Structure structure = getStructure(name, revision);
+        if (structure == null) {
+            structure = new Structure();
+            structure.setName(name);
+            structure.setRevision(revision);
+        }
+
+        return new StructureBuilder(structure);
     }
 
     @Transactional
     public Structure saveStructure(Structure structure) {
         return entityManager.merge(structure);
+    }
+
+    public StructureService(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

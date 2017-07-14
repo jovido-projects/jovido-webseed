@@ -1,11 +1,12 @@
 package biz.jovido.seed.content;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * @author Stephan Grundner
@@ -18,20 +19,21 @@ public class Structure {
     @GeneratedValue
     private Long id;
 
-    @Column(updatable = false)
+    @Column(nullable = false)
     private String name;
-
-    @Column(updatable = false)
     private int revision;
 
-    @OneToMany(mappedBy = "structure",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    private final List<Attribute> attributes = new ArrayList<>();
+    @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @MapKey(name = "fieldName")
+    @OrderBy("ordinal")
+    private final Map<String, Attribute> attributeByFieldName = new HashMap<>();
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -50,36 +52,25 @@ public class Structure {
         this.revision = revision;
     }
 
-    public Set<String> getAttributeNames() {
-        return attributes.stream()
-                .map(Attribute::getName)
-                .collect(Collectors.toSet());
-    }
-
     public List<Attribute> getAttributes() {
-        return Collections.unmodifiableList(attributes);
+//        TODO Sort by ordinal!
+        return new ArrayList<>(attributeByFieldName.values());
     }
 
-    public Attribute getAttribute(String name) {
-        return attributes.stream()
-                .filter(attribute -> attribute.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+    public Attribute getAttribute(String fieldName) {
+        return attributeByFieldName.get(fieldName);
     }
 
-    public boolean addAttribute(Attribute attribute) {
-        if (attributes.add(attribute)) {
-            attribute.setStructure(this);
-            return true;
+    public Attribute putAttribute(Attribute attribute) {
+        String fieldName = attribute.getFieldName();
+        Assert.hasText(fieldName, "[fieldName] must not be empty");
+        Attribute replaced = attributeByFieldName.put(fieldName, attribute);
+        if (replaced != null) {
+            replaced.setStructure(null);
         }
-        return false;
-    }
 
-    public Attribute removeAttribute(int index) {
-        Attribute removed = attributes.remove(index);
-        if (removed != null) {
-            removed.setStructure(null);
-        }
-        return removed;
+        attribute.setStructure(this);
+
+        return replaced;
     }
 }

@@ -1,7 +1,5 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.DefaultViewNameResolver;
-import biz.jovido.seed.content.ViewNameResolver;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -32,17 +30,17 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    @Bean
-    public AliasRequestMapping aliasRequestMapping() {
-        AliasRequestMapping requestMapping = new AliasRequestMapping();
-        requestMapping.setOrder(0);
-        return requestMapping;
-    }
-
-    @Bean
-    public ViewNameResolver viewNameResolver() {
-        return new DefaultViewNameResolver();
-    }
+//    @Bean
+//    public AliasRequestMapping aliasRequestMapping() {
+//        AliasRequestMapping requestMapping = new AliasRequestMapping();
+//        requestMapping.setOrder(0);
+//        return requestMapping;
+//    }
+//
+//    @Bean
+//    public ViewNameResolver viewNameResolver() {
+//        return new DefaultViewNameResolver();
+//    }
 
     @Bean
     public FilterRegistrationBean openSessionInViewFilter() {

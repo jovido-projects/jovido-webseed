@@ -7,6 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"structure_id", "field_name"}))
 public abstract class Attribute {
 
     @Id
@@ -14,18 +15,22 @@ public abstract class Attribute {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "structure_id")
     private Structure structure;
 
-    private String name;
+    @Column(name = "field_name", nullable = false)
+    private String fieldName;
 
-    private int capacity;
-    private int required;
+    private int ordinal;
+
+    private int capacity = 1;
+    private int required = 1;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /* public */ void setId(Long id) {
         this.id = id;
     }
 
@@ -37,12 +42,20 @@ public abstract class Attribute {
         this.structure = structure;
     }
 
-    public String getName() {
-        return name;
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /* public */ void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
+    }
+
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
     }
 
     public int getCapacity() {
@@ -63,8 +76,15 @@ public abstract class Attribute {
 
     public abstract Payload createPayload();
 
-    public Attribute(String name) {
-        this.name = name;
+    @Deprecated
+    public Attribute(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public Attribute(Structure structure, String fieldName) {
+        this.fieldName = fieldName;
+
+        structure.putAttribute(this);
     }
 
     public Attribute() {}

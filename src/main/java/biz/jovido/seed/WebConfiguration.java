@@ -2,11 +2,11 @@ package biz.jovido.seed;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Stephan Grundner
@@ -24,11 +24,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
 
 //    @Autowired
 //    private SpringTemplateEngine templateEngine;
-
-    @PostConstruct
-    void init() {
-//        templateEngine.addDialect(new biz.grundner.spring.web.component.tyhmeleaf.ComponentDialect());
-    }
+//
+//    @PostConstruct
+//    void init() {
+//        templateEngine.addDialect(new ComponentDialect());
+//    }
 
 //    @Bean
 //    public AliasRequestMapping aliasRequestMapping() {
@@ -37,6 +37,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
 //
 //
 //        return requestMapping;
+//    }
+
+//    @Bean
+//    OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+//
 //    }
 
     @Override

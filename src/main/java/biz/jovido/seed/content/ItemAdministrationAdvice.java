@@ -7,15 +7,17 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 /**
  * @author Stephan Grundner
  */
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {ItemListingController.class, ItemEditorController.class})
 @SessionAttributes(types = ItemAdministration.class)
 public class ItemAdministrationAdvice {
 
     @ModelAttribute
     protected ItemAdministration administration() {
         ItemAdministration administration = new ItemAdministration();
-        administration.setListing(new ItemListing());
-        administration.setEditor(new ItemEditor());
+        ItemListing listing = new ItemListing();
+        administration.setListing(listing);
+        ItemEditor editor = new ItemEditor();
+        administration.setEditor(editor);
         return administration;
     }
 }

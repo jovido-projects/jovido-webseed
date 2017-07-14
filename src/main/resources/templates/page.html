@@ -2,7 +2,7 @@
 <html xmlns:th="//www.thymeleaf.org">
 <head>
 
-    <title>Title</title>
+    <title th:text="${title} ?: _">Title</title>
 
     <meta charset="UTF-8">
 
@@ -126,10 +126,7 @@
         }
     </style>
 </head>
-<body>
-<!--<th:block th:replace="admin/menu" />-->
-<!--<p>&nbsp;</p>-->
-<th:block th:replace="${content}" />
+<body th:include="${body} ?: _">
 <footer class="container">
     <div class="row">
         <div class="col-md-12">

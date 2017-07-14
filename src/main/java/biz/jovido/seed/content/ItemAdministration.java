@@ -6,6 +6,7 @@ package biz.jovido.seed.content;
 public class ItemAdministration {
 
     private ItemListing listing;
+
     private ItemEditor editor;
 
     public ItemListing getListing() {

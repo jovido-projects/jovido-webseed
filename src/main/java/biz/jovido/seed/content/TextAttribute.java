@@ -1,7 +1,4 @@
-package biz.jovido.seed.content.attribute;
-
-import biz.jovido.seed.content.Attribute;
-import biz.jovido.seed.content.payload.TextPayload;
+package biz.jovido.seed.content;
 
 import javax.persistence.Entity;
 
@@ -26,12 +23,12 @@ public class TextAttribute extends Attribute {
     }
 
     @Override
-    public TextPayload createPayload() {
+    public Payload createPayload() {
         return new TextPayload();
     }
 
-    public TextAttribute(String name) {
-        super(name);
+    public TextAttribute(Structure structure, String fieldName) {
+        super(structure, fieldName);
     }
 
     public TextAttribute() {}

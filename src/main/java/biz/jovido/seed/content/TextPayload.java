@@ -1,6 +1,4 @@
-package biz.jovido.seed.content.payload;
-
-import biz.jovido.seed.content.Payload;
+package biz.jovido.seed.content;
 
 import javax.persistence.Entity;
 

@@ -1,112 +1,96 @@
 package biz.jovido.seed.content;
 
-import org.springframework.util.StringUtils;
+import biz.jovido.seed.LocaleConverter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"bundle_id", "revision"}))
+@EntityListeners(AuditingEntityListener.class)
 public class Item {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Bundle bundle;
+    @Convert(converter = LocaleConverter.class)
+    private Locale locale;
 
-    private int revision;
+    @Column(length = 1024 * 4)
+    private String title;
 
-    private String path;
+    @OneToOne
+    private Fragment activeFragment;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @MapKey(name = "name")
-    private final Map<String, Property<?>> propertyByName = new HashMap<>();
+    @OneToOne
+    private Fragment currentFragment;
+
+    @CreatedDate
+    private Date created;
+
+    @LastModifiedDate
+    private Date lastModified;
 
     public Long getId() {
         return id;
     }
 
-    public Bundle getBundle() {
-        return bundle;
+    /* public */ void setId(Long id) {
+        this.id = id;
     }
 
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
+    public Locale getLocale() {
+        return locale;
     }
 
-    public int getRevision() {
-        return revision;
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    public void setRevision(int revision) {
-        this.revision = revision;
+    public String getTitle() {
+        return title;
     }
 
-    public String getPath() {
-        return path;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setPath(String path) {
-        if (StringUtils.hasLength(path)) {
-            if (!path.startsWith("/")) {
-                path = String.format("/%s", path);
-            }
-        }
-
-        this.path = path;
+    public Fragment getActiveFragment() {
+        return activeFragment;
     }
 
-    public Set<String> getPropertyNames() {
-        return Collections.unmodifiableSet(propertyByName.keySet());
+    public void setActiveFragment(Fragment activeFragment) {
+        this.activeFragment = activeFragment;
     }
 
-    public List<Property<?>> getProperties() {
-        List<Property<?>> properties = new ArrayList<>();
-        for (String name : getBundle().getStructure().getAttributeNames()) {
-            properties.add(getProperty(name));
-        }
-
-        return Collections.unmodifiableList(properties);
+    public Fragment getCurrentFragment() {
+        return currentFragment;
     }
 
-    public Property<?> getProperty(String name) {
-        return propertyByName.get(name);
+    public void setCurrentFragment(Fragment currentFragment) {
+        this.currentFragment = currentFragment;
     }
 
-    public Property<?> putProperty(Property<?> property) {
-        Property<?> replaced = propertyByName.put(property.getName(), property);
-
-        if (replaced != null) {
-            replaced.setItem(null);
-        }
-
-        property.setItem(this);
-
-        return replaced;
+    public Date getCreated() {
+        return created;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getValue(String propertyName, int index) {
-        Property<T> property = (Property<T>) getProperty(propertyName);
-        return property.getValue(index);
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T setValue(String propertyName, int index, T value) {
-        Property<T> property = (Property<T>) getProperty(propertyName);
-        return property.setValue(index, value);
+    public Date getLastModified() {
+        return lastModified;
     }
 
-    public <T> T getValue(String propertyName) {
-        return getValue(propertyName, 0);
-    }
-
-    public <T> T setValue(String propertyName, T value) {
-        return setValue(propertyName, 0, value);
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 }

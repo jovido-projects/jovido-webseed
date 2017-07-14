@@ -1,0 +1,127 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="/admin(main=~{::main},title='Test')"
+      th:remove="tag">
+
+<th:block th:fragment="main" th:with="
+administration=${itemAdministration},
+listing=${administration.listing}">
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-search"></i>
+                            Find
+                        </button>
+
+
+
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            New <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li th:each="structureName : ${@structureService.allStructureNames}">
+                                <a th:href="@{/admin/item/create(structure=${structureName})}"
+                                   th:text="${structureName}">Structure name</a>
+                            </li>
+                        </ul>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-responsive">
+                <thead>
+                <tr>
+                    <th>
+                        <span>ID</span>
+                    </th>
+                    <th>
+                        <span>Structure</span>
+                    </th>
+                    <th>
+                        <span>Locale</span>
+                    </th>
+                    <th>
+                        <span>Title</span>
+                    </th>
+                    <th>
+                        <span>Created</span>
+                    </th>
+                    <th>
+                        <span>Last Modified</span>
+                    </th>
+                    <th>
+                        &nbsp;
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${listing.items}">
+                    <td>
+                        <span th:text="${item}">ID</span>
+                    </td>
+                    <td>
+                        <span th_text="${item.structure}">basicPage</span>
+                    </td>
+                    <td>
+                        <span th_text="${item.locale}">Locale</span>
+                    </td>
+                    <td>
+                        <span th:text="${item.title}">Title</span>
+                    </td>
+                    <td>
+                        <span th:text="${item.created}">Created</span>
+                    </td>
+                    <td>
+                        <span th:text="${item.lastModified}">Last Modified</span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-xs pull-right">
+                            <button class="btn btn-default">
+                                <i class="fa fa-edit"></i>
+                                Edit
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!--<nav aria-label="Page navigation">-->
+        <!--<ul class="pagination">-->
+            <!--<li>-->
+                <!--<a href="#" aria-label="Previous">-->
+                    <!--<span aria-hidden="true">&laquo;</span>-->
+                <!--</a>-->
+            <!--</li>-->
+            <!--<li><a href="#">1</a></li>-->
+            <!--<li><a href="#">2</a></li>-->
+            <!--<li><a href="#">3</a></li>-->
+            <!--<li><a href="#">4</a></li>-->
+            <!--<li><a href="#">5</a></li>-->
+            <!--<li>-->
+                <!--<a href="#" aria-label="Next">-->
+                    <!--<span aria-hidden="true">&raquo;</span>-->
+                <!--</a>-->
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</nav>-->
+
+</th:block>
+
+
+</html>

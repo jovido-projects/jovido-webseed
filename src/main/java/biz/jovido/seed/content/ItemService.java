@@ -1,13 +1,17 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.AliasService;
-import org.springframework.beans.factory.annotation.Autowired;
+import biz.jovido.seed.utils.QueryUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Stephan Grundner
@@ -15,114 +19,117 @@ import java.util.Locale;
 @Service
 public class ItemService {
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+    private final StructureService structureService;
 
-    @Autowired
-    private AliasService aliasService;
+//    public Attribute getAttribute(Fragment fragment, String fieldName) {
+//        if (fragment != null) {
+//            Structure structure = fragment.getStructure();
+//            if (structure != null) {
+//                return structure.getAttribute(fieldName);
+//            }
+//        }
+//
+//        return null;
+//    }
 
-    @Autowired
-    private StructureService structureService;
-
-    private <T> void applyPayloads(Property property) {
-        Item item = property.getItem();
-        Bundle bundle = item.getBundle();
-        Structure structure = bundle.getStructure();
-        Attribute attribute = structure.getAttribute(property.getName());
-
-        List<Payload> payloads = property.getPayloads();
-        int remaining = attribute.getRequired() - payloads.size();
+    private void applyPayloads(Field field) {
+        Attribute attribute = field.getAttribute();
+        int remaining = attribute.getRequired() - field.getPayloads().size();
         while (remaining-- > 0) {
-            Payload<?> payload = attribute.createPayload();
-            property.addPayload(payload);
-        }
-
-        for (int i = 0; i < payloads.size(); i++) {
-            Payload<?> payload = payloads.get(i);
-            payload.setOrdinal(i + 1);
+            field.appendPayload(attribute.createPayload());
         }
     }
 
-    private void applyProperties(Item item) {
-        Bundle bundle = item.getBundle();
-        Structure structure = bundle.getStructure();
+    @SuppressWarnings("unchecked")
+    public void applyFields(Fragment fragment) {
+        Structure structure = fragment.getStructure();
         for (Attribute attribute : structure.getAttributes()) {
-            String name = attribute.getName();
-            Property property = item.getProperty(name);
-            if (property == null) {
-                property = new Property();
-                property.setItem(item);
-                property.setName(name);
+            String fieldName = attribute.getFieldName();
+            Field field = fragment.getField(fieldName);
+            if (field == null) {
+                field = new Field(fieldName);
+                fragment.putField(field);
             }
 
-            applyPayloads(property);
-
-            item.putProperty(property);
+            if (!FragmentAttribute.class.isAssignableFrom(attribute.getClass())) {
+                applyPayloads(field);
+            }
         }
     }
 
-    public Item createNewItem(Structure structure, Locale locale) {
-        Item item = new Item();
-        item.setRevision(1);
+    public Fragment createFragment(Structure structure) {
+        Assert.notNull(structure, "[structure] must not be null");
 
-        Bundle bundle = new Bundle();
-        bundle.setStructure(structure);
-        bundle.setLocale(locale);
-        bundle.setDraft(item);
-        item.setBundle(bundle);
+        Fragment fragment = new Fragment();
+        fragment.setStructure(structure);
+//        fragment.setUuid(UUID.randomUUID());
 
-        applyProperties(item);
+        applyFields(fragment);
 
-        return item;
+        return fragment;
     }
 
-    public Item createItemRevision(Bundle bundle, int revision) {
-        Item item = new Item();
-        item.setRevision(revision);
-
-        bundle.setDraft(item);
-        item.setBundle(bundle);
-
-        applyProperties(item);
-
-        return item;
+    public Fragment createFragment(String structureName, int revision) {
+        Structure structure = structureService.getStructure(structureName, revision);
+        return createFragment(structure);
     }
 
-    public Item findItemById(Long id) {
-        return entityManager.find(Item.class, id);
+    public Fragment createFragment(String structureName) {
+        int revision = structureService.getActiveStructureRevision(structureName);
+        return createFragment(structureName, revision);
     }
 
     @Transactional
-    public Item saveItem(Item item){
-        return entityManager.merge(item);
-    }
+    public Fragment saveFragment(Fragment fragment) {
 
-    @Transactional
-    public void activateItem(Item item) {
-        Bundle bundle = item.getBundle();
-        bundle.setPublished(item);
-        item = saveItem(item);
-
-        aliasService.createAliasesFor(item);
-    }
-
-    public Object appendNewValue(Item item, String propertyName) {
-        Property<?> property = item.getProperty(propertyName);
-        return property.appendNewValue();
-    }
-
-    public void swapValues(Item item, String propertyName, int i, int j) {
-        Property property = item.getProperty(propertyName);
-        property.swapPayloads(i, j);
-    }
-
-    public Object removeValue(Item item, String propertyName, int index) {
-        Property property = item.getProperty(propertyName);
-        Payload<?> removed = property.removePayload(index);
-        if (removed != null) {
-            return removed.getValue();
+        Structure structure = fragment.getStructure();
+        for (Attribute attribute : structure.getAttributes()) {
+            if (attribute instanceof FragmentAttribute) {
+                FragmentAttribute fragmentAttribute = (FragmentAttribute) attribute;
+                if (fragmentAttribute.isEmbeddable()) {
+                    Field<Fragment> field = (Field<Fragment>) fragment.getField(attribute.getFieldName());
+                    for (Payload<Fragment> payload : field.getPayloads()) {
+                        Fragment dependent = payload.getValue();
+                        if (dependent.isDependent()) {
+                            dependent = saveFragment(dependent);
+                            payload.setValue(dependent);
+                        }
+                    }
+                }
+            }
         }
 
-        return null;
+        Fragment saved = entityManager.merge(fragment);
+        return saved;
+    }
+
+    public Fragment loadFragmentById(Long id) {
+        EntityGraph<?> graph = entityManager.getEntityGraph("fragment.full");
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("javax.persistence.fetchgraph", graph);
+//        return entityManager.find(Fragment.class, id, properties);
+        TypedQuery<Fragment> query = entityManager.createQuery("from Fragment where id = ?", Fragment.class);
+        query.setParameter(1, id);
+        query.setHint("javax.persistence.fetchgraph", graph);
+        return QueryUtils.getSingleResult(query);
+    }
+
+    public Item createItem(Structure structure, Locale locale) {
+        Item item = new Item();
+        item.setLocale(locale);
+        Fragment fragment = createFragment(structure);
+        item.setCurrentFragment(fragment);
+        return item;
+    }
+
+    public Item createItem(String structureName, Locale locale) {
+        Structure structure = structureService.getActiveStructure(structureName);
+        return createItem(structure, locale);
+    }
+
+    public ItemService(EntityManager entityManager, StructureService structureService) {
+        this.entityManager = entityManager;
+        this.structureService = structureService;
     }
 }

@@ -7,29 +7,25 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "kind")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "ordinal"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"field_id", "ordinal"}))
 public abstract class Payload<T> {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
-    private Property property;
+    @ManyToOne(optional = false, targetEntity = Field.class)
+    @JoinColumn(name = "field_id")
+    private Field<T> field;
 
     private int ordinal;
 
-    public Long getId() {
-        return id;
+    public Field<T> getField() {
+        return field;
     }
 
-    public Property getProperty() {
-        return property;
-    }
-
-    /* public */ void setProperty(Property property) {
-        this.property = property;
+    /* public */ void setField(Field<T> field) {
+        this.field = field;
     }
 
     public int getOrdinal() {
