@@ -1,4 +1,4 @@
-package biz.jovido.seed.utils;
+package biz.jovido.seed;
 
 import javax.persistence.TypedQuery;
 import java.util.List;

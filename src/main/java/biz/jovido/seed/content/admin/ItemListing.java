@@ -1,4 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.admin;
+
+import biz.jovido.seed.content.Item;
 
 import java.util.ArrayList;
 import java.util.List;

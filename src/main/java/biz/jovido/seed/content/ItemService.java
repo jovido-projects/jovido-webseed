@@ -1,6 +1,6 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.utils.QueryUtils;
+import biz.jovido.seed.QueryUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -9,7 +9,6 @@ import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 

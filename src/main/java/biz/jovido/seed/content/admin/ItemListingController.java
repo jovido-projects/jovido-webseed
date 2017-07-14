@@ -1,5 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.admin;
 
+import biz.jovido.seed.content.Item;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

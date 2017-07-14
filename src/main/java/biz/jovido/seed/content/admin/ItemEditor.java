@@ -1,5 +1,7 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.admin;
 
+import biz.jovido.seed.content.Fragment;
+import biz.jovido.seed.content.Item;
 import org.springframework.validation.Errors;
 
 /**

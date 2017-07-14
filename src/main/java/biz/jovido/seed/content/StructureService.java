@@ -1,6 +1,6 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.utils.QueryUtils;
+import biz.jovido.seed.QueryUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

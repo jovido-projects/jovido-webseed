@@ -1,5 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.admin;
 
+import biz.jovido.seed.content.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
