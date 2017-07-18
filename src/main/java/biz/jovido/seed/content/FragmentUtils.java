@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import java.util.Collection;
+
 /**
  * @author Stephan Grundner
  */
@@ -18,4 +20,18 @@ public class FragmentUtils {
 //        fragment = getEnclosingFragment(fragment);
 //        return fragment.getStructure();
 //    }
+
+    public static void walkFragments(Fragment fragment, FragmentVisitor visitor) {
+        if (fragment != null) {
+            visitor.visitFragment(fragment);
+            Collection<Field> fields = fragment.getFields().values();
+            for (Field field : fields) {
+                for (Payload payload : field.getPayloads()) {
+                    if (payload instanceof FragmentPayload) {
+                        walkFragments(((FragmentPayload) payload).getValue(), visitor);
+                    }
+                }
+            }
+        }
+    }
 }

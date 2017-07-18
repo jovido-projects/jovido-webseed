@@ -1,19 +1,13 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Stephan Grundner
  */
-@Entity
 public class AssetAttribute extends Attribute {
 
-    @ElementCollection
-    @CollectionTable(name = "file_name_extension")
     private final Set<String> fileNameExtensions = new HashSet<>();
 
     private long contentLengthLimit = Long.MAX_VALUE;
@@ -38,6 +32,4 @@ public class AssetAttribute extends Attribute {
     public AssetAttribute(Structure structure, String fieldName) {
         super(structure, fieldName);
     }
-
-    public AssetAttribute() {}
 }

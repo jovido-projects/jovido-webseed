@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/item")
-public class ItemController {
+public class ContentController {
 
     @Autowired
     private ItemService itemService;
@@ -20,9 +20,9 @@ public class ItemController {
     protected String byId(@RequestParam(name = "id") Long itemId, Model model) {
         Item item = itemService.findItemById(itemId);
         Fragment fragment = item.getActiveFragment();
-        Structure structure = fragment.getStructure();
+        Structure structure = itemService.getStructure(fragment);
         model.addAttribute("item", item);
         model.addAttribute("fragment", fragment);
-        return String.format("%s-%d", structure.getName(), structure.getRevision());
+        return structure.getName();
     }
 }

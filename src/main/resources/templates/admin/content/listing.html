@@ -1,9 +1,13 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="/admin(main=~{::main},title='Test')"
+      th:replace="/admin(
+      objectName='contentAdministration',
+      main=~{::main},
+      title='Test'
+      )"
       th:remove="tag">
 
 <th:block th:fragment="main" th:with="
-administration=${itemAdministration},
+administration=${__${objectName}__},
 listing=${administration.listing}">
 
 
@@ -78,7 +82,7 @@ listing=${administration.listing}">
                         <span th_text="${item.locale}">Locale</span>
                     </td>
                     <td>
-                        <span th:text="${item.title}">Title</span>
+                        <span th:text="${item.currentFragment?.title}">Title</span>
                     </td>
                     <td>
                         <span th:text="${item.created}">Created</span>

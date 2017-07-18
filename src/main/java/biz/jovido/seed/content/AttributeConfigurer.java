@@ -38,8 +38,8 @@ public abstract class AttributeConfigurer<A extends Attribute, C extends Attribu
     }
 
     @Override
-    public Structure getStructure() {
-        return builder.getStructure();
+    public void register() {
+        builder.register();
     }
 
     public AttributeConfigurer(StructureBuilder builder, A attribute) {

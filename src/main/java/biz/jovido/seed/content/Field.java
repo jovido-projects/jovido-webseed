@@ -96,17 +96,6 @@ public final class Field {
         return payloads.size();
     }
 
-    public Attribute getAttribute() {
-        if (fragment != null) {
-            Structure structure = fragment.getStructure();
-            if (structure != null) {
-                return structure.getAttribute(name);
-            }
-        }
-
-        return null;
-    }
-
     public Field(String name) {
         this.name = name;
     }

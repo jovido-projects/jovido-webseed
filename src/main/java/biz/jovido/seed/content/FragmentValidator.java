@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class FragmentValidator implements Validator {
 
+    private final ItemService itemService;
+
     @Override
     public boolean supports(Class<?> clazz) {
         return Fragment.class.isAssignableFrom(clazz);
@@ -27,7 +29,7 @@ public class FragmentValidator implements Validator {
     }
 
     public void validate(Fragment fragment, Errors errors) {
-        Structure structure = fragment.getStructure();
+        Structure structure = itemService.getStructure(fragment);
         for (Attribute attribute : structure.getAttributes()) {
             Field field = fragment.getField(attribute.getFieldName());
             if (attribute instanceof TextAttribute) {
@@ -39,5 +41,9 @@ public class FragmentValidator implements Validator {
     @Override
     public final void validate(Object target, Errors errors) {
         validate((Fragment) target, errors);
+    }
+
+    public FragmentValidator(ItemService itemService) {
+        this.itemService = itemService;
     }
 }

@@ -19,11 +19,7 @@ public class Fragment {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private Structure structure;
-
-//    @ManyToOne
-//    private Item item;
+    private String structureName;
 
     private String title;
 
@@ -50,21 +46,13 @@ public class Fragment {
         this.id = id;
     }
 
-    public Structure getStructure() {
-        return structure;
+    public String getStructureName() {
+        return structureName;
     }
 
-    public void setStructure(Structure structure) {
-        this.structure = structure;
+    public void setStructureName(String structureName) {
+        this.structureName = structureName;
     }
-
-//    public Item getItem() {
-//        return item;
-//    }
-//
-//    public void setItem(Item item) {
-//        this.item = item;
-//    }
 
     public String getTitle() {
         return title;
@@ -122,31 +110,5 @@ public class Fragment {
         field.setFragment(this);
 
         return replaced;
-    }
-
-    public Object getValue(String fieldName, int index) {
-        Field field = getField(fieldName);
-        if (index >= field.size()) {
-            return null;
-        }
-
-        Payload payload = field.getPayloads().get(index);
-        return payload.getValue();
-    }
-
-    public void setValue(String fieldName, int index, Object value) {
-        Field field = getField(fieldName);
-        List<Payload> payloads = field.getPayloads();
-        if (index >= payloads.size()) {
-            int remaining = (index + 1) - payloads.size();
-            while (remaining-- > 0) {
-                Attribute attribute = field.getAttribute();
-                Payload payload = attribute.createPayload();
-                field.appendPayload(payload);
-            }
-        }
-
-        Payload payload = payloads.get(index);
-        payload.setValue(value);
     }
 }

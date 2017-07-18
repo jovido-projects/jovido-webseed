@@ -1,18 +1,13 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.QueryUtils;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author Stephan Grundner
@@ -35,7 +30,9 @@ public class ItemService {
 //    }
 
     private void applyPayloads(Field field, int n) {
-        Attribute attribute = field.getAttribute();
+        Fragment fragment = field.getFragment();
+        Structure structure = getStructure(fragment);
+        Attribute attribute = structure.getAttribute(field.getName());
         int remaining = n - field.getPayloads().size();
         while (remaining-- > 0) {
             field.appendPayload(attribute.createPayload());
@@ -43,13 +40,15 @@ public class ItemService {
     }
 
     private void applyPayloads(Field field) {
-        Attribute attribute = field.getAttribute();
+        Fragment fragment = field.getFragment();
+        Structure structure = getStructure(fragment);
+        Attribute attribute = structure.getAttribute(field.getName());
         applyPayloads(field, attribute.getRequired());
     }
 
     @SuppressWarnings("unchecked")
     public void applyFields(Fragment fragment) {
-        Structure structure = fragment.getStructure();
+        Structure structure = getStructure(fragment);
         for (Attribute attribute : structure.getAttributes()) {
             String fieldName = attribute.getFieldName();
             Field field = fragment.getField(fieldName);
@@ -64,59 +63,29 @@ public class ItemService {
         }
     }
 
+    public Structure getStructure(Fragment fragment) {
+        return structureService.getStructure(fragment.getStructureName());
+    }
+
     public Fragment createFragment(Structure structure) {
         Assert.notNull(structure, "[structure] must not be null");
 
         Fragment fragment = new Fragment();
-        fragment.setStructure(structure);
-//        fragment.setUuid(UUID.randomUUID());
+        fragment.setStructureName(structure.getName());
 
         applyFields(fragment);
 
         return fragment;
     }
 
-    public Fragment createFragment(String structureName, int revision) {
-        Structure structure = structureService.getStructure(structureName, revision);
+    public Fragment createFragment(String structureName) {
+        Structure structure = structureService.getStructure(structureName);
         return createFragment(structure);
     }
 
-    public Fragment createFragment(String structureName) {
-        int revision = structureService.getActiveStructureRevision(structureName);
-        return createFragment(structureName, revision);
-    }
-
-//    @SuppressWarnings("unchecked")
     @Transactional
     public Fragment saveFragment(Fragment fragment) {
-        if (fragment == null || fragment.getStructure() == null) {
-            return null;
-        }
-
-//        Structure structure = fragment.getStructure();
-//        for (Attribute attribute : structure.getAttributes()) {
-//            if (attribute instanceof FragmentAttribute) {
-//                Field<Fragment> field = fragment.getField(attribute.getFieldName());
-//                List<Payload<Fragment>> payloads = field.getPayloads();
-//                for (Payload<Fragment> payload : payloads) {
-//                    Fragment referredFragment = payload.getValue();
-//                    referredFragment.
-//                }
-//            }
-//        }
-
         return entityManager.merge(fragment);
-    }
-
-    public Fragment loadFragmentById(Long id) {
-        EntityGraph<?> graph = entityManager.getEntityGraph("fragment.full");
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("javax.persistence.fetchgraph", graph);
-//        return entityManager.find(Fragment.class, id, properties);
-        TypedQuery<Fragment> query = entityManager.createQuery("from Fragment where id = ?", Fragment.class);
-        query.setParameter(1, id);
-        query.setHint("javax.persistence.fetchgraph", graph);
-        return QueryUtils.getSingleResult(query);
     }
 
     public Item createItem(Structure structure, Locale locale) {
@@ -128,7 +97,7 @@ public class ItemService {
     }
 
     public Item createItem(String structureName, Locale locale) {
-        Structure structure = structureService.getActiveStructure(structureName);
+        Structure structure = structureService.getStructure(structureName);
         return createItem(structure, locale);
     }
 
@@ -137,13 +106,15 @@ public class ItemService {
         Fragment currentFragment = item.getCurrentFragment();
         currentFragment = saveFragment(currentFragment);
         item.setCurrentFragment(currentFragment);
-        return entityManager.merge(item);
+        Item saved = entityManager.merge(item);
+
+        return saved;
     }
 
     @Transactional
     public Item findItemById(Long id) {
         Item item = entityManager.find(Item.class, id);
-        entityManager.refresh(item);
+
         return item;
     }
 
@@ -152,17 +123,44 @@ public class ItemService {
         return findItemsQuery.getResultList();
     }
 
+    public Object getValue(Fragment fragment, String fieldName, int index) {
+        Field field = fragment.getField(fieldName);
+        if (index >= field.size()) {
+            return null;
+        }
+
+        Payload payload = field.getPayloads().get(index);
+        return payload.getValue();
+    }
+
+    public void setValue(Fragment fragment, String fieldName, int index, Object value) {
+        Structure structure = getStructure(fragment);
+        Field field = fragment.getField(fieldName);
+        List<Payload> payloads = field.getPayloads();
+        if (index >= payloads.size()) {
+            int remaining = (index + 1) - payloads.size();
+            while (remaining-- > 0) {
+                Attribute attribute = structure.getAttribute(fieldName);
+                Payload payload = attribute.createPayload();
+                field.appendPayload(payload);
+            }
+        }
+
+        Payload payload = payloads.get(index);
+        payload.setValue(value);
+    }
+
     private Fragment duplicateFragment(Fragment source) {
-        Structure structure = source.getStructure();
+        Structure structure = getStructure(source);
         Fragment copy = createFragment(structure);
         for (Attribute attribute : structure.getAttributes()) {
             String fieldName = attribute.getFieldName();
             for (int i = 0; i < source.getField(fieldName).size(); i++) {
-                Object value = source.getValue(fieldName, i);
+                Object value = getValue(source, fieldName, i);
                 if (value instanceof Fragment) {
                     value = duplicateFragment((Fragment) value);
                 }
-                copy.setValue(fieldName, i, value);
+                setValue(copy, fieldName, i, value);
             }
         }
 

@@ -8,6 +8,4 @@ public abstract class SimpleAttribute extends Attribute {
     public SimpleAttribute(Structure structure, String fieldName) {
         super(structure, fieldName);
     }
-
-    public SimpleAttribute() {}
 }

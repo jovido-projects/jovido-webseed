@@ -1,6 +1,5 @@
-package biz.jovido.seed.content.admin;
+package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.Item;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,11 +14,11 @@ import org.springframework.web.bind.annotation.SessionAttributes;
  */
 @Controller
 @RequestMapping("/admin/items/")
-@SessionAttributes(types = {ItemListing.class, ItemAdministration.class})
-public class ItemListingController {
+@SessionAttributes(types = {ContentListing.class, ContentAdministration.class})
+public class ContentListingController {
 
     @ModelAttribute
-    protected ItemListing listing(@ModelAttribute ItemAdministration administration) {
+    protected ContentListing listing(@ModelAttribute ContentAdministration administration) {
         return administration.getListing();
     }
 
@@ -29,7 +28,7 @@ public class ItemListingController {
     }
 
     @RequestMapping
-    protected String index(@ModelAttribute ItemListing listing,
+    protected String index(@ModelAttribute ContentListing listing,
                            BindingResult bindingResult,
                            Model model) {
 
@@ -38,6 +37,6 @@ public class ItemListingController {
         listing.getItems().add(new Item());
         listing.getItems().add(new Item());
 
-        return "admin/item/listing";
+        return "admin/content/listing";
     }
 }

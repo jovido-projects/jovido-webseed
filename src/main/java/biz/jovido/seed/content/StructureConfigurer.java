@@ -9,5 +9,5 @@ public abstract class StructureConfigurer {
     public abstract FragmentAttributeConfigurer addFragmentAttribute(String fieldName);
     public abstract AssetAttributeConfigurer addAssetAttribute(String fieldName);
 
-    public abstract Structure getStructure();
+    public abstract void register();
 }

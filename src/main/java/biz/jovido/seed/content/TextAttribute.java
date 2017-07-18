@@ -1,11 +1,9 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.Entity;
-
 /**
  * @author Stephan Grundner
  */
-@Entity
+//@Entity
 public class TextAttribute extends SimpleAttribute {
 
     private int rows = 1;
@@ -40,6 +38,4 @@ public class TextAttribute extends SimpleAttribute {
     public TextAttribute(Structure structure, String fieldName) {
         super(structure, fieldName);
     }
-
-    public TextAttribute() {}
 }

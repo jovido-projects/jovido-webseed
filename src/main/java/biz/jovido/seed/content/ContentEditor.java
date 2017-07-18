@@ -1,13 +1,11 @@
-package biz.jovido.seed.content.admin;
+package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.Fragment;
-import biz.jovido.seed.content.Item;
 import org.springframework.validation.Errors;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemEditor {
+public class ContentEditor {
 
     private Item item;
     private Fragment fragment;

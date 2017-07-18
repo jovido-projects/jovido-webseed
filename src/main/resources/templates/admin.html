@@ -2,7 +2,7 @@
       th:replace="/page(body=~{::body})"
       th:remove="tag">
 <body>
-<form method="post" th:object="${itemAdministration}">
+<form method="post" th:object="${__${objectName}__}">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
 

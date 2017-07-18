@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.admin;
+package biz.jovido.seed.content;
 
 import biz.jovido.seed.content.Item;
 
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Stephan Grundner
  */
-public class ItemListing {
+public class ContentListing {
 
     private final List<Item> items = new ArrayList<>();
 

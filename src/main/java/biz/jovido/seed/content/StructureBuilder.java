@@ -5,7 +5,8 @@ package biz.jovido.seed.content;
  */
 public class StructureBuilder extends StructureConfigurer {
 
-    private final Structure structure;
+    private final StructureRegistry registry;
+    private Structure structure;
 
     @Override
     public TextAttributeConfigurer addTextAttribute(String fieldName) {
@@ -35,11 +36,17 @@ public class StructureBuilder extends StructureConfigurer {
     }
 
     @Override
-    public Structure getStructure() {
-        return structure;
+    public void register() {
+        registry.registerStructure(structure);
     }
 
-    public StructureBuilder(Structure structure) {
-        this.structure = structure;
+    public StructureBuilder(StructureRegistry registry, String name) {
+        structure = registry.getStructure(name);
+        if (structure == null) {
+            structure = new Structure();
+            structure.setName(name);
+        }
+
+        this.registry = registry;
     }
 }

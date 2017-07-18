@@ -1,31 +1,31 @@
-package biz.jovido.seed.content.admin;
+package biz.jovido.seed.content;
 
 import org.springframework.validation.Errors;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemAdministration {
+public class ContentAdministration {
 
-    private ItemListing listing;
+    private ContentListing listing;
 
-    private ItemEditor editor;
+    private ContentEditor editor;
 
     private Errors errors;
 
-    public ItemListing getListing() {
+    public ContentListing getListing() {
         return listing;
     }
 
-    public void setListing(ItemListing listing) {
+    public void setListing(ContentListing listing) {
         this.listing = listing;
     }
 
-    public ItemEditor getEditor() {
+    public ContentEditor getEditor() {
         return editor;
     }
 
-    public void setEditor(ItemEditor editor) {
+    public void setEditor(ContentEditor editor) {
         this.editor = editor;
     }
 
