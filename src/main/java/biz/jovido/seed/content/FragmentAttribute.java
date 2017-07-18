@@ -19,6 +19,7 @@ public class FragmentAttribute extends Attribute {
     @Column(name = "name")
     private final Set<String> structureNames = new HashSet<>();
 
+    @Deprecated
     public boolean isEmbeddable() {
         return embeddable;
     }

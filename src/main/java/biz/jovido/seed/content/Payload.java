@@ -7,25 +7,34 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"field_id", "ordinal"}))
-public abstract class Payload<T> {
+public abstract class Payload {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, targetEntity = Field.class)
-    @JoinColumn(name = "field_id")
-    private Field<T> field;
+    @ManyToOne(optional = false)
+    private Field field;
+
+    @Transient
+    private boolean toBeRemoved;
 
     private int ordinal;
 
-    public Field<T> getField() {
+    public Field getField() {
         return field;
     }
 
-    /* public */ void setField(Field<T> field) {
+    /* public */ void setField(Field field) {
         this.field = field;
+    }
+
+    public boolean isToBeRemoved() {
+        return toBeRemoved;
+    }
+
+    public void setToBeRemoved(boolean toBeRemoved) {
+        this.toBeRemoved = toBeRemoved;
     }
 
     public int getOrdinal() {
@@ -36,6 +45,6 @@ public abstract class Payload<T> {
         this.ordinal = ordinal;
     }
 
-    public abstract T getValue();
-    public abstract void setValue(T value);
+    public abstract Object getValue();
+    public abstract void setValue(Object value);
 }

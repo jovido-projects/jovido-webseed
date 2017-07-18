@@ -23,8 +23,8 @@ public class Item {
     @Convert(converter = LocaleConverter.class)
     private Locale locale;
 
-    @Column(length = 1024 * 4)
-    private String title;
+//    @Column(length = 1024 * 4)
+//    private String title;
 
     @OneToOne
     private Fragment activeFragment;
@@ -54,13 +54,13 @@ public class Item {
         this.locale = locale;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+//    public String getTitle() {
+//        return title;
+//    }
+//
+//    public void setTitle(String title) {
+//        this.title = title;
+//    }
 
     public Fragment getActiveFragment() {
         return activeFragment;

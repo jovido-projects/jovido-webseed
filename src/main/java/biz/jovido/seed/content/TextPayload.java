@@ -6,7 +6,7 @@ import javax.persistence.Entity;
  * @author Stephan Grundner
  */
 @Entity
-public class TextPayload extends Payload<String> {
+public class TextPayload extends Payload {
 
     private String text;
 
@@ -16,7 +16,7 @@ public class TextPayload extends Payload<String> {
     }
 
     @Override
-    public void setValue(String value) {
-        text = value;
+    public void setValue(Object value) {
+        text = (String) value;
     }
 }

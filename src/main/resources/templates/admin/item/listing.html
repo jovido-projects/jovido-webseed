@@ -67,9 +67,9 @@ listing=${administration.listing}">
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item : ${listing.items}">
+                <tr th:each="item : ${@itemService.findItems('')}">
                     <td>
-                        <span th:text="${item}">ID</span>
+                        <span th:text="${item.id}">ID</span>
                     </td>
                     <td>
                         <span th_text="${item.structure}">basicPage</span>
@@ -88,7 +88,7 @@ listing=${administration.listing}">
                     </td>
                     <td>
                         <div class="btn-group btn-group-xs pull-right">
-                            <button class="btn btn-default">
+                            <button class="btn btn-default" th:formaction="@{/admin/item/load(item=${item.id})}">
                                 <i class="fa fa-edit"></i>
                                 Edit
                             </button>

@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -7,9 +8,9 @@ import javax.persistence.OneToOne;
  * @author Stephan Grundner
  */
 @Entity
-public class FragmentPayload extends Payload<Fragment> {
+public class FragmentPayload extends Payload {
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Fragment fragment;
 
     @Override
@@ -18,8 +19,11 @@ public class FragmentPayload extends Payload<Fragment> {
     }
 
     @Override
-    public void setValue(Fragment value) {
-        fragment = value;
-        fragment.setDependingPayload(this);
+    public void setValue(Object value) {
+        fragment = (Fragment) value;
+
+        if (fragment != null) {
+            fragment.setReferringPayload(this);
+        }
     }
 }

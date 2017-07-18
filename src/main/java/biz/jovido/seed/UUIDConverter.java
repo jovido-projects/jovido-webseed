@@ -20,9 +20,9 @@ public class UUIDConverter implements AttributeConverter<UUID, String> {
     }
 
     @Override
-    public UUID convertToEntityAttribute(String text) {
-        if (StringUtils.hasLength(text)) {
-            return UUID.fromString(text);
+    public UUID convertToEntityAttribute(String value) {
+        if (StringUtils.hasLength(value)) {
+            return UUID.fromString(value);
         }
 
         return null;

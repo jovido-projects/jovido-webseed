@@ -1,6 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.QueryUtils;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -9,6 +10,7 @@ import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,12 +34,17 @@ public class ItemService {
 //        return null;
 //    }
 
-    private void applyPayloads(Field field) {
+    private void applyPayloads(Field field, int n) {
         Attribute attribute = field.getAttribute();
-        int remaining = attribute.getRequired() - field.getPayloads().size();
+        int remaining = n - field.getPayloads().size();
         while (remaining-- > 0) {
             field.appendPayload(attribute.createPayload());
         }
+    }
+
+    private void applyPayloads(Field field) {
+        Attribute attribute = field.getAttribute();
+        applyPayloads(field, attribute.getRequired());
     }
 
     @SuppressWarnings("unchecked")
@@ -79,28 +86,26 @@ public class ItemService {
         return createFragment(structureName, revision);
     }
 
+//    @SuppressWarnings("unchecked")
     @Transactional
     public Fragment saveFragment(Fragment fragment) {
-
-        Structure structure = fragment.getStructure();
-        for (Attribute attribute : structure.getAttributes()) {
-            if (attribute instanceof FragmentAttribute) {
-                FragmentAttribute fragmentAttribute = (FragmentAttribute) attribute;
-                if (fragmentAttribute.isEmbeddable()) {
-                    Field<Fragment> field = (Field<Fragment>) fragment.getField(attribute.getFieldName());
-                    for (Payload<Fragment> payload : field.getPayloads()) {
-                        Fragment dependent = payload.getValue();
-                        if (dependent.isDependent()) {
-                            dependent = saveFragment(dependent);
-                            payload.setValue(dependent);
-                        }
-                    }
-                }
-            }
+        if (fragment == null || fragment.getStructure() == null) {
+            return null;
         }
 
-        Fragment saved = entityManager.merge(fragment);
-        return saved;
+//        Structure structure = fragment.getStructure();
+//        for (Attribute attribute : structure.getAttributes()) {
+//            if (attribute instanceof FragmentAttribute) {
+//                Field<Fragment> field = fragment.getField(attribute.getFieldName());
+//                List<Payload<Fragment>> payloads = field.getPayloads();
+//                for (Payload<Fragment> payload : payloads) {
+//                    Fragment referredFragment = payload.getValue();
+//                    referredFragment.
+//                }
+//            }
+//        }
+
+        return entityManager.merge(fragment);
     }
 
     public Fragment loadFragmentById(Long id) {
@@ -125,6 +130,52 @@ public class ItemService {
     public Item createItem(String structureName, Locale locale) {
         Structure structure = structureService.getActiveStructure(structureName);
         return createItem(structure, locale);
+    }
+
+    @Transactional
+    public Item saveItem(Item item) {
+        Fragment currentFragment = item.getCurrentFragment();
+        currentFragment = saveFragment(currentFragment);
+        item.setCurrentFragment(currentFragment);
+        return entityManager.merge(item);
+    }
+
+    @Transactional
+    public Item findItemById(Long id) {
+        Item item = entityManager.find(Item.class, id);
+        entityManager.refresh(item);
+        return item;
+    }
+
+    public List<Item> findItems(String filter) {
+        TypedQuery<Item> findItemsQuery = entityManager.createQuery("from Item i", Item.class);
+        return findItemsQuery.getResultList();
+    }
+
+    private Fragment duplicateFragment(Fragment source) {
+        Structure structure = source.getStructure();
+        Fragment copy = createFragment(structure);
+        for (Attribute attribute : structure.getAttributes()) {
+            String fieldName = attribute.getFieldName();
+            for (int i = 0; i < source.getField(fieldName).size(); i++) {
+                Object value = source.getValue(fieldName, i);
+                if (value instanceof Fragment) {
+                    value = duplicateFragment((Fragment) value);
+                }
+                copy.setValue(fieldName, i, value);
+            }
+        }
+
+        return copy;
+    }
+
+    @Transactional
+    public void activateItem(Item item) {
+        Fragment current = item.getCurrentFragment();
+        Fragment active = duplicateFragment(current);
+        active = saveFragment(active);
+        item.setActiveFragment(active);
+        saveItem(item);
     }
 
     public ItemService(EntityManager entityManager, StructureService structureService) {

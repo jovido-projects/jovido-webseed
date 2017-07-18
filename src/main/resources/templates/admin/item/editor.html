@@ -8,7 +8,7 @@
 
     <th:block th:fragment="dependent(payload)">
         <th:block th:if="${payload}">
-            <th:block th:replace="::dependent(${payload.field.fragment.dependingPayload})" />
+            <th:block th:replace="::dependent(${payload.field.fragment.referringPayload})" />
             <li>
                 <span th:text="${payload?.field?.name}">Field Name</span>
                 [<span th:text="${payload?.ordinal}">#</span>]
@@ -19,8 +19,8 @@
     <li>
         <span th:text="${item}">Item name</span>
     </li>
-    <th:block th:if="${fragment?.dependent}">
-        <th:block th:replace="::dependent(${fragment?.dependingPayload})" />
+    <th:block th:if="${fragment?.referred}">
+        <th:block th:replace="::dependent(${fragment?.referringPayload})" />
     </th:block>
 
 
@@ -28,8 +28,17 @@
 
 <div th:fragment="default">
 
-    <ul th:if="${#fields.hasErrors('itemEditor')}">
-        <li th:each="err : ${#fields.errors('itemEditor')}" th:text="${err}">Input is incorrect</li>
+    <th:block th:if="${editor.item?.id != null}">
+        <input type="hidden" th:name="id" th:value="${editor?.item?.id}">
+    </th:block>
+    <th:block th:if="${editor.item?.id == null}">
+        <input type="hidden" th:name="new" th:value="${editor?.fragment?.structure?.name}">
+    </th:block>
+
+    <ul th:if="${#fields.hasErrors('editor.*')}">
+        <li th:each="err : ${#fields.detailedErrors('editor.*')}" >
+            <span th:text="${err}">Error</span>
+        </li>
     </ul>
 
     <div class="row">
@@ -38,8 +47,11 @@
         <div class="col-md-7" th:with="fragment=${editor.fragment}">
 
             <h2>
-                <span th:text="#{seed.structure.__${editor.fragment.structure.name}__}">Title</span>
+                <span th:text="#{seed.structure.__${editor.fragment?.structure?.name}__}">Title</span>
             </h2>
+            <ul class="breadcrumb">
+                <th:block th:replace="::breadcrumbs" />
+            </ul>
 
             <!-- Fields -->
             <th:block th:each="attribute : ${fragment?.structure?.attributes}"
@@ -80,7 +92,7 @@
                     <ul class="list-group">
                         <th:block th:each="payload,payloadItr : ${field.payloads}">
 
-                            <th:block th:with="bindingPath=itemEditor.fragment.fields[__${field.name}__].payloads[__${payloadItr.index}__].value">
+                            <th:block th:with="bindingPath=editor.fragment.fields[__${field.name}__].payloads[__${payloadItr.index}__].value">
                                 <!-- Payload field -->
                                 <li class="list-group-item">
 
@@ -97,30 +109,26 @@
 
                                             <th:block th:if="${attribute.multiline}">
                                                 <div class="form-group">
-                                    <textarea type="text" class="form-control summernote" th:rows="${attribute.rows}"
-                                              th:field="*{__${bindingPath}__}"></textarea>
-                                                    <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            var name = '[[__${bindingPath}__]]]';
-                                            var textarea = $('textarea[name=\'' + name + '\']');
-                                            //textarea.minHeight(400);
-                                            textarea.summernote({height: 900});
-                                            textarea.css('min-height', '900px');
-                                            textarea.css('height', '900px');
-                                        });
-                                    </script>
+                                                <textarea type="text" class="form-control summernote" th:rows="${attribute.rows}"
+                                                          th:field="*{__${bindingPath}__}"></textarea>
+                                                                <script type="text/javascript">
+                                                    $(document).ready(function() {
+                                                        var name = '[[__${bindingPath}__]]]';
+                                                        var textarea = $('textarea[name=\'' + name + '\']');
+                                                        //textarea.minHeight(400);
+                                                        textarea.summernote({height: 900});
+                                                        textarea.css('min-height', '900px');
+                                                        textarea.css('height', '900px');
+                                                    });
+                                                </script>
                                                 </div>
-
                                             </th:block>
-
-
-
                                         </th:block>
 
                                         <!-- FragmentAttribute -->
                                         <th:block th:case="'FragmentAttribute'">
                                             <th:block th:if="${attribute.embeddable}">
-                                                <h3>
+                                                <h3 class="" th:classappend="${payload.toBeRemoved} ? 'remove' : _">
                                                     <span th:text="${payload.ordinal + 1}">#</span>.
                                                     <span th:with="fragment=${payload.value}"
                                                           th:text="#{seed.structure.__${fragment?.structure?.name}__}">Structure Name</span>
@@ -130,33 +138,38 @@
                                                             <i class="fa fa-edit"></i>
                                                             Bearbeiten
                                                         </button>
-                                                        <button class="btn btn-default ">
+                                                        <button class="btn btn-default"
+                                                                th:disabled="${payloadItr.index == 0} ?: _"
+                                                                th:formaction="@{move-payload-up(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
                                                             <i class="fa fa-arrow-up"></i>
                                                         </button>
-                                                        <button class="btn btn-default ">
+                                                        <button class="btn btn-default"
+                                                                th:disabled="${payloadItr.index == field.payloads.size() - 1} ?: _"
+                                                                th:formaction="@{move-payload-down(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
                                                             <i class="fa fa-arrow-down"></i>
                                                         </button>
-                                                        <button class="btn btn-default ">
+                                                        <button class="btn btn-default"
+                                                                th:formaction="@{remove-payload(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
                                                             <i class="fa fa-trash"></i>
                                                         </button>
                                                     </div>
                                                 </h3>
 
                                                 <span>Zusammenfassung</span>
-                                            </th:block>
-                                            <th:block th:unless="${attribute.embeddable}">
-                                                ;(
+
                                             </th:block>
                                         </th:block>
                                     </th:block>
                                 </li>
                             </th:block>
-
                         </th:block>
                     </ul>
-
-
-
                 </div>
 
 
@@ -170,18 +183,23 @@
                     <i class="fa fa-floppy-o"></i>
                     Save
                 </button>
+                <button class="btn btn-success" th:if="${!fragment.referred}"
+                        th:formaction="@{activate}">
+                    <i class="fa fa-bullhorn"></i>
+                    Activate
+                </button>
                 <!--<a class="btn btn-success"-->
                    <!--th:href="@{validate}">-->
                     <!--<i class="fa fa-check"></i>-->
                     <!--Check-->
                 <!--</a>-->
-                <button class="btn btn-danger" th:if="${!fragment.dependent}"
+                <button class="btn btn-danger" th:if="${!fragment.referred}"
                         disabled="disabled"
                         th:formaction="@{delete}" >
                     <i class="fa fa-trash"></i>
                     Delete
                 </button>
-                <a class="btn btn-default" th:if="${fragment.dependent}"
+                <a class="btn btn-default" th:if="${fragment.referred}"
                    th:href="@{close}">
                     <i class="fa fa-times"></i>
                     Close
@@ -196,7 +214,7 @@
                 <span>&nbsp;</span>
             </h2>
 
-            <table class="table table-condensed">
+            <table class="table ">
                 <tbody>
                 <tr>
                     <th>ID</th>
@@ -211,20 +229,31 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>Fragment</th>
+                    <th>Structure</th>
                     <td>
-                        <span th:text="${editor?.fragment}">Locale</span>
+                        <span th:text="${editor?.item?.currentFragment?.structure?.name}">Structure</span>
                     </td>
                 </tr>
                 <tr>
                     <th>Dependent</th>
                     <td>
-                        <span th:text="${editor?.fragment?.dependent}">Locale</span>
+                        <span th:text="${editor?.fragment?.referred}">True/False</span>
                     </td>
                 </tr>
+                <tr>
+                    <th>Active Fragment</th>
+                    <td>
+                        <span th:text="${editor?.item?.activeFragment?.id}">?</span>
+                    </td>
+                </tr>
+
                 </tbody>
             </table>
 
+            <div class="form-group">
+                <label>Path</label>
+                <input class="form-control" type="text" th:field="*{editor.fragment.path}">
+            </div>
         </div>
     </div>
 </div>

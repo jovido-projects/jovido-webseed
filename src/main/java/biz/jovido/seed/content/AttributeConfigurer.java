@@ -33,6 +33,11 @@ public abstract class AttributeConfigurer<A extends Attribute, C extends Attribu
     }
 
     @Override
+    public AssetAttributeConfigurer addAssetAttribute(String fieldName) {
+        return builder.addAssetAttribute(fieldName);
+    }
+
+    @Override
     public Structure getStructure() {
         return builder.getStructure();
     }

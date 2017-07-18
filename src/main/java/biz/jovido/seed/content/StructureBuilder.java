@@ -26,6 +26,15 @@ public class StructureBuilder extends StructureConfigurer {
     }
 
     @Override
+    public AssetAttributeConfigurer addAssetAttribute(String fieldName) {
+        AssetAttribute attribute = (AssetAttribute) structure.getAttribute(fieldName);
+        if (attribute == null) {
+            attribute = new AssetAttribute(structure, fieldName);
+        }
+        return new AssetAttributeConfigurer(this, attribute);
+    }
+
+    @Override
     public Structure getStructure() {
         return structure;
     }

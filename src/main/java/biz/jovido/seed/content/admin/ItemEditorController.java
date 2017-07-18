@@ -1,5 +1,6 @@
 package biz.jovido.seed.content.admin;
 
+import biz.jovido.seed.ErrorUtils;
 import biz.jovido.seed.content.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -7,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,42 +23,55 @@ import java.util.Locale;
 @SessionAttributes(types = {ItemAdministration.class})
 public class ItemEditorController {
 
-    private static class Foobar implements Validator {
-
-        @Override
-        public boolean supports(Class<?> clazz) {
-            return ItemEditor.class.isAssignableFrom(clazz);
-        }
-
-        @Override
-        public void validate(Object target, Errors errors) {
-            errors.rejectValue("fragment", "fuck.up", "Fuckup!");
-        }
-    }
-
     @Autowired
     private ItemService itemService;
 
-    @ModelAttribute
-    protected ItemEditor editor(@ModelAttribute ItemAdministration administration) {
-        return administration.getEditor();
+    @Autowired
+    private ItemAdministrationValidator administrationValidator;
+
+    @InitBinder("itemAdministration")
+    protected void init(WebDataBinder dataBinder) {
+        dataBinder.setDisallowedFields(
+                "*value.payloads*",
+                "*fragment.referringPayload",
+                "*currentFragment*",
+                "*activeFragment*");
+        dataBinder.addValidators(administrationValidator);
     }
 
-    @InitBinder
-    protected void init(WebDataBinder dataBinder) {
-//        dataBinder.setAllowedFields("fragment");
-        dataBinder.addValidators(new Foobar());
+    private String redirect(Item item) {
+        if (item != null) {
+            Long id = item.getId();
+            if (item.getId() != null) {
+                return String.format("redirect:?id=%d", item.getId());
+            } else {
+                Fragment fragment = item.getCurrentFragment();
+                if (fragment != null) {
+                    Structure structure = fragment.getStructure();
+                    if (structure != null) {
+                        return String.format("redirect:?new=%s", structure.getName());
+                    }
+                }
+            }
+        }
+
+        return "redirect:/admin/items/";
+    }
+
+    private String redirect(ItemEditor editor) {
+        return redirect(editor.getItem());
     }
 
     @RequestMapping
     protected String index(@ModelAttribute ItemAdministration administration,
-                           @Valid @ModelAttribute ItemEditor editor,
-                           BindingResult bindingResult2,
+                           BindingResult bindingResult,
                            Model model) {
+
+        ErrorUtils.addToModel(model, administration.getErrors());
 
         model.addAttribute("administration", administration);
 
-        editor = administration.getEditor();
+        ItemEditor editor = administration.getEditor();
         model.addAttribute("editor", editor);
         model.addAttribute("item", editor.getItem());
 
@@ -70,121 +82,197 @@ public class ItemEditorController {
     }
 
     @RequestMapping(path = "create")
-    protected String create(@ModelAttribute ItemEditor editor,
+    protected String create(@ModelAttribute ItemAdministration administration,
                             BindingResult bindingResult,
                             @RequestParam(name = "structure") String structureName) {
 
-//        editor = administration.getEditor();
-//        if (editor == null) {
-//            editor = new ItemEditor();
-//            administration.setEditor(editor);
-//        }
-
         Locale locale = LocaleContextHolder.getLocale();
         Item item = itemService.createItem(structureName, locale);
-        editor.setItem(item);
 
-        return "redirect:";
+        ItemEditor editor = administration.getEditor();
+        editor.setItem(item);
+        editor.setFragment(item.getCurrentFragment());
+        editor.setErrors(null);
+
+//        return "redirect:";
+        return redirect(item);
     }
 
     @Transactional
     @RequestMapping(path = "save")
-    protected String save(@ModelAttribute ItemEditor editor,
+    protected String save(@Valid @ModelAttribute ItemAdministration administration,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes) {
 
-        bindingResult.reject("test", "Haa haa");
-        bindingResult.rejectValue("fragment", "Arghhh");
-        redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.itemEditor", bindingResult);
+        administration.setErrors(bindingResult);
 
+        ItemEditor editor = administration.getEditor();
         Fragment fragment = editor.getFragment();
-        if (!fragment.isDependent()) {
-            Fragment saved = itemService.saveFragment(editor.getFragment());
-            editor.setFragment(saved);
+        if (fragment.isReferred()) {
+            return "forward:close";
         } else {
-//            return "forward:close";
+            Item item = editor.getItem();
+            item = itemService.saveItem(item);
+            editor.setItem(item);
         }
 
-        return "redirect:";
+//        return "redirect:";
+        return redirect(editor);
     }
 
-    @RequestMapping(path = "edit")
+    @RequestMapping(path = "edit", params = {"field", "index"})
     protected String editDependent(@ModelAttribute ItemAdministration administration,
-                                   @ModelAttribute ItemEditor editor,
                                    BindingResult bindingResult,
                                    @RequestParam(name = "field") String fieldName,
                                    @RequestParam(name = "index") int valueIndex) {
 
+        ItemEditor editor = administration.getEditor();
         Fragment fragment = editor.getFragment();
         Field field = fragment.getField(fieldName);
         FragmentPayload payload = (FragmentPayload) field.getPayloads().get(valueIndex);
         Fragment dependentFragment = payload.getValue();
         editor.setFragment(dependentFragment);
 
-        return "redirect:";
+//        return "redirect:";
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "edit")
+    protected String edit(@ModelAttribute ItemAdministration administration,
+                          BindingResult bindingResult,
+                          @RequestParam(name = "item") Long itemId) {
+
+        Item item = itemService.findItemById(itemId);
+        ItemEditor editor = administration.getEditor();
+        editor.setItem(item);
+
+//        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "load")
-    protected String load(@ModelAttribute ItemEditor editor,
+    protected String load(@ModelAttribute ItemAdministration administration,
                           BindingResult bindingResult,
-                          @RequestParam(name = "fragment") Long fragmentId) {
+                          @RequestParam(name = "item") Long itemId,
+                          RedirectAttributes redirectAttributes) {
 
-        Fragment fragment = itemService.loadFragmentById(fragmentId);
-        editor.setFragment(fragment);
-
-        return "redirect:";
+        redirectAttributes.addAttribute("item", itemId);
+        return "forward:edit";
     }
 
+
     @RequestMapping(path = "delete")
-    protected String delete(@ModelAttribute ItemEditor editor,
+    protected String delete(@ModelAttribute ItemAdministration administration,
                             BindingResult bindingResult) {
 
-        return "redirect:";
+        ItemEditor editor = administration.getEditor();
+
+//        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "discard")
-    protected String discard(@ModelAttribute ItemEditor editor,
+    protected String discard(@ModelAttribute ItemAdministration administration,
                              BindingResult bindingResult) {
 
-        return "redirect:";
+        ItemEditor editor = administration.getEditor();
+
+//        return "redirect:";
+        return redirect(editor);
     }
 
+    @RequestMapping(path = "activate")
+    protected String activate(@ModelAttribute ItemAdministration administration,
+                              BindingResult bindingResult) {
+
+        ItemEditor editor = administration.getEditor();
+        itemService.activateItem(editor.getItem());
+
+//        return "redirect:";
+        return redirect(editor);
+    }
+
+
     @RequestMapping(path = "close")
-    protected String close(@ModelAttribute ItemEditor editor,
+    protected String close(@ModelAttribute ItemAdministration administration,
                            BindingResult bindingResult,
                            Model model) {
 
-//        ItemEditor.Origin origin = editor.getChain().removeLast();
-//        editor.setFragment(origin.getFragment());
-//        ItemEditor.Parent parent = editor.getParent();
-//        if (parent != null) {
-//            model.addAttribute(parent.getEditor());
-//        }
-
+        ItemEditor editor = administration.getEditor();
         Fragment fragment = editor.getFragment();
-        if (fragment.isDependent()) {
-            FragmentPayload dependingPayload = fragment.getDependingPayload();
+        if (fragment.isReferred()) {
+            FragmentPayload dependingPayload = fragment.getReferringPayload();
             fragment = dependingPayload.getField().getFragment();
             editor.setFragment(fragment);
         }
 
-        return "redirect:";
+//        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "append-payload")
-    protected String appendPayload(@ModelAttribute ItemEditor editor,
+    protected String appendPayload(@ModelAttribute ItemAdministration administration,
                                    BindingResult bindingResult,
                                    @RequestParam(name = "field") String fieldName,
                                    @RequestParam(name = "structure") String structureName) {
 
+        ItemEditor editor = administration.getEditor();
         Fragment fragment = editor.getFragment();
-        Field<Fragment> field = fragment.getField(fieldName);
+        Field field = fragment.getField(fieldName);
         FragmentPayload payload = new FragmentPayload();
         payload.setValue(itemService.createFragment(structureName));
 //        payload.getValue().setEmbedded(true);
         field.appendPayload(payload);
 
-        return "redirect:";
+//        return "redirect:";
+        return redirect(editor);
     }
 
+    @RequestMapping(path = "move-payload-up")
+    protected String movePayloadUp(@ModelAttribute ItemAdministration administration,
+                                   @RequestParam(name = "field") String fieldName,
+                                   @RequestParam(name = "index") int payloadIndex,
+                                   BindingResult bindingResult) {
+
+        ItemEditor editor = administration.getEditor();
+        Fragment fragment = editor.getFragment();
+        Field field = fragment.getField(fieldName);
+        field.rearrangePayload(payloadIndex, payloadIndex - 1);
+
+//        return "redirect:";
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "move-payload-down")
+    protected String movePayloadDown(@ModelAttribute ItemAdministration administration,
+                                     @RequestParam(name = "field") String fieldName,
+                                     @RequestParam(name = "index") int payloadIndex,
+                                     BindingResult bindingResult) {
+
+        ItemEditor editor = administration.getEditor();
+        Fragment fragment = editor.getFragment();
+        Field field = fragment.getField(fieldName);
+        field.rearrangePayload(payloadIndex, payloadIndex + 1);
+
+//        return "redirect:";
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "remove-payload")
+    protected String removePayload(@ModelAttribute ItemAdministration administration,
+                                   @RequestParam(name = "field") String fieldName,
+                                   @RequestParam(name = "index") int payloadIndex,
+                                   BindingResult bindingResult) {
+
+        ItemEditor editor = administration.getEditor();
+        Fragment fragment = editor.getFragment();
+        Field field = fragment.getField(fieldName);
+        field.removePayload(payloadIndex);
+//        Payload<?> payload = field.getPayloads().get(payloadIndex);
+//        boolean toBeRemoved = payload.isToBeRemoved();
+//        payload.setToBeRemoved(!toBeRemoved);
+
+//        return "redirect:";
+        return redirect(editor);
+    }
 }
