@@ -11,7 +11,7 @@ public class TextPayload extends Payload {
     private String text;
 
     @Override
-    public String getValue() {
+    public Object getValue() {
         return text;
     }
 

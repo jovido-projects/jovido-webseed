@@ -1,48 +1,51 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.LocaleConverter;
+
 import javax.persistence.*;
+import java.util.Locale;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"locale", "element_id"}))
 public abstract class Payload {
 
     @Id
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
+    @Convert(converter = LocaleConverter.class)
+    private Locale locale;
+
     @ManyToOne(optional = false)
-    private Field field;
+    private Element element;
 
-    @Transient
-    private boolean toBeRemoved;
-
-    private int ordinal;
-
-    public Field getField() {
-        return field;
+    public Long getId() {
+        return id;
     }
 
-    /* public */ void setField(Field field) {
-        this.field = field;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public boolean isToBeRemoved() {
-        return toBeRemoved;
+    public Locale getLocale() {
+        return locale;
     }
 
-    public void setToBeRemoved(boolean toBeRemoved) {
-        this.toBeRemoved = toBeRemoved;
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    public int getOrdinal() {
-        return ordinal;
+    public Element getElement() {
+        return element;
     }
 
-    public void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
+    /* public */ void setElement(Element element) {
+        this.element = element;
     }
 
     public abstract Object getValue();

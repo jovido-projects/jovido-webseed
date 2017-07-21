@@ -47,17 +47,17 @@ listing=${administration.listing}">
             <table class="table table-responsive">
                 <thead>
                 <tr>
+                    <!--<th>-->
+                        <!--<span>ID</span>-->
+                    <!--</th>-->
                     <th>
-                        <span>ID</span>
-                    </th>
-                    <th>
-                        <span>Structure</span>
+                        <span>Title</span>
                     </th>
                     <th>
                         <span>Locale</span>
                     </th>
                     <th>
-                        <span>Title</span>
+                        <span>Structure</span>
                     </th>
                     <th>
                         <span>Created</span>
@@ -72,17 +72,17 @@ listing=${administration.listing}">
                 </thead>
                 <tbody>
                 <tr th:each="item : ${@itemService.findItems('')}">
+                    <!--<td>-->
+                        <!--<span th:text="${item.id}">ID</span>-->
+                    <!--</td>-->
                     <td>
-                        <span th:text="${item.id}">ID</span>
+                        <span th:text="${item.currentFragment?.title}">Title</span>
+                    </td>
+                    <td>
+                        <span th:text="${item.locale?.displayName}">Locale</span>
                     </td>
                     <td>
                         <span th_text="${item.structure}">basicPage</span>
-                    </td>
-                    <td>
-                        <span th_text="${item.locale}">Locale</span>
-                    </td>
-                    <td>
-                        <span th:text="${item.currentFragment?.title}">Title</span>
                     </td>
                     <td>
                         <span th:text="${item.created}">Created</span>

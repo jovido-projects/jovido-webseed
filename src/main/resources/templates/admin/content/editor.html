@@ -58,122 +58,19 @@
             <th:block th:each="attribute : ${structure?.attributes}"
                       th:with="field=${fragment?.getField(attribute.fieldName)}">
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span th:text="${field.name}">Field Name</span>
-                        <span class="badge"
-                              th:if="${attribute.capacity > 1}"
-                              th:text="${field.payloads.size()}">#</span>
-
-
-                        <div class="btn-group btn-group-xs pull-right" th:if="${attribute.class.simpleName} eq 'FragmentAttribute'">
-                            <button class="btn btn-default" disabled>
-                                <i class="fa fa-search"></i>
-                                <span>Suchen</span>
-                            </button>
-                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
-                                <i class="fa fa-plus"></i>
-                                <span>Neu</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li th:each="structureName : ${attribute.structureNames}">
-                                    <a th:href="@{append-payload(
-                                               field=${field.name},
-                                               structure=${structureName})}">
-                                        <span th:text="#{seed.structure.__${structureName}__}">Structure Name</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-
-                    </div>
-
-                    <!-- Payloads -->
-                    <ul class="list-group">
-                        <th:block th:each="payload,payloadItr : ${field.payloads}">
-
-                            <th:block th:with="bindingPath=editor.fragment.fields[__${field.name}__].payloads[__${payloadItr.index}__].value">
-                                <!-- Payload field -->
-                                <li class="list-group-item">
-
-                                    <th:block th:switch="${attribute.class.simpleName}">
-
-                                        <!-- TextAttribute -->
-                                        <th:block th:case="'TextAttribute'">
-
-                                            <th:block th:unless="${attribute.multiline}">
-                                                <div class="form-group">
-                                                    <input type="text" th:field="*{__${bindingPath}__}" class="form-control">
-                                                </div>
-                                            </th:block>
-
-                                            <th:block th:if="${attribute.multiline}">
-                                                <div class="form-group">
-                                                <textarea type="text" class="form-control summernote" th:rows="${attribute.rows}"
-                                                          th:field="*{__${bindingPath}__}"></textarea>
-                                                                <script type="text/javascript">
-                                                    $(document).ready(function() {
-                                                        var name = '[[__${bindingPath}__]]]';
-                                                        var textarea = $('textarea[name=\'' + name + '\']');
-                                                        //textarea.minHeight(400);
-                                                        textarea.summernote({height: 900});
-                                                        textarea.css('min-height', '900px');
-                                                        textarea.css('height', '900px');
-                                                    });
-                                                </script>
-                                                </div>
-                                            </th:block>
-                                        </th:block>
-
-                                        <!-- FragmentAttribute -->
-                                        <th:block th:case="'FragmentAttribute'">
-                                            <th:block th:if="${attribute.embeddable}">
-                                                <h3 class="" th:classappend="${payload.toBeRemoved} ? 'remove' : _">
-                                                    <span th:text="${payload.ordinal + 1}">#</span>.
-                                                    <span th:with="fragment=${payload.value}"
-                                                          th:text="#{seed.structure.__${structure?.name}__}">Structure Name</span>
-                                                    <div class="btn-group btn-group-xs pull-right">
-                                                        <button class="btn btn-default" formmethod="post"
-                                                                th:formaction="@{edit(field=${field.name},index=${payloadItr.index})}">
-                                                            <i class="fa fa-edit"></i>
-                                                            Bearbeiten
-                                                        </button>
-                                                        <button class="btn btn-default"
-                                                                th:disabled="${payloadItr.index == 0} ?: _"
-                                                                th:formaction="@{move-payload-up(
-                                                                field=${field.name},
-                                                                index=${payloadItr.index})}">
-                                                            <i class="fa fa-arrow-up"></i>
-                                                        </button>
-                                                        <button class="btn btn-default"
-                                                                th:disabled="${payloadItr.index == field.payloads.size() - 1} ?: _"
-                                                                th:formaction="@{move-payload-down(
-                                                                field=${field.name},
-                                                                index=${payloadItr.index})}">
-                                                            <i class="fa fa-arrow-down"></i>
-                                                        </button>
-                                                        <button class="btn btn-default"
-                                                                th:formaction="@{remove-payload(
-                                                                field=${field.name},
-                                                                index=${payloadItr.index})}">
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </h3>
-
-                                                <span>Zusammenfassung</span>
-
-                                            </th:block>
-                                        </th:block>
-                                    </th:block>
-                                </li>
-                            </th:block>
+                <th:block th:switch="${attribute.class.simpleName}">
+                    <th:block th:case="'TextAttribute'">
+                        <th:block th:unless="${attribute.multiline}">
+                            <th:block th:replace="admin/content/editor/text-field" />
                         </th:block>
-                    </ul>
-                </div>
-
-
+                        <th:block th:if="${attribute.multiline}">
+                            <th:block th:replace="admin/content/editor/multiline-text-field" />
+                        </th:block>
+                    </th:block>
+                    <th:block th:case="'FragmentAttribute'">
+                        <th:block th:replace="admin/content/editor/fragment-field" />
+                    </th:block>
+                </th:block>
             </th:block>
 
 
@@ -204,6 +101,11 @@
                    th:href="@{close}">
                     <i class="fa fa-times"></i>
                     Close
+                </a>
+                <a class="btn btn-info" th:if="${!fragment.referred}"
+                   th:href="@{/item(id=${editor.item.id})}">
+                    <i class="fa fa-eye"></i>
+                    Preview
                 </a>
             </div>
         </div>
@@ -251,6 +153,10 @@
                 </tbody>
             </table>
 
+            <div class="form-group">
+                <label>Title</label>
+                <input class="form-control" type="text" th:field="*{editor.fragment.title}">
+            </div>
             <div class="form-group">
                 <label>Path</label>
                 <input class="form-control" type="text" th:field="*{editor.fragment.path}">

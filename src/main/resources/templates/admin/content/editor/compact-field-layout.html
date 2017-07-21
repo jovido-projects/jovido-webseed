@@ -1,0 +1,62 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div th:fragment="default(field,attribute,control)" class="panel panel-default">
+    <div class="panel-heading">
+        <span th:text="${field.name}">Field Name</span>
+        <span class="badge"
+              th:if="${attribute.capacity > 1}"
+              th:text="${field.payloads.size()}">#</span>
+
+
+        <div class="btn-group btn-group-xs pull-right">
+            <button class="btn btn-default" disabled>
+                <i class="fa fa-search"></i>
+                <span>Suchen</span>
+            </button>
+            <button class="btn btn-default"
+                    th:disabled="${field.payloads.size() >= attribute.capacity} ? 'disabled' : _"
+                    th:formaction="@{append-payload(field=${field.name})}">
+                <i class="fa fa-plus"></i>
+                <span>Anhängen</span>
+            </button>
+        </div>
+    </div>
+
+    <ul class="list-group">
+        <th:block th:each="payload,payloadItr : ${field.payloads}">
+            <th:block th:with="bindingPath=editor.fragment.fields[__${field.name}__].payloads[__${payloadItr.index}__].value">
+                <li class="list-group-item">
+                    <div class="form-group">
+                        <span class="help-block" th:text="#{seed.structure.__${structure.name}__.__${field.name}__}">Field description</span>
+                        <div class="input-group">
+                            <!--<input type="text" th:field="*{__${bindingPath}__}" class="form-control">-->
+                            <th:block th:replace="${control} ?: _" />
+                            <div class="input-group-btn">
+                                <button class="btn btn-default"
+                                        th:disabled="${payloadItr.index == 0} ?: _"
+                                        th:formaction="@{move-payload-up(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                                <button class="btn btn-default"
+                                        th:disabled="${payloadItr.index == field.payloads.size() - 1} ?: _"
+                                        th:formaction="@{move-payload-down(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
+                                    <i class="fa fa-arrow-down"></i>
+                                </button>
+                                <button class="btn btn-default"
+                                        th:formaction="@{remove-payload(
+                                                                field=${field.name},
+                                                                index=${payloadItr.index})}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </th:block>
+        </th:block>
+    </ul>
+</div>
+</html>

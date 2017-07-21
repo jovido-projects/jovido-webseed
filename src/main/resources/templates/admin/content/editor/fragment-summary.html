@@ -1,0 +1,20 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:fragment="default(fragment)">
+    <th:block th:with="structure=${@itemService.getStructure(fragment)}">
+        <th:block>
+            <fieldset th:each="attribute : ${structure.attributes}"
+                      th:with="field=${fragment.getField(attribute.fieldName)}">
+                <legend th:text="${field.name}"></legend>
+                <th:block th:if="${attribute.class.simpleName} eq 'FragmentAttribute'">
+                    <p th:each="payload : ${field.payloads}">
+                        <th:block th:replace="::default(${payload.value})" />
+                    </p>
+                </th:block>
+                <p th:each="payload : ${field.payloads}">
+                    [[${payload.value}]]
+                </p>
+            </fieldset>
+        </th:block>
+    </th:block>
+</th:block>
+</html>

@@ -1,0 +1,19 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:replace="admin/content/editor/large-field-layout::default(${field}, ${attribute}, ~{::foobar})">
+    <th:block th:fragment="foobar">
+            <textarea class="form-control summernote"
+                      th:rows="${attribute.rows}"
+                      th:field="*{__${bindingPath}__}"></textarea>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var name = '[[__${bindingPath}__]]]';
+                var textarea = $('textarea[name=\'' + name + '\']');
+                //textarea.minHeight(400);
+                textarea.summernote({height: 900});
+                textarea.css('min-height', '900px');
+                textarea.css('height', '900px');
+            });
+        </script>
+    </th:block>
+</th:block>
+</html>
