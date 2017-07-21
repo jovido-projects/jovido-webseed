@@ -1,9 +1,6 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.Item;
-import biz.jovido.seed.content.ItemService;
-import biz.jovido.seed.content.Structure;
-import biz.jovido.seed.content.StructureService;
+import biz.jovido.seed.content.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +18,6 @@ import java.util.Locale;
 @DataJpaTest
 public class ItemTests {
 
-    @Autowired
-    private StructureService structureService;
 
     @Autowired
     private ItemService itemService;
@@ -30,17 +25,24 @@ public class ItemTests {
     @Test
     public void test1() {
 
-        structureService.configure("basicPage")
-                .addTextField("title").setCapacity(1)
-                .addTextField("subtitle").setCapacity(3)
-                .addTextField("summary").setMultiline(true);
+        Item item = new Item();
+        Property titleProperty = new Property();
+        titleProperty.setName("title");
+        item.putProperty(titleProperty);
 
-        Structure basicPageStructure = structureService.getStructure("basicPage");
+        item = itemService.saveItem(item);
 
-        Item basicPage1 = itemService.createItem(basicPageStructure);
-        itemService.setValue(basicPage1, "title", 0, Locale.GERMAN, "Willkommen");
-        itemService.setValue(basicPage1, "title", 0, Locale.ENGLISH, "Welcome");
+        Translation de = new Translation();
+        de.setItem(item);
 
-        itemService.saveItem(basicPage1);
+        TextPayload titlePayload = new TextPayload();
+        titlePayload.setText("juhuuuu");
+
+        de.putPayload("title", 0, titlePayload);
+
+        de = itemService.saveTranslation(de);
+
+        Object x = de.getPayload("title", 0);
+
     }
 }

@@ -15,29 +15,24 @@ public class History {
     private Long id;
 
     @OneToOne
-    private Item current;
+    private Item active;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Item draft;
 
     @OneToMany(mappedBy = "history")
-    @OrderBy("created DESC")
     private final List<Item> items = new ArrayList<>();
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Item getActive() {
+        return active;
     }
 
-    public Item getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(Item current) {
-        this.current = current;
+    public void setActive(Item active) {
+        this.active = active;
     }
 
     public Item getDraft() {

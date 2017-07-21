@@ -15,8 +15,7 @@ public class TextPayload extends Payload {
         return text;
     }
 
-    @Override
-    public void setValue(Object value) {
-        text = (String) value;
+    public void setText(String text) {
+        this.text = text;
     }
 }

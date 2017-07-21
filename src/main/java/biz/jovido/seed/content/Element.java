@@ -1,18 +1,13 @@
 package biz.jovido.seed.content;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
-import java.util.LinkedHashMap;
-import java.util.Locale;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "ordinal"}))
 public class Element {
 
     @Id
@@ -20,15 +15,14 @@ public class Element {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Property property;
+    Property property;
 
-    @Column(name = "ordinal")
-    private int index;
+    private int ordinal;
 
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @OneToMany(mappedBy = "element", cascade = CascadeType.ALL)
-    @MapKey(name = "locale")
-    private final Map<Locale, Payload> payloads = new LinkedHashMap<>();
+//    @OneToMany(mappedBy = "element")
+//    @MapKey(name = "translation")
+//    private Map<Translation, Payload> payloads = new HashMap<>();
+
 
     public Long getId() {
         return id;
@@ -42,56 +36,29 @@ public class Element {
         return property;
     }
 
-    /* public */ void setProperty(Property property) {
-        this.property = property;
+    public int getOrdinal() {
+        return ordinal;
     }
 
-    public int getIndex() {
-        return index;
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
     }
 
-    /* public */ void setIndex(int ordinal) {
-        this.index = ordinal;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Element)) return false;
+
+        Element element = (Element) o;
+
+        if (ordinal != element.ordinal) return false;
+        return property != null ? property.equals(element.property) : element.property == null;
     }
 
-    public Map<Locale, Payload> getPayloads() {
-        return payloads;
-    }
-
-    public Payload getPayload(Locale locale) {
-        Payload payload = payloads.get(locale);
-        if (payload != null) {
-            return payload;
-        }
-
-        return null;
-    }
-
-    public Payload setPayload(Locale locale, Payload payload) {
-        Payload replaced = payloads.put(locale, payload);
-
-        if (replaced != null) {
-            replaced.setElement(null);
-        }
-
-        if (payload != null) {
-            payload.setElement(this);
-        }
-
-        return replaced;
-    }
-
-    public Object getValue(Locale locale) {
-        Payload payload = getPayload(locale);
-        if (payload != null) {
-            return payload.getValue();
-        }
-
-        return null;
-    }
-
-    public void setValue(Locale locale, Object value) {
-        Payload payload = getPayload(locale);
-        payload.setValue(value);
+    @Override
+    public int hashCode() {
+        int result = property != null ? property.hashCode() : 0;
+        result = 31 * result + ordinal;
+        return result;
     }
 }
