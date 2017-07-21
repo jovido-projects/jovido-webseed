@@ -1,13 +1,10 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * item.properties[title].elements[0].payloads[de-DE].value
- *
  * @author Stephan Grundner
  */
 @Entity
@@ -17,11 +14,14 @@ public class Item {
     @GeneratedValue
     private Long id;
 
-    private String structureName;
+    @OneToOne
+    private Chunk current;
+
+    @OneToOne
+    private Chunk draft;
 
     @OneToMany(mappedBy = "item")
-    @MapKey(name = "name")
-    private final Map<String, Property> properties = new HashMap<>();
+    private final List<Chunk> history = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -31,15 +31,23 @@ public class Item {
         this.id = id;
     }
 
-    public String getStructureName() {
-        return structureName;
+    public Chunk getCurrent() {
+        return current;
     }
 
-    public void setStructureName(String structureName) {
-        this.structureName = structureName;
+    public void setCurrent(Chunk current) {
+        this.current = current;
     }
 
-    public Map<String, Property> getProperties() {
-        return Collections.unmodifiableMap(properties);
+    public Chunk getDraft() {
+        return draft;
+    }
+
+    public void setDraft(Chunk draft) {
+        this.draft = draft;
+    }
+
+    public List<Chunk> getHistory() {
+        return history;
     }
 }

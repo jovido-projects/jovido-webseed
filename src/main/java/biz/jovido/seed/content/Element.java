@@ -1,7 +1,10 @@
 package biz.jovido.seed.content;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -9,22 +12,22 @@ import java.util.Map;
  * @author Stephan Grundner
  */
 @Entity
-//@Embeddable
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "ordinal"}))
 public class Element {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @ManyToOne(optional = false, targetEntity = Property.class)
     private Property property;
 
     private int ordinal;
 
-//    @OneToMany(mappedBy = "element")
-//    @MapKey(name = "locale")
-    @Transient
-    private final Map<Locale, Payload> payloads = new HashMap<>();
+    @OneToMany(mappedBy = "element")
+    @MapKey(name = "locale")
+    private final Map<Locale, Payload> payloads = new LinkedHashMap<>();
 
     public Long getId() {
         return id;
@@ -52,11 +55,5 @@ public class Element {
 
     public Map<Locale, Payload> getPayloads() {
         return payloads;
-    }
-
-    public boolean addPayload(Payload payload) {
-        payloads.put(payload.getLocale(), payload);
-        payload.setElement(this);
-        return true;
     }
 }

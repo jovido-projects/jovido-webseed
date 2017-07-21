@@ -16,7 +16,7 @@ public class Property {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Item item;
+    private Chunk chunk;
 
     private String name;
 
@@ -31,11 +31,19 @@ public class Property {
         this.id = id;
     }
 
+    public Chunk getChunk() {
+        return chunk;
+    }
+
+    /* public */ void setChunk(Chunk chunk) {
+        this.chunk = chunk;
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /* public */ void setName(String name) {
         this.name = name;
     }
 
@@ -45,11 +53,27 @@ public class Property {
 
     public boolean addElement(Element element) {
         if (elements.add(element)) {
-//            element.setProperty(this);
+            element.setProperty(this);
             return true;
         }
 
         return false;
     }
 
+    public Element getElement(int index) {
+        return elements.get(index);
+    }
+
+    public void setElement(int index, Element element) {
+        Element replaced = elements.set(index, element);
+
+        if (replaced != null) {
+            replaced.setOrdinal(-1);
+            replaced.setProperty(null);
+        }
+
+        if (element != null) {
+            element.setOrdinal(index);
+        }
+    }
 }
