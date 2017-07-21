@@ -1,14 +1,18 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.ListUtils;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "name"}))
 public class Property {
 
     @Id
@@ -16,11 +20,12 @@ public class Property {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Chunk chunk;
+    private Item item;
 
     private String name;
 
-    @OneToMany(mappedBy = "property")
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+    @OrderBy("index")
     private final List<Element> elements = new ArrayList<>();
 
     public Long getId() {
@@ -31,12 +36,12 @@ public class Property {
         this.id = id;
     }
 
-    public Chunk getChunk() {
-        return chunk;
+    public Item getItem() {
+        return item;
     }
 
-    /* public */ void setChunk(Chunk chunk) {
-        this.chunk = chunk;
+    /* public */ void setItem(Item item) {
+        this.item = item;
     }
 
     public String getName() {
@@ -51,29 +56,44 @@ public class Property {
         return Collections.unmodifiableList(elements);
     }
 
-    public boolean addElement(Element element) {
-        if (elements.add(element)) {
+    public Element getOrCreateElementAt(int index) {
+        Element element = ListUtils.getOrNull(elements, index);
+        if (element == null) {
+            element = new Element();
             element.setProperty(this);
-            return true;
+            element.setIndex(index);
+            elements.add(index, element);
         }
 
-        return false;
+//        while(--index > 0) {
+//            getOrCreateElementAt(index);
+//        }
+
+        return element;
     }
 
-    public Element getElement(int index) {
-        return elements.get(index);
+    public Element appendElement() {
+        int index = elements.size();
+        return getOrCreateElementAt(index);
     }
 
-    public void setElement(int index, Element element) {
-        Element replaced = elements.set(index, element);
+    public Payload getPayload(int index, Locale locale) {
+        Element element = getOrCreateElementAt(index);
+        return element.getPayload(locale);
+    }
 
-        if (replaced != null) {
-            replaced.setOrdinal(-1);
-            replaced.setProperty(null);
-        }
+    public void setPayload(int index, Payload payload) {
+        Element element = getOrCreateElementAt(index);
+        element.setPayload(payload.getLocale(), payload);
+    }
 
-        if (element != null) {
-            element.setOrdinal(index);
-        }
+    public Object getValue(int index, Locale locale) {
+        Element element = getOrCreateElementAt(index);
+        return element.getValue(locale);
+    }
+
+    public void setValue(int index, Locale locale, Object value) {
+        Element element = getOrCreateElementAt(index);
+        element.setValue(locale, value);
     }
 }

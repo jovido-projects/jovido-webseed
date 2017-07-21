@@ -1,10 +1,13 @@
 package biz.jovido.seed.content;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
+ * item.properties[title].elements[0].value
+ *
  * @author Stephan Grundner
  */
 @Entity
@@ -14,14 +17,22 @@ public class Item {
     @GeneratedValue
     private Long id;
 
-    @OneToOne
-    private Chunk current;
+    private String structureName;
+
+    @ManyToOne
+    private History history;
 
     @OneToOne
-    private Chunk draft;
+    private ItemPayload referrer;
 
-    @OneToMany(mappedBy = "item")
-    private final List<Chunk> history = new ArrayList<>();
+    @CreatedDate
+    private Date created;
+
+    private String label;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "name")
+    private final Map<String, Property> properties = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -31,23 +42,65 @@ public class Item {
         this.id = id;
     }
 
-    public Chunk getCurrent() {
-        return current;
+    public String getStructureName() {
+        return structureName;
     }
 
-    public void setCurrent(Chunk current) {
-        this.current = current;
+    public void setStructureName(String structureName) {
+        this.structureName = structureName;
     }
 
-    public Chunk getDraft() {
-        return draft;
-    }
-
-    public void setDraft(Chunk draft) {
-        this.draft = draft;
-    }
-
-    public List<Chunk> getHistory() {
+    public History getHistory() {
         return history;
+    }
+
+    public void setHistory(History history) {
+        this.history = history;
+    }
+
+    public ItemPayload getReferrer() {
+        return referrer;
+    }
+
+    public void setReferrer(ItemPayload referrer) {
+        this.referrer = referrer;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Map<String, Property> getProperties() {
+        return Collections.unmodifiableMap(properties);
+    }
+
+    public Property getProperty(String name) {
+        return properties.get(name);
+    }
+
+    public void setProperty(String name, Property property) {
+        Property replaced = properties.put(name, property);
+
+        if (replaced != null) {
+            replaced.setItem(null);
+            replaced.setName(null);
+        }
+
+        if (property != null) {
+            property.setItem(this);
+            property.setName(name);
+        }
     }
 }

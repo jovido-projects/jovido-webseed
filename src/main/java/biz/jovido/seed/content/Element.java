@@ -19,13 +19,14 @@ public class Element {
     @GeneratedValue
     private Long id;
 
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @ManyToOne(optional = false, targetEntity = Property.class)
+    @ManyToOne(optional = false)
     private Property property;
 
-    private int ordinal;
+    @Column(name = "ordinal")
+    private int index;
 
-    @OneToMany(mappedBy = "element")
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @OneToMany(mappedBy = "element", cascade = CascadeType.ALL)
     @MapKey(name = "locale")
     private final Map<Locale, Payload> payloads = new LinkedHashMap<>();
 
@@ -45,15 +46,52 @@ public class Element {
         this.property = property;
     }
 
-    public int getOrdinal() {
-        return ordinal;
+    public int getIndex() {
+        return index;
     }
 
-    /* public */ void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
+    /* public */ void setIndex(int ordinal) {
+        this.index = ordinal;
     }
 
     public Map<Locale, Payload> getPayloads() {
         return payloads;
+    }
+
+    public Payload getPayload(Locale locale) {
+        Payload payload = payloads.get(locale);
+        if (payload != null) {
+            return payload;
+        }
+
+        return null;
+    }
+
+    public Payload setPayload(Locale locale, Payload payload) {
+        Payload replaced = payloads.put(locale, payload);
+
+        if (replaced != null) {
+            replaced.setElement(null);
+        }
+
+        if (payload != null) {
+            payload.setElement(this);
+        }
+
+        return replaced;
+    }
+
+    public Object getValue(Locale locale) {
+        Payload payload = getPayload(locale);
+        if (payload != null) {
+            return payload.getValue();
+        }
+
+        return null;
+    }
+
+    public void setValue(Locale locale, Object value) {
+        Payload payload = getPayload(locale);
+        payload.setValue(value);
     }
 }
