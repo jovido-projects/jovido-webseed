@@ -1,21 +1,24 @@
 package biz.jovido.seed.content;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
+@DiscriminatorValue("text")
 public class TextPayload extends Payload {
 
     private String text;
 
     @Override
-    public Object getValue() {
+    public String getValue() {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    @Override
+    public void setValue(Object value) {
+        text = (String) value;
     }
 }

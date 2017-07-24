@@ -1,0 +1,8 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div class="form-group">
+    <span>
+        <label th:text="${attributeName}">#</label>
+    </span>
+    <input type="text" class="form-control" th:field="*{item.payloads[__${attributeName}__].value}">
+</div>
+</html>

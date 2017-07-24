@@ -1,29 +1,51 @@
 package biz.jovido.seed.content;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"bundle_id", "locale"}))
 public class Item {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    private Bundle bundle;
+
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private History history;
 
+    @Column(nullable = false)
+    private Locale locale;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    @MapKey(name = "name")
-    private final Map<String, Property> properties = new HashMap<>();
+    @MapKey(name = "attributeName")
+    private final Map<String, Payload> payloads = new HashMap<>();
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    /* public */ void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     public History getHistory() {
@@ -34,18 +56,46 @@ public class Item {
         this.history = history;
     }
 
-    public Map<String, Property> getProperties() {
-        return Collections.unmodifiableMap(properties);
+    public Locale getLocale() {
+        return locale;
     }
 
-    public Property getProperty(String name) {
-        return properties.get(name);
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    public Property putProperty(Property property) {
-        Property replaced = properties.put(property.getName(), property);
-        property.item = this;
+    public Map<String, Payload> getPayloads() {
+        return Collections.unmodifiableMap(payloads);
+    }
 
-        return replaced;
+    public Payload getPayload(String attributeName) {
+        return payloads.get(attributeName);
+    }
+
+    public void setPayload(String attributeName, Payload payload) {
+        if (payload != null) {
+            payload.setAttributeName(attributeName);
+            payload.setItem(this);
+        }
+
+        Payload replaced = payloads.put(attributeName, payload);
+        if (replaced != null) {
+            replaced.setAttributeName(null);
+            replaced.setItem(null);
+        }
+    }
+
+    public Object getValue(String attributeName) {
+        Payload payload = getPayloads().get(attributeName);
+        if (payload != null) {
+            return payload.getValue();
+        }
+
+        return null;
+    }
+
+    public void setValue(String attributeName, Object value) {
+        Payload payload = getPayloads().get(attributeName);
+        payload.setValue(value);
     }
 }

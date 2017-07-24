@@ -1,6 +1,9 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.*;
+import biz.jovido.seed.content.Item;
+import biz.jovido.seed.content.ItemService;
+import biz.jovido.seed.content.OneToManyRelation;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +28,23 @@ public class ItemTests {
     @Test
     public void test1() {
 
-        Item item = new Item();
-        Property titleProperty = new Property();
-        titleProperty.setName("title");
-        item.putProperty(titleProperty);
+        final String WILLKOMMEN = "Willkommen";
 
-        item = itemService.saveItem(item);
+//        Item de = itemService.createItem(Locale.GERMAN);
+//
+//        de.setValue("title", WILLKOMMEN);
+//
+//        OneToManyRelation children = new OneToManyRelation();
+//        children.setOwner(de);
+//        children.getMany().add(de);
+//        children.getMany().add(de);
+//        de.setValue("children", children);
+//
+//        de = itemService.saveItem(de);
+//
+//        String value = (String) de.getValue("title");
+//        Assert.assertEquals(value, WILLKOMMEN);
 
-        Translation de = new Translation();
-        de.setItem(item);
-
-        TextPayload titlePayload = new TextPayload();
-        titlePayload.setText("juhuuuu");
-
-        de.putPayload("title", 0, titlePayload);
-
-        de = itemService.saveTranslation(de);
-
-        Object x = de.getPayload("title", 0);
 
     }
 }

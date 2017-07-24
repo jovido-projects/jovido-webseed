@@ -1,8 +1,9 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  * @author Stephan Grundner
@@ -17,33 +18,6 @@ public class History {
     @OneToOne
     private Item active;
 
-    @OneToOne(optional = false)
+    @OneToOne
     private Item draft;
-
-    @OneToMany(mappedBy = "history")
-    private final List<Item> items = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public Item getActive() {
-        return active;
-    }
-
-    public void setActive(Item active) {
-        this.active = active;
-    }
-
-    public Item getDraft() {
-        return draft;
-    }
-
-    public void setDraft(Item draft) {
-        this.draft = draft;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
 }
