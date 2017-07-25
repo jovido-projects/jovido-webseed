@@ -19,7 +19,7 @@ public class RelationAttributeConfigurer extends AttributeConfigurer<RelationAtt
         return this;
     }
 
-    public RelationAttributeConfigurer setType(RelationType type) {
+    public RelationAttributeConfigurer setType(Relation.Type type) {
         attribute.setType(type);
 
         return this;

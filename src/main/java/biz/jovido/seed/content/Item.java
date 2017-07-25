@@ -3,10 +3,7 @@ package biz.jovido.seed.content;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -27,6 +24,9 @@ public class Item {
 
     @Column(nullable = false)
     private Locale locale;
+
+    @ManyToMany(mappedBy = "items")
+    private final List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @MapKey(name = "attributeName")

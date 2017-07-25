@@ -8,15 +8,15 @@ import java.util.List;
  */
 public class RelationAttribute extends Attribute {
 
-    private RelationType type;
+    private Relation.Type type;
 
     private final List<String> structureNames = new ArrayList<>();
 
-    public RelationType getType() {
+    public Relation.Type getType() {
         return type;
     }
 
-    public void setType(RelationType type) {
+    public void setType(Relation.Type type) {
         this.type = type;
     }
 
