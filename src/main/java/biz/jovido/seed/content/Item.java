@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -25,8 +23,8 @@ public class Item {
     @Column(nullable = false)
     private Locale locale;
 
-    @ManyToMany(mappedBy = "items")
-    private final List<Relation> relations = new ArrayList<>();
+    @ManyToMany(mappedBy = "targets")
+    private final List<RelationPayload> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @MapKey(name = "attributeName")
@@ -62,6 +60,14 @@ public class Item {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public List<RelationPayload> getRelations() {
+        return Collections.unmodifiableList(relations);
+    }
+
+    public void addRelation(RelationPayload relation) {
+        relations.add(relation);
     }
 
     public Map<String, Payload> getPayloads() {
