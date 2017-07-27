@@ -1,7 +1,6 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.Locale;
 
 /**
  * @author Stephan Grundner
@@ -26,10 +25,6 @@ public abstract class Payload {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Item getItem() {
         return item;
     }
@@ -42,7 +37,7 @@ public abstract class Payload {
         return attributeName;
     }
 
-    void setAttributeName(String attributeName) {
+    public void setAttributeName(String attributeName) {
         this.attributeName = attributeName;
     }
 

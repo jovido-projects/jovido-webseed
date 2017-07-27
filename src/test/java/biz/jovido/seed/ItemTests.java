@@ -2,7 +2,6 @@ package biz.jovido.seed;
 
 import biz.jovido.seed.content.Item;
 import biz.jovido.seed.content.ItemService;
-import biz.jovido.seed.content.RelationPayload;
 import biz.jovido.seed.content.StructureService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,14 +28,14 @@ public class ItemTests {
     @Test
     public void test1() {
 
-        structureService.configure("menuItem")
-                .addTextAttribute("title")
-                .addRelationAttribute("parent")
-                .addRelationAttribute("children");
+        structureService.configure("menuItem", 1)
+                .addTextAttribute("title");
+//                .addRelationAttribute("parent")
+//                .addRelationAttribute("children");
 
-        structureService.configure("simplePage")
-                .addTextAttribute("title")
-                .addRelationAttribute("menu");
+        structureService.configure("simplePage", 1)
+                .addTextAttribute("title");
+//                .addRelationAttribute("menu");
 
         Item root = itemService.createItem("menuItem");
         root.setValue("title", "Root Menu Item (not visible)");
@@ -44,22 +43,6 @@ public class ItemTests {
         Item menuItem1 = itemService.createItem("menuItem");
         menuItem1.setValue("title", "Menu Item One");
 
-        Item item1 = itemService.createItem("simplePage");
-        item1.setValue("title", "Willkommen");
-        RelationPayload relation = (RelationPayload) item1.getPayload("menu");
-        relation.setValue(menuItem1);
-
-
-
-
-
-
-        structureService.configure("textOnlySection")
-                .addTextAttribute("text");
-
-        structureService.configure("sectionsPage")
-                .addTextAttribute("title")
-                .addRelationAttribute("sections");
 
     }
 }

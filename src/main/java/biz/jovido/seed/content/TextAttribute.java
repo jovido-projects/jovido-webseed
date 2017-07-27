@@ -1,8 +1,11 @@
 package biz.jovido.seed.content;
 
+import javax.persistence.Entity;
+
 /**
  * @author Stephan Grundner
  */
+@Entity
 public class TextAttribute extends Attribute {
 
     private boolean multiline;
@@ -18,9 +21,5 @@ public class TextAttribute extends Attribute {
     @Override
     public Payload createPayload() {
         return new TextPayload();
-    }
-
-    public TextAttribute(String name) {
-        super(name);
     }
 }

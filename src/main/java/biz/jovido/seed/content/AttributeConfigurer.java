@@ -5,26 +5,30 @@ package biz.jovido.seed.content;
  */
 public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigurer<A, C>> implements StructureConfigurer {
 
-    protected final StructureBuilder builder;
+    protected final StructureConfiguration configuration;
     protected final A attribute;
 
     @Override
     public Structure getStructure() {
-        return builder.getStructure();
+        return configuration.getStructure();
+    }
+
+    @Override
+    public void update() {
+        configuration.update();
     }
 
     @Override
     public TextAttributeConfigurer addTextAttribute(String name) {
-        return builder.addTextAttribute(name);
+        return configuration.addTextAttribute(name);
     }
 
-    @Override
     public RelationAttributeConfigurer addRelationAttribute(String name) {
-        return builder.addRelationAttribute(name);
+        return configuration.addRelationAttribute(name);
     }
 
-    public AttributeConfigurer(StructureBuilder builder, A attribute) {
-        this.builder = builder;
+    public AttributeConfigurer(StructureConfiguration configuration, A attribute) {
+        this.configuration = configuration;
         this.attribute = attribute;
     }
 }

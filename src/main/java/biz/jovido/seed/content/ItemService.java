@@ -20,7 +20,7 @@ public class ItemService {
 
     private void applyPayloads(Item item) {
         Bundle bundle = item.getBundle();
-        Structure structure = structureService.getStructure(bundle.getStructureName());
+        Structure structure = null;//structureService.getStructure(bundle.getStructureName());
         for (String attributeName : structure.getAttributeNames()) {
             Attribute attribute = structure.getAttribute(attributeName);
             Payload payload = item.getPayload(attributeName);
@@ -36,7 +36,7 @@ public class ItemService {
         item.setLocale(Locale.ROOT);
 
         Bundle bundle = new Bundle();
-        bundle.setStructureName(structure.getName());
+//        bundle.setStructureName(structure.getName());
         bundle.putItem(item);
 
         History history = new History();

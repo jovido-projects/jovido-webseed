@@ -14,6 +14,9 @@ public class Item {
     @GeneratedValue
     private Long id;
 
+    @ManyToOne(optional = false)
+    private Structure structure;
+
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Bundle bundle;
 
@@ -24,7 +27,9 @@ public class Item {
     private Locale locale;
 
     @ManyToMany(mappedBy = "targets")
-    private final List<RelationPayload> relations = new ArrayList<>();
+    private final List<Relation> relations = new ArrayList<>();
+//    @ManyToMany(mappedBy = "targets")
+//    private final List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @MapKey(name = "attributeName")
@@ -62,14 +67,6 @@ public class Item {
         this.locale = locale;
     }
 
-    public List<RelationPayload> getRelations() {
-        return Collections.unmodifiableList(relations);
-    }
-
-    public void addRelation(RelationPayload relation) {
-        relations.add(relation);
-    }
-
     public Map<String, Payload> getPayloads() {
         return Collections.unmodifiableMap(payloads);
     }
@@ -80,13 +77,13 @@ public class Item {
 
     public void setPayload(String attributeName, Payload payload) {
         if (payload != null) {
-            payload.setAttributeName(attributeName);
+//            payload.setAttributeName(attributeName);
             payload.setItem(this);
         }
 
-        Payload replaced = payloads.put(attributeName, payload);
+        Payload replaced = null;//payloads.put(attributeName, payload);
         if (replaced != null) {
-            replaced.setAttributeName(null);
+//            replaced.setAttributeName(null);
             replaced.setItem(null);
         }
     }

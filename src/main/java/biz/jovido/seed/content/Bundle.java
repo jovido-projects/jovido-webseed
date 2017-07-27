@@ -18,8 +18,6 @@ public class Bundle {
     @GeneratedValue
     private Long id;
 
-    private String structureName;
-
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     @MapKey(name = "locale")
     private final Map<Locale, Item> items = new HashMap<>();
@@ -30,14 +28,6 @@ public class Bundle {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getStructureName() {
-        return structureName;
-    }
-
-    public void setStructureName(String structureName) {
-        this.structureName = structureName;
     }
 
     public Map<Locale, Item> getItems() {
