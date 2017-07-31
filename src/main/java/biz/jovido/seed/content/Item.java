@@ -1,13 +1,14 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"bundle_id", "locale"}))
 public class Item {
 
     @Id
@@ -15,23 +16,9 @@ public class Item {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Structure structure;
+    private Chronicle chronicle;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private Bundle bundle;
-
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private History history;
-
-    @Column(nullable = false)
-    private Locale locale;
-
-    @ManyToMany(mappedBy = "targets")
-    private final List<Relation> relations = new ArrayList<>();
-//    @ManyToMany(mappedBy = "targets")
-//    private final List<Relation> relations = new ArrayList<>();
-
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Payload> payloads = new HashMap<>();
 
@@ -43,28 +30,12 @@ public class Item {
         this.id = id;
     }
 
-    public Bundle getBundle() {
-        return bundle;
+    public Chronicle getChronicle() {
+        return chronicle;
     }
 
-    /* public */ void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-    }
-
-    public History getHistory() {
-        return history;
-    }
-
-    public void setHistory(History history) {
-        this.history = history;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
+    public void setChronicle(Chronicle chronicle) {
+        this.chronicle = chronicle;
     }
 
     public Map<String, Payload> getPayloads() {
@@ -76,15 +47,17 @@ public class Item {
     }
 
     public void setPayload(String attributeName, Payload payload) {
-        if (payload != null) {
-//            payload.setAttributeName(attributeName);
-            payload.setItem(this);
+        Payload replaced = payloads.put(attributeName, payload);
+        if (replaced != null) {
+            replaced.attributeName = null;
+            replaced.item = null;
+            replaced.attributeName = null;
         }
 
-        Payload replaced = null;//payloads.put(attributeName, payload);
-        if (replaced != null) {
-//            replaced.setAttributeName(null);
-            replaced.setItem(null);
+        if (payload != null) {
+            payload.attributeName = attributeName;
+            payload.item = this;
+            payload.attributeName = attributeName;
         }
     }
 
@@ -98,7 +71,7 @@ public class Item {
     }
 
     public void setValue(String attributeName, Object value) {
-        Payload payload = getPayloads().get(attributeName);
+        Payload payload = getPayload(attributeName);
         payload.setValue(value);
     }
 }

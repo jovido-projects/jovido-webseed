@@ -14,7 +14,7 @@ public class RelationPayload extends Payload {
     private Relation relation;
 
     @Override
-    public Object getValue() {
+    public Relation getValue() {
         return relation;
     }
 
@@ -22,6 +22,6 @@ public class RelationPayload extends Payload {
     public void setValue(Object value) {
         relation = (Relation) value;
 
-        relation.setSource(this);
+        relation.source = this;
     }
 }

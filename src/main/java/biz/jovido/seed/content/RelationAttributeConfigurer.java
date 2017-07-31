@@ -17,6 +17,12 @@ public class RelationAttributeConfigurer extends AttributeConfigurer<RelationAtt
         return this;
     }
 
+    public RelationAttributeConfigurer addAcceptedStructure(String structureName) {
+        attribute.getAcceptedStructureNames().add(structureName);
+
+        return this;
+    }
+
     public RelationAttributeConfigurer(StructureConfiguration builder, RelationAttribute attribute) {
         super(builder, attribute);
     }

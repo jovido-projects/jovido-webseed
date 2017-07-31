@@ -4,7 +4,7 @@
 
 <div th:fragment="default">
     <div class="container">
-        <form th:object="${itemEditor}">
+        <form th:object="${itemAdministration}">
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
                     <span th:text="${err}">Error</span>
@@ -12,20 +12,23 @@
             </ul>
 
             <div class="row" th:with="
-editor=${itemEditor},
-structureName=*{item.bundle.structureName},
-structure=${@structureService.getStructure(structureName)}">
+administration=${itemAdministration},
+editor=*{editor},
+item=${editor.item},
+structure=*{editor.item.structure}">
 
                 <!-- Content -->
-                <div class="col-md-7" th:with="item=*{item}">
+                <div class="col-md-7" th:with="item=*{editor.item}">
 
                     <h2>
                         <span th:text="#{seed.structure.__${structure?.name}__}">Title</span>
                     </h2>
 
                     <!-- Fields -->
-                    <th:block th:each="attributeName : ${structure?.attributeNames}"
-                              th:with="attribute=${structure.getAttribute(attributeName)}">
+                    <th:block th:each="attribute,attributeItr : ${structure?.attributes}"
+                              th:with="
+                              attributeName=${attribute.name},
+                              payload=${item.getPayload(attributeName)}">
 
                         <th:block th:switch="${attribute.class.simpleName}">
                             <th:block th:case="'TextAttribute'">
@@ -73,7 +76,7 @@ structure=${@structureService.getStructure(structureName)}">
                             Close
                         </a>
                         <a class="btn btn-info"
-                           th:href="@{/item(id=*{item.id})}">
+                           th:href="@{/item(id=*{editor.item.id})}">
                             <i class="fa fa-eye"></i>
                             Preview
                         </a>
@@ -92,13 +95,13 @@ structure=${@structureService.getStructure(structureName)}">
                         <tr>
                             <th>ID</th>
                             <td>
-                                <span th:text="*{item.id}">ID</span>
+                                <span th:text="*{editor.item.id}">ID</span>
                             </td>
                         </tr>
                         <tr>
                             <th>Locale</th>
                             <td>
-                                <span th:text="*{item.locale.displayName}">Locale</span>
+                                <span th:text="*{editor.item.chronicle.locale.displayName}">Locale</span>
                             </td>
                         </tr>
                         <tr>
@@ -107,9 +110,37 @@ structure=${@structureService.getStructure(structureName)}">
                                 <span th:text="${structure?.name}">Structure</span>
                             </td>
                         </tr>
+                        <tr>
+                            <th>Chronicle</th>
+                            <td>
+                                <span th:text="${item.chronicle}">Structure</span>
+                            </td>
+                        </tr>
 
                         </tbody>
                     </table>
+
+                    <h3>Translations</h3>
+                    <ul class="list-group">
+                        <li th:each="locale : ${@itemService.allSupportedLocales}" class="list-group-item">
+
+                            <th:block th:if="${item?.chronicle?.locale?.equals(locale)}">
+                                :)
+                            </th:block>
+                            <th:block th:unless="${item?.chronicle?.locale?.equals(locale)}">
+                                <th:block th:with="translation=${@itemService.getTranslation(item, locale)}">
+                                    <span th:text="${locale.displayName}">Locale Name</span>
+                                    <div class="btn-group btn-group-xs pull-right">
+                                        <button class="btn btn-default">
+                                            <i class="fa fa-plus"></i>
+                                            Add translation
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </th:block>
+
+                        </li>
+                    </ul>
 
                     <!--<div class="form-group">-->
                     <!--<label>Title</label>-->

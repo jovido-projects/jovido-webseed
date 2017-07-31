@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,9 +16,11 @@ public class Bundle {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
+    private String structureName;
+
+    @OneToMany(mappedBy = "bundle")
     @MapKey(name = "locale")
-    private final Map<Locale, Item> items = new HashMap<>();
+    private final Map<Locale, Chronicle> chronicles = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -30,20 +30,25 @@ public class Bundle {
         this.id = id;
     }
 
-    public Map<Locale, Item> getItems() {
-        return Collections.unmodifiableMap(items);
+    public String getStructureName() {
+        return structureName;
     }
 
-    public Item putItem(Item item) {
-        Assert.notNull(item);
-        Item replaced = items.put(item.getLocale(), item);
+    public void setStructureName(String structureName) {
+        this.structureName = structureName;
+    }
 
+    public Map<Locale, Chronicle> getChronicles() {
+        return Collections.unmodifiableMap(chronicles);
+    }
+
+    public void putChronicle(Chronicle chronicle) {
+        Locale locale = chronicle.getLocale();
+        Chronicle replaced = chronicles.put(locale, chronicle);
         if (replaced != null) {
-            replaced.setBundle(null);
+            replaced.bundle = null;
         }
 
-        item.setBundle(this);
-
-        return replaced;
+        chronicle.bundle = this;
     }
 }

@@ -9,6 +9,4 @@ public interface StructureConfigurer {
     RelationAttributeConfigurer addRelationAttribute(String name);
 
     Structure getStructure();
-
-    void update();
 }

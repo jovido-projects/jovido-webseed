@@ -12,11 +12,6 @@ public class StructureConfiguration implements StructureConfigurer {
         return structure;
     }
 
-    @Override
-    public void update() {
-        structureService.saveStructure(structure);
-    }
-
     public TextAttributeConfigurer addTextAttribute(String name) {
         TextAttribute attribute = (TextAttribute) structure.getAttribute(name);
         if (attribute == null) {

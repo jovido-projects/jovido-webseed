@@ -3,6 +3,6 @@
     <span>
         <label th:text="${attributeName}">#</label>
     </span>
-    <input type="text" class="form-control" th:field="*{item.payloads[__${attributeName}__].value}">
+    <input type="text" class="form-control" th:field="*{editor.item.payloads[__${attributeName}__].value}">
 </div>
 </html>

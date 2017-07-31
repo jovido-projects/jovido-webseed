@@ -14,11 +14,6 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
-    public void update() {
-        configuration.update();
-    }
-
-    @Override
     public TextAttributeConfigurer addTextAttribute(String name) {
         return configuration.addTextAttribute(name);
     }

@@ -16,10 +16,10 @@ public abstract class Payload {
     private Long id;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private Item item;
+    Item item;
 
     @Column(name = "attribute_name")
-    private String attributeName;
+    String attributeName;
 
     public Long getId() {
         return id;
@@ -29,16 +29,8 @@ public abstract class Payload {
         return item;
     }
 
-    void setItem(Item item) {
-        this.item = item;
-    }
-
     public String getAttributeName() {
         return attributeName;
-    }
-
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
     }
 
     public abstract Object getValue();

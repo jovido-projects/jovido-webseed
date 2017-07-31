@@ -21,7 +21,7 @@ public class Relation {
     private Long id;
 
     @OneToOne(mappedBy = "relation")
-    private RelationPayload source;
+    RelationPayload source;
 
     @ManyToMany
     @JoinTable(name = "relation_target",
@@ -33,16 +33,8 @@ public class Relation {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public RelationPayload getSource() {
         return source;
-    }
-
-    void setSource(RelationPayload source) {
-        this.source = source;
     }
 
     public List<Item> getTargets() {

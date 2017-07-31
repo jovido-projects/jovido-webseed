@@ -1,15 +1,17 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.Entity;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Stephan Grundner
  */
-@Entity
 public class RelationAttribute extends Attribute {
 
     private int capacity;
     private int required;
+
+    private final Set<String> accepted = new HashSet<>();
 
     public int getCapacity() {
         return capacity;
@@ -25,6 +27,10 @@ public class RelationAttribute extends Attribute {
 
     public void setRequired(int required) {
         this.required = required;
+    }
+
+    public Set<String> getAcceptedStructureNames() {
+        return accepted;
     }
 
     @Override

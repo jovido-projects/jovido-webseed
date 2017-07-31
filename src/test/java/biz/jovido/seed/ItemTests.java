@@ -1,6 +1,5 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.Item;
 import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.content.StructureService;
 import org.junit.Test;
@@ -27,22 +26,6 @@ public class ItemTests {
 
     @Test
     public void test1() {
-
-        structureService.configure("menuItem", 1)
-                .addTextAttribute("title");
-//                .addRelationAttribute("parent")
-//                .addRelationAttribute("children");
-
-        structureService.configure("simplePage", 1)
-                .addTextAttribute("title");
-//                .addRelationAttribute("menu");
-
-        Item root = itemService.createItem("menuItem");
-        root.setValue("title", "Root Menu Item (not visible)");
-
-        Item menuItem1 = itemService.createItem("menuItem");
-        menuItem1.setValue("title", "Menu Item One");
-
 
     }
 }

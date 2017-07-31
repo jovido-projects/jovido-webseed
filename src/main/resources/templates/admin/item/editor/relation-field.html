@@ -7,18 +7,42 @@
                 <i class="fa fa-search"></i>
                 <span>Search</span>
             </button>
-            <button class="btn btn-default">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
                 <i class="fa fa-plus"></i>
                 <span>Append</span>
+                <span class="caret"></span>
             </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li th:each="structureName : ${attribute.acceptedStructureNames}"
+                    th:with="structure=${@structureService.getStructure(structureName)}">
+                    <a href="#" th:href="@{append(
+                    attribute=${attributeName},
+                    structure=${structureName})}">
+                        <span th:text="${structureName}">Structure Name</span>
+                    </a>
+                </li>
+            </ul>
+
         </div>
     </span>
-    <ul class="list-group">
-        <li class="list-group-item">
-            &nbsp;
-        </li>
-        <li class="list-group-item">
-            &nbsp;
+    <ul class="list-group" th:with="relation=${payload.value}">
+        <li th:each="target,targetItr : ${relation?.targets}" class="list-group-item"
+            th:with="item=${target}">
+
+            <h3>
+                <span th:text="${target?.structure?.name}">Title</span>
+                <div class="btn-group btn-group-xs pull-right">
+                    <button class="btn btn-default" formmethod="post"
+                            th:formaction="@{edit-related(
+                            attribute=${attributeName},
+                            index=${targetItr.index})}">
+                        <i class="fa fa-pencil"></i>
+                        Edit
+                    </button>
+                </div>
+            </h3>
+            <span th:replace="admin/item/editor/preview">Preview!</span>
         </li>
     </ul>
 </div>
