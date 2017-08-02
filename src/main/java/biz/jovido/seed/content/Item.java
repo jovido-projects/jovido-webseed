@@ -1,9 +1,7 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -21,6 +19,9 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Payload> payloads = new HashMap<>();
+
+    @ManyToMany(mappedBy = "relatedItems")
+    private final List<Relation> relations = new ArrayList<>();
 
     public Long getId() {
         return id;

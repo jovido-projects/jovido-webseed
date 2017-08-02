@@ -25,6 +25,9 @@ public class Chronicle {
     @OneToOne(mappedBy = "chronicle")
     private Item current;
 
+    @OneToOne
+    private Item active;
+
     public Long getId() {
         return id;
     }
@@ -37,9 +40,9 @@ public class Chronicle {
         return bundle;
     }
 
-//    public void setBundle(Bundle bundle) {
-//        this.bundle = bundle;
-//    }
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
 
     public Locale getLocale() {
         return locale;
@@ -55,5 +58,13 @@ public class Chronicle {
 
     public void setCurrent(Item current) {
         this.current = current;
+    }
+
+    public Item getActive() {
+        return active;
+    }
+
+    public void setActive(Item active) {
+        this.active = active;
     }
 }

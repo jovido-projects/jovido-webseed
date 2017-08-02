@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
@@ -64,7 +63,7 @@ public class ItemEditorController {
             payload.setValue(relation);
         }
 
-        List<Item> targets = relation.getTargets();
+        List<Item> targets = relation.getRelatedItems();
 
         Item target = itemService.createItem(structureName, Locale.GERMAN);
         targets.add(target);
@@ -89,7 +88,7 @@ public class ItemEditorController {
         parent.setEditor(editor);
         parent.setAttributeName(attributeName);
         relatedEditor.setParent(parent);
-        relatedEditor.setItem(relation.getTargets().get(index));
+        relatedEditor.setItem((relation.getRelatedItems().get(index)));
 
         administration.setEditor(relatedEditor);
 
