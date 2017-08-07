@@ -87,4 +87,8 @@ public class ItemService {
     public Item saveItem(Item item) {
         return entityManager.merge(item);
     }
+
+    public ItemService(StructureService structureService) {
+        this.structureService = structureService;
+    }
 }

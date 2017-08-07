@@ -17,11 +17,16 @@ public class StructureService {
         return structures.get(name);
     }
 
+    private void putStructure(Structure structure) {
+        structures.put(structure.getName(), structure);
+    }
+
     public StructureConfigurer configure(String name) {
         Structure structure = getStructure(name);
         if (structure == null) {
             structure = new Structure();
             structure.setName(name);
+            putStructure(structure);
         }
 
         return new StructureConfiguration(structure, this);
