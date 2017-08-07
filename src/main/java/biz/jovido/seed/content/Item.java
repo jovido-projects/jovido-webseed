@@ -16,11 +16,14 @@ public class Item {
     @ManyToOne(optional = false)
     private Chronicle chronicle;
 
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    private Item supra;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Payload> payloads = new HashMap<>();
 
-    @ManyToMany(mappedBy = "relatedItems")
+    @ManyToMany(mappedBy = "items")
     private final List<Relation> relations = new ArrayList<>();
 
     public Long getId() {
@@ -37,6 +40,14 @@ public class Item {
 
     public void setChronicle(Chronicle chronicle) {
         this.chronicle = chronicle;
+    }
+
+    public Item getSupra() {
+        return supra;
+    }
+
+    public void setSupra(Item supra) {
+        this.supra = supra;
     }
 
     public Map<String, Payload> getPayloads() {

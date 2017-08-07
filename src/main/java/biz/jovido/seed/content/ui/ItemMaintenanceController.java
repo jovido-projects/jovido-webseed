@@ -2,6 +2,7 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.content.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.Locale;
 
 /**
  * @author Stephan Grundner
@@ -38,7 +41,8 @@ public class ItemMaintenanceController {
                                   BindingResult bindingResult,
                                   @RequestParam(name = "structure") String structureName) {
 
-        maintenance.create(structureName);
+        Locale locale = LocaleContextHolder.getLocale();
+        maintenance.create(structureName, locale);
 
         return new RedirectView("");
     }

@@ -44,7 +44,7 @@ public class ItemService {
         }
     }
 
-    public Item createItem(Bundle bundle, Structure structure, Locale locale) {
+    public Item createItem(Bundle bundle, Locale locale) {
         Chronicle chronicle = new Chronicle();
         chronicle.setLocale(locale);
         bundle.putChronicle(chronicle);
@@ -52,30 +52,20 @@ public class ItemService {
         Item item = new Item();
         item.setChronicle(chronicle);
 
+        if (!Locale.ROOT.equals(locale)) {
+            Item supra = createItem(bundle, Locale.ROOT);
+            item.setSupra(supra);
+        }
+
         applyPayloads(item);
 
         return item;
     }
 
-    public Item createItem(Structure structure, Locale locale) {
-        Bundle bundle = new Bundle();
-        bundle.setStructureName(structure.getName());
-        return createItem(bundle, structure, locale);
-    }
-
     public Item createItem(String structureName, Locale locale) {
-        return createItem(structureService.getStructure(structureName), locale);
-    }
-
-    public Item getTranslation(Item item, Locale locale) {
-        Chronicle chronicle = item.getChronicle();
-        Bundle bundle = chronicle.getBundle();
-        Chronicle other = bundle.getChronicles().get(locale);
-        if (other != null) {
-            return other.getCurrent();
-        }
-
-        return null;
+        Bundle bundle = new Bundle();
+        bundle.setStructureName(structureName);
+        return createItem(bundle, locale);
     }
 
     public List<Locale> getAllSupportedLocales() {

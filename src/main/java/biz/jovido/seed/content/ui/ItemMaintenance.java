@@ -15,8 +15,7 @@ public class ItemMaintenance {
 
     private final ItemService itemService;
 
-    private Item rootItem;
-    private Item localizedItem;
+    private Item item;
 
     private Structure structure;
     private Map<String, Field> fieldByAttributeName = new HashMap<>();
@@ -35,12 +34,9 @@ public class ItemMaintenance {
                 .collect(Collectors.toList());
     }
 
-    public void create(String structureName) {
-        rootItem = itemService.createItem(structureName, Locale.ROOT);
-        structure = itemService.getStructure(rootItem);
-
-        Bundle bundle = rootItem.getChronicle().getBundle();
-        localizedItem = itemService.createItem(bundle, structure, Locale.GERMAN);
+    public void create(String structureName, Locale locale) {
+        item = itemService.createItem(structureName, locale);
+        structure = itemService.getStructure(item);
 
         for (Attribute attribute : structure.getAttributes()) {
             Field field = null;

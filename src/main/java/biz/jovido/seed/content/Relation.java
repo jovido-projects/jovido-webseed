@@ -21,7 +21,7 @@ public class Relation {
     @JoinTable(name = "relation_target",
             joinColumns = @JoinColumn(name = "relation_id"),
             inverseJoinColumns = @JoinColumn(name = "target_id"))
-    private final List<Item> relatedItems = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -31,7 +31,7 @@ public class Relation {
         return property;
     }
 
-    public List<Item> getRelatedItems() {
-        return relatedItems;
+    public List<Item> getItems() {
+        return items;
     }
 }
