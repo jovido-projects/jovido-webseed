@@ -52,11 +52,6 @@ public class ItemService {
         Item item = new Item();
         item.setChronicle(chronicle);
 
-        if (!Locale.ROOT.equals(locale)) {
-            Item supra = createItem(bundle, Locale.ROOT);
-            item.setSupra(supra);
-        }
-
         applyPayloads(item);
 
         return item;

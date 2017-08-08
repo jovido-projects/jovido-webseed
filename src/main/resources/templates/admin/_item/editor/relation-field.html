@@ -1,8 +1,7 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="form-group" th:with="nestedPath='__${nestedPath}__.payloads[__${attributeName}__].value.items[__${attributeItr.index}__]'">
+<div class="form-group">
     <span>
         <label th:text="${attributeName}">Label</label>
-        <span>[[__${nestedPath}__.payloads[__${attributeName}__].value.items[__${attributeItr.index}__]]]</span>
         <div class="btn-group btn-group-xs pull-right">
             <button class="btn btn-default" disabled>
                 <i class="fa fa-search"></i>
@@ -28,11 +27,11 @@
         </div>
     </span>
     <ul class="list-group" th:with="relation=${payload.value}">
-        <li th:each="target,targetItr : ${relation?.items}" class="list-group-item"
-            th:with="item=${target},structure=${@itemService.getStructure(item)}">
+        <li th:each="target,targetItr : ${relation?.targets}" class="list-group-item"
+            th:with="item=${target}">
 
             <h3>
-                <span th:text="${structure?.name}">Title</span>
+                <span th:text="${target?.structure?.name}">Title</span>
                 <div class="btn-group btn-group-xs pull-right">
                     <button class="btn btn-default" formmethod="post"
                             th:formaction="@{edit-related(
@@ -43,19 +42,7 @@
                     </button>
                 </div>
             </h3>
-            <!--<span th:replace="admin/item/editor/preview">Preview!</span>-->
-
-            <th:block th:each="attribute,attributeItr : ${structure?.attributes}"
-                      th:with="
-                              nestedPath='__${nestedPath}__.payloads[__${attributeName}__]',
-                              attributeName=${attribute.name},
-                              payload=${item.getPayload(attributeName)}">
-
-                <p>[[${nestedPath}]]</p>
-
-            </th:block>
-
-
+            <span th:replace="admin/item/editor/preview">Preview!</span>
         </li>
     </ul>
 </div>

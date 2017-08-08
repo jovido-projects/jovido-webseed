@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 public class RelationPayload extends Payload {
 
-    @OneToOne
-    private Relation relation;
+    @OneToOne(optional = false)
+    private Relation relation = new Relation(this);
 
     @Override
     public Relation getValue() {
@@ -20,6 +20,6 @@ public class RelationPayload extends Payload {
     public void setValue(Object value) {
         relation = (Relation) value;
 
-        relation.property = this;
+        relation.payload = this;
     }
 }

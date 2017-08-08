@@ -16,15 +16,15 @@ public class Item {
     @ManyToOne(optional = false)
     private Chronicle chronicle;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    private Item supra;
+    @ManyToMany(mappedBy = "targets")
+    final List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Payload> payloads = new HashMap<>();
 
-    @ManyToMany(mappedBy = "items")
-    private final List<Relation> relations = new ArrayList<>();
+    @Transient
+    final ItemChangeListenerSupport listenerSupport = new ItemChangeListenerSupport(this);
 
     public Long getId() {
         return id;
@@ -42,12 +42,8 @@ public class Item {
         this.chronicle = chronicle;
     }
 
-    public Item getSupra() {
-        return supra;
-    }
-
-    public void setSupra(Item supra) {
-        this.supra = supra;
+    public List<Relation> getRelations() {
+        return Collections.unmodifiableList(relations);
     }
 
     public Map<String, Payload> getPayloads() {
@@ -71,19 +67,17 @@ public class Item {
             payload.item = this;
             payload.attributeName = attributeName;
         }
+
+        listenerSupport.notifyPayloadChange(attributeName);
+//                replaced != null ? replaced.getValue() : null,
+//                payload != null ? payload.getValue() : null);
     }
 
-    public Object getValue(String attributeName) {
-        Payload payload = getPayloads().get(attributeName);
-        if (payload != null) {
-            return payload.getValue();
-        }
-
-        return null;
+    public boolean addChangeListener(ItemChangeListener listener) {
+        return listenerSupport.addListener(listener);
     }
 
-    public void setValue(String attributeName, Object value) {
-        Payload payload = getPayload(attributeName);
-        payload.setValue(value);
+    public boolean removeChangeListener(ItemChangeListener listener) {
+        return listenerSupport.removeListener(listener);
     }
 }

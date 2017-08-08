@@ -22,7 +22,7 @@ public class Chronicle {
     @Convert(converter = LocaleConverter.class)
     private Locale locale;
 
-    @OneToOne(mappedBy = "chronicle")
+    @OneToOne(mappedBy = "chronicle", optional = false)
     private Item current;
 
     @OneToOne

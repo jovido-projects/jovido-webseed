@@ -4,7 +4,7 @@
 
 <div th:fragment="default">
     <div class="container">
-        <form th:object="${itemEditor}">
+        <form th:object="${itemAdministration}">
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
                     <span th:text="${err}">Error</span>
@@ -12,12 +12,13 @@
             </ul>
 
             <div class="row" th:with="
-editor=${itemEditor},
-item=*{item},
-structure=*{structure}">
+administration=${itemAdministration},
+editor=*{editor},
+item=${editor.item},
+structure=*{editor.item.structure}">
 
                 <!-- Content -->
-                <div class="col-md-7">
+                <div class="col-md-7" th:with="item=*{editor.item}">
 
                     <h2>
                         <span th:text="#{seed.structure.__${structure?.name}__}">Title</span>
@@ -26,8 +27,8 @@ structure=*{structure}">
                     <!-- Fields -->
                     <th:block th:each="attribute,attributeItr : ${structure?.attributes}"
                               th:with="
-                              field=${editor.fields[__${attribute.name}__]},
-                              nestedPath=''">
+                              attributeName=${attribute.name},
+                              payload=${item.getPayload(attributeName)}">
 
                         <th:block th:switch="${attribute.class.simpleName}">
                             <th:block th:case="'TextAttribute'">
@@ -39,7 +40,7 @@ structure=*{structure}">
                                 </th:block>
                             </th:block>
                             <th:block th:case="'RelationAttribute'">
-                                <th:block th:replace="admin/item/editor/one-to-many-field" />
+                                <th:block th:replace="admin/item/editor/relation-field" />
                             </th:block>
                         </th:block>
 
@@ -75,7 +76,7 @@ structure=*{structure}">
                             Close
                         </a>
                         <a class="btn btn-info"
-                           th:href="@{/item(id=*{item.id})}">
+                           th:href="@{/item(id=*{editor.item.id})}">
                             <i class="fa fa-eye"></i>
                             Preview
                         </a>
@@ -94,13 +95,13 @@ structure=*{structure}">
                         <tr>
                             <th>ID</th>
                             <td>
-                                <span th:text="*{item.id}">ID</span>
+                                <span th:text="*{editor.item.id}">ID</span>
                             </td>
                         </tr>
                         <tr>
                             <th>Locale</th>
                             <td>
-                                <span th:text="*{item.chronicle.locale.displayName}">Locale</span>
+                                <span th:text="*{editor.item.chronicle.locale.displayName}">Locale</span>
                             </td>
                         </tr>
                         <tr>
@@ -127,15 +128,15 @@ structure=*{structure}">
                                 :)
                             </th:block>
                             <th:block th:unless="${item?.chronicle?.locale?.equals(locale)}">
-                                <!--<th:block th:with="translation=${@itemService.getTranslation(item, locale)}">-->
-                                    <!--<span th:text="${locale.displayName}">Locale Name</span>-->
-                                    <!--<div class="btn-group btn-group-xs pull-right">-->
-                                        <!--<button class="btn btn-default">-->
-                                            <!--<i class="fa fa-plus"></i>-->
-                                            <!--Add translation-->
-                                        <!--</button>-->
-                                    <!--</div>-->
-                                <!--</th:block>-->
+                                <th:block th:with="translation=${@itemService.getTranslation(item, locale)}">
+                                    <span th:text="${locale.displayName}">Locale Name</span>
+                                    <div class="btn-group btn-group-xs pull-right">
+                                        <button class="btn btn-default">
+                                            <i class="fa fa-plus"></i>
+                                            Add translation
+                                        </button>
+                                    </div>
+                                </th:block>
                             </th:block>
 
                         </li>

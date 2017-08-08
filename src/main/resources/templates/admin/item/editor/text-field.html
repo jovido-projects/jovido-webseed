@@ -1,8 +1,10 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="form-group">
     <span>
-        <label th:text="${attributeName}">#</label>
+        <label th:text="${field.attribute.name}">#</label>
+        [[${field}]]
     </span>
-    <input type="text" class="form-control" th:field="*{editor.item.payloads[__${attributeName}__].value}">
+    <!--<input type="text" class="form-control" th:field="*{__${nestedPath}__.payloads[__${attributeName}__].value}">-->
+    <input type="text" class="form-control" th:field="*{fields[__${field.attribute.name}__].value}">
 </div>
 </html>

@@ -1,8 +1,9 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="form-group" th:with="nestedPath='__${nestedPath}__.payloads[__${attributeName}__].value.items[__${attributeItr.index}__]'">
+<div class="form-group"
+     th:with="nestedPath='__${nestedPath}__fields[__${field.attribute.name}__].'">
     <span>
         <label th:text="${attributeName}">Label</label>
-        <span>[[__${nestedPath}__.payloads[__${attributeName}__].value.items[__${attributeItr.index}__]]]</span>
+
         <div class="btn-group btn-group-xs pull-right">
             <button class="btn btn-default" disabled>
                 <i class="fa fa-search"></i>
@@ -18,7 +19,7 @@
                 <li th:each="structureName : ${attribute.acceptedStructureNames}"
                     th:with="structure=${@structureService.getStructure(structureName)}">
                     <a href="#" th:href="@{append(
-                    attribute=${attributeName},
+                    attribute=${field.attribute.name},
                     structure=${structureName})}">
                         <span th:text="${structureName}">Structure Name</span>
                     </a>
@@ -27,9 +28,12 @@
 
         </div>
     </span>
-    <ul class="list-group" th:with="relation=${payload.value}">
-        <li th:each="target,targetItr : ${relation?.items}" class="list-group-item"
-            th:with="item=${target},structure=${@itemService.getStructure(item)}">
+    <ul class="list-group" th:with="relation=${field.payload.value}">
+        <li th:each="target,targetItr : ${relation?.targets}" class="list-group-item"
+            th:with="
+            item=${target},
+            structure=${@itemService.getStructure(item)},
+            nestedPath='__${nestedPath}__editors[__${targetItr.index}__]'">
 
             <h3>
                 <span th:text="${structure?.name}">Title</span>
@@ -47,7 +51,7 @@
 
             <th:block th:each="attribute,attributeItr : ${structure?.attributes}"
                       th:with="
-                              nestedPath='__${nestedPath}__.payloads[__${attributeName}__]',
+                              nestedPath='__${nestedPath}__.fields[__${attribute.name}__]',
                               attributeName=${attribute.name},
                               payload=${item.getPayload(attributeName)}">
 
