@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
 
 import biz.jovido.seed.LocaleConverter;
 
@@ -10,7 +10,7 @@ import java.util.Locale;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"bundle_id", "locale"}))
-public class Chronicle {
+public final class Chronicle {
 
     @Id
     @GeneratedValue

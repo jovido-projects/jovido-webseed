@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

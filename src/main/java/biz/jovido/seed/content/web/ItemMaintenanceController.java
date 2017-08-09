@@ -1,5 +1,7 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.web;
 
+import biz.jovido.seed.content.ItemService;
+import biz.jovido.seed.content.model.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -18,62 +19,50 @@ import java.util.Locale;
  */
 @Controller
 @RequestMapping("/admin/items/")
-@SessionAttributes(types = ItemEditor.class)
-public class ItemEditorController {
+@SessionAttributes(types = ItemMaintenance.class)
+public class ItemMaintenanceController {
 
     @Autowired
     private ItemService itemService;
 
     @ModelAttribute
-    protected ItemEditor editor() {
-        return new ItemEditor(itemService);
+    protected ItemMaintenance maintenance() {
+        return new ItemMaintenance(itemService);
     }
 
     @RequestMapping
-    protected String index(@ModelAttribute ItemEditor editor,
+    protected String index(@ModelAttribute ItemMaintenance maintenance,
                            BindingResult bindingResult) {
 
-        return "admin/item/editor";
+        return "admin/item/maintenance";
     }
 
     @RequestMapping(path = "create")
-    protected RedirectView create(@ModelAttribute ItemEditor editor,
+    protected RedirectView create(@ModelAttribute ItemMaintenance maintenance,
                                   BindingResult bindingResult,
                                   @RequestParam(name = "structure") String structureName) {
 
         Locale locale = LocaleContextHolder.getLocale();
-        editor.create(structureName, locale);
+        maintenance.create(structureName, locale);
 
         return new RedirectView("");
     }
 
     @RequestMapping(path = "save")
-    protected RedirectView save(@ModelAttribute ItemEditor editor,
+    protected RedirectView save(@ModelAttribute ItemMaintenance maintenance,
                                 BindingResult bindingResult) {
-
-        editor.save();
 
         return new RedirectView("");
     }
 
     @RequestMapping(path = "append")
-    protected RedirectView append(@ModelAttribute ItemEditor editor,
+    protected RedirectView append(@ModelAttribute ItemMaintenance maintenance,
                                   BindingResult bindingResult,
                                   @RequestParam(name = "attribute") String attributeName,
                                   @RequestParam(name = "structure") String structureName) {
 
-        Item item = editor.getItem();
-        RelationPayload payload = (RelationPayload) item.getPayload(attributeName);
-        Relation relation = payload.getValue();
-        if (relation == null) {
-            relation = new Relation();
-            payload.setValue(relation);
-        }
 
-        Item target = itemService.createItem(structureName, Locale.GERMAN);
-        relation.addTarget(target);
-
-        editor.append(attributeName, structureName);
+//        maintenance.append(attributeName, structureName);
 
         return new RedirectView("");
     }

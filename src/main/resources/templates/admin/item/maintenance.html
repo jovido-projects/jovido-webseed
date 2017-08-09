@@ -1,0 +1,82 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="page(body=~{::default})"
+      th:remove="tag">
+
+<div th:fragment="default">
+    <div class="container">
+        <form th:object="${itemMaintenance}">
+
+            <ul th:if="${#fields.hasErrors('*')}">
+                <li th:each="err : ${#fields.detailedErrors('*')}">
+                    <span th:text="${err}">Error</span>
+                </li>
+            </ul>
+
+            <div class="row">
+
+                <!-- Content -->
+                <div class="col-md-7">
+
+                    <h2>
+                        <span th:text="#{seed.structure.__${structure?.name}__}">Title</span>
+                    </h2>
+
+
+                    <th:block th:each="e : *{form.editors}"
+                              th:with="editor=${e.value}">
+
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <th:block th:each="field,fieldItr : ${editor.fields}">
+
+                                    <div class="form-group">
+                                        <input class="form-control"
+                                               th:field="*{form.editors[__${editor.property.name}__].fields[__${fieldItr.index}__].value}">
+                                    </div>
+
+                                </th:block>
+                            </div>
+                        </div>
+
+                    </th:block>
+
+                    <!-- Editor actions (save, delete, ...) -->
+                    <div class="btn-group">
+                        <button class="btn btn-primary"
+                                th:formaction="@{save}">
+                            <i class="fa fa-floppy-o"></i>
+                            Save
+                        </button>
+                        <button class="btn btn-success"
+                                th:formaction="@{activate}">
+                            <i class="fa fa-bullhorn"></i>
+                            Activate
+                        </button>
+                        <button class="btn btn-danger"
+                                disabled="disabled"
+                                th:formaction="@{delete}">
+                            <i class="fa fa-trash"></i>
+                            Delete
+                        </button>
+                        <a class="btn btn-default"
+                           th:href="@{close}">
+                            <i class="fa fa-times"></i>
+                            Close
+                        </a>
+                        <a class="btn btn-info"
+                           th:href="@{/item(id=*{form.item.id})}">
+                            <i class="fa fa-eye"></i>
+                            Preview
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-md-5">
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+</html>

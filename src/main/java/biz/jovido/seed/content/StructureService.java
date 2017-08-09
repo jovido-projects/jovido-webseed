@@ -1,5 +1,8 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.model.Structure;
+import biz.jovido.seed.content.model.StructureConfiguration;
+import biz.jovido.seed.content.model.StructureConfigurer;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

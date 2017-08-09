@@ -1,4 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
+
+import biz.jovido.seed.content.StructureService;
 
 /**
  * @author Stephan Grundner

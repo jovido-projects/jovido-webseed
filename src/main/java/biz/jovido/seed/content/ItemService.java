@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +33,20 @@ public class ItemService {
         return getStructure(bundle);
     }
 
-    private void applyPayloads(Item item) {
+    private void applyProperties(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
-            Payload payload = item.getPayload(attributeName);
-            if (payload == null) {
-                Attribute attribute = structure.getAttribute(attributeName);
-                payload = attribute.createPayload();
-                item.setPayload(attributeName, payload);
+            Attribute attribute = structure.getAttribute(attributeName);
+            Property property = item.getProperty(attribute.getName());
+            if (property == null) {
+                item.setProperty(attribute.getName(),
+                        property = new Property());
+            }
+            List<Payload> payloads = property.getPayloads();
+            int remaining = attribute.getRequired() - payloads.size();
+            while (remaining-- > 0) {
+                Payload payload = attribute.createPayload();
+                property.addPayload(payload);
             }
         }
     }
@@ -52,7 +59,7 @@ public class ItemService {
         Item item = new Item();
         item.setChronicle(chronicle);
 
-        applyPayloads(item);
+        applyProperties(item);
 
         return item;
     }

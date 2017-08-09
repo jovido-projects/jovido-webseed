@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
 
 import java.util.Comparator;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
 
 /**
  * @author Stephan Grundner
@@ -11,6 +11,20 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     @Override
     public Structure getStructure() {
         return configuration.getStructure();
+    }
+
+    @SuppressWarnings("unchecked")
+    public C setCapacity(int capacity) {
+        attribute.setCapacity(capacity);
+
+        return (C) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public C setRequired(int required) {
+        attribute.setRequired(required);
+
+        return (C) this;
     }
 
     @Override

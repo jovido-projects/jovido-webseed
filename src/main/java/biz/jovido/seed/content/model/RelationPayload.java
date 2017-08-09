@@ -1,6 +1,7 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 /**
  * @author Stephan Grundner
@@ -9,7 +10,7 @@ import javax.persistence.*;
 public class RelationPayload extends Payload {
 
     @OneToOne(optional = false)
-    private Relation relation = new Relation(this);
+    private Relation relation;
 
     @Override
     public Relation getValue() {
@@ -19,7 +20,5 @@ public class RelationPayload extends Payload {
     @Override
     public void setValue(Object value) {
         relation = (Relation) value;
-
-        relation.payload = this;
     }
 }
