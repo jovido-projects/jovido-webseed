@@ -1,0 +1,15 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:each="e : *{__${nestedPath}__.fields}"
+          th:with="field=${e.value}">
+
+    <th:block th:switch="${field.attribute?.class?.simpleName}">
+        <th:block th:case="'TextAttribute'">
+            <th:block th:replace="admin/item/editor/text-field" />
+        </th:block>
+        <th:block th:case="'RelationAttribute'">
+            <th:block th:replace="admin/item/editor/relation-field" />
+        </th:block>
+    </th:block>
+
+</th:block>
+</html>

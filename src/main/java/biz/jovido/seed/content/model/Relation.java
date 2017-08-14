@@ -13,7 +13,7 @@ public final class Relation {
     private Long id;
 
     @OneToOne(mappedBy = "relation")
-    RelationPayload source;
+    RelationValue source;
 
     @ManyToOne
     Item target;
@@ -22,7 +22,7 @@ public final class Relation {
         return id;
     }
 
-    public RelationPayload getSource() {
+    public RelationValue getSource() {
         return source;
     }
 

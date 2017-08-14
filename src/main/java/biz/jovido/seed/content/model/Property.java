@@ -21,7 +21,7 @@ public final class Property {
 
     @OneToMany(mappedBy = "property")
     @OrderBy("ordinal")
-    private final List<Payload> payloads = new ArrayList<>();
+    private final List<Value> payloads = new ArrayList<>();
 
     @Transient
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport();
@@ -42,15 +42,15 @@ public final class Property {
         return name;
     }
 
-    public List<Payload> getPayloads() {
+    public List<Value> getValues() {
         return payloads;
     }
 
-    public Payload getPayload(int index) {
+    public Value getValue(int index) {
         return payloads.get(index);
     }
 
-    public boolean addPayload(Payload payload) {
+    public boolean addValue(Value payload) {
         if (payloads.add(payload)) {
             payload.property = this;
             return true;

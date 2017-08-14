@@ -7,18 +7,18 @@ import javax.persistence.OneToOne;
  * @author Stephan Grundner
  */
 @Entity
-public class RelationPayload extends Payload {
+public class RelationValue extends Value {
 
     @OneToOne(optional = false)
     private Relation relation;
 
     @Override
-    public Relation getValue() {
+    public Relation getData() {
         return relation;
     }
 
     @Override
-    public void setValue(Object value) {
-        relation = (Relation) value;
+    public void setData(Object data) {
+        relation = (Relation) data;
     }
 }

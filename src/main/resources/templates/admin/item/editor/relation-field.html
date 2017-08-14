@@ -1,38 +1,17 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div>
-    <div>
-        <strong th:text="${field.attribute.name}"></strong>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3>Relation field</h3>
+        <span th:text="${field.name}">Field name</span>
     </div>
-    <ul class="list-group">
-        <li class="list-group-item" th:each="payload,payloadItr : ${field.property.payloads}">
-            <div class="form-group" style="margin-bottom:0;">
-
-                <div class="input-group">
-                    <div class="input-group-addon">
-                        <span th:text="${payloadItr.index + 1}">#</span>
-                    </div>
-                    <input type="text" class="form-control" disabled="disabled">
-                </div>
+    <div class="panel-body">
+        <th:block th:each="payload,payloadItr : ${field.payloads}">
+            <div class="form-group">
+                <label th:text="${payloadItr.index}">Label</label>
+                <input type="text" class="form-control"
+                       th:field="*{form.fields[__${field.name}__].payloads[__${payloadItr.index}__].value.data}">
             </div>
-        </li>
-        <li class="list-group-item">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                <i class="fa fa-plus"></i>
-                <span>Append</span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li th:each="structureName : ${attribute.acceptedStructureNames}"
-                    th:with="structure=${@structureService.getStructure(structureName)}">
-                    <a href="#" th:href="@{append(
-                    attribute=${field.attribute.name},
-                    structure=${structureName})}">
-                        <span th:text="${structureName}">Structure Name</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-    </ul>
+        </th:block>
+    </div>
 </div>
 </html>

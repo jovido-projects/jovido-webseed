@@ -19,44 +19,46 @@ import java.util.Locale;
  */
 @Controller
 @RequestMapping("/admin/items/")
-@SessionAttributes(types = ItemMaintenance.class)
-public class ItemMaintenanceController {
+@SessionAttributes(types = ItemEditor.class)
+public class ItemEditorController {
 
     @Autowired
     private ItemService itemService;
 
     @ModelAttribute
-    protected ItemMaintenance maintenance() {
-        return new ItemMaintenance(itemService);
+    protected ItemEditor editor() {
+        return new ItemEditor(itemService);
     }
 
     @RequestMapping
-    protected String index(@ModelAttribute ItemMaintenance maintenance,
+    protected String index(@ModelAttribute ItemEditor editor,
                            BindingResult bindingResult) {
 
-        return "admin/item/maintenance";
+        Structure structure = itemService.getStructure(editor.item);
+
+        return "admin/item/editor";
     }
 
     @RequestMapping(path = "create")
-    protected RedirectView create(@ModelAttribute ItemMaintenance maintenance,
+    protected RedirectView create(@ModelAttribute ItemEditor editor,
                                   BindingResult bindingResult,
                                   @RequestParam(name = "structure") String structureName) {
 
         Locale locale = LocaleContextHolder.getLocale();
-        maintenance.create(structureName, locale);
+        editor.create(structureName, locale);
 
         return new RedirectView("");
     }
 
     @RequestMapping(path = "save")
-    protected RedirectView save(@ModelAttribute ItemMaintenance maintenance,
+    protected RedirectView save(@ModelAttribute ItemEditor editor,
                                 BindingResult bindingResult) {
 
         return new RedirectView("");
     }
 
     @RequestMapping(path = "append")
-    protected RedirectView append(@ModelAttribute ItemMaintenance maintenance,
+    protected RedirectView append(@ModelAttribute ItemEditor editor,
                                   BindingResult bindingResult,
                                   @RequestParam(name = "attribute") String attributeName,
                                   @RequestParam(name = "structure") String structureName) {

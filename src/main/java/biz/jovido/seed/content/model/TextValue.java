@@ -8,17 +8,17 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("text")
-public class TextPayload extends Payload {
+public class TextValue extends Value {
 
     private String text;
 
     @Override
-    public String getValue() {
+    public String getData() {
         return text;
     }
 
     @Override
-    public void setValue(Object value) {
-        text = (String) value;
+    public void setData(Object data) {
+        text = (String) data;
     }
 }

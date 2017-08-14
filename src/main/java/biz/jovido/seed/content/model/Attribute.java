@@ -53,5 +53,5 @@ public abstract class Attribute {
         this.structure = structure;
     }
 
-    public abstract Payload createPayload();
+    public abstract Value createValue();
 }

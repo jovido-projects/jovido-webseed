@@ -1,16 +1,16 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div>
-    <strong>Label</strong>
-    <th:block th:each="payload,payloadItr : ${field.property.payloads}">
-        <div class="form-group">
-    <!--<span>-->
-        <!--<label th:text="${field.attribute.name}">#</label>-->
-        <!--[[${field}]]-->
-    <!--</span>-->
-            <!--<input type="text" class="form-control" th:field="*{__${nestedPath}__.payloads[__${attributeName}__].value}">-->
-            <!--<input type="text" class="form-control" th:field="*{fields[__${field.attribute.name}__].property.payloads[__${payloadItr.index}__].value}">-->
-            <input type="text" class="form-control" th:field="*{fields[__${field.attribute.name}__].payloads[__${payloadItr.index}__].value}">
-        </div>
-    </th:block>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span th:text="${field.name}">Field name</span>
+    </div>
+    <div class="panel-body">
+        <th:block th:each="payload,payloadItr : ${field.payloads}">
+            <div class="form-group">
+                <label th:text="${payloadItr.index}">Label</label>
+                <input type="text" class="form-control"
+                       th:field="*{form.fields[__${field.name}__].payloads[__${payloadItr.index}__].value.data}">
+            </div>
+        </th:block>
+    </div>
 </div>
 </html>

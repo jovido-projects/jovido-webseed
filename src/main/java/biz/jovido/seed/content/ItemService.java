@@ -42,11 +42,11 @@ public class ItemService {
                 item.setProperty(attribute.getName(),
                         property = new Property());
             }
-            List<Payload> payloads = property.getPayloads();
-            int remaining = attribute.getRequired() - payloads.size();
+            List<Value> values = property.getValues();
+            int remaining = attribute.getRequired() - values.size();
             while (remaining-- > 0) {
-                Payload payload = attribute.createPayload();
-                property.addPayload(payload);
+                Value value = attribute.createValue();
+                property.addValue(value);
             }
         }
     }

@@ -1,9 +1,7 @@
 package biz.jovido.seed.content.web;
 
 import biz.jovido.seed.content.model.Item;
-import biz.jovido.seed.content.model.Property;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,43 +11,37 @@ import java.util.Map;
  */
 public class ItemForm {
 
-    private final ItemMaintenance maintenance;
+    final ItemEditor editor;
 
-    private Item item;
+    private final Map<String, PropertyField> fields = new HashMap<>();
 
-    private final Map<String, PropertyEditor> editors = new HashMap<>();
-
-    public Item getItem() {
-        return item;
+    public Map<String, PropertyField> getFields() {
+        return Collections.unmodifiableMap(fields);
     }
 
-    public void setItem(Item item) {
-        this.item = item;
-
-        init();
+    public PropertyField getField(String name) {
+        return fields.get(name);
     }
 
-    public Map<String, PropertyEditor> getEditors() {
-        return Collections.unmodifiableMap(editors);
-    }
+    public void setField(String name, PropertyField field) {
+        PropertyField replaced = fields.put(name, field);
 
-    public void init() {
-        editors.clear();
+        if (replaced != null) {
+            replaced.form = null;
+            replaced.name = null;
+        }
 
-        for (Property property : item.getProperties().values()) {
-            PropertyEditor editor = editors.get(property.getName());
-            if (editor == null) {
-                editor = new PropertyEditor();
-                editor.form = this;
-                editor.propertyName = property.getName();
-                editors.put(property.getName(), editor);
-
-                editor.refresh();
-            }
+        if (field != null) {
+            field.form = this;
+            field.name = name;
         }
     }
 
-    public ItemForm(ItemMaintenance maintenance) {
-        this.maintenance = maintenance;
+    public Item getItem() {
+        return editor.item;
+    }
+
+    public ItemForm(ItemEditor editor) {
+        this.editor = editor;
     }
 }

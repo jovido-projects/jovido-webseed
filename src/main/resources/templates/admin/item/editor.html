@@ -5,44 +5,24 @@
 <div th:fragment="default">
     <div class="container">
         <form th:object="${itemEditor}">
+
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
                     <span th:text="${err}">Error</span>
                 </li>
             </ul>
 
-            <div class="row" th:with="
-editor=${itemEditor},
-item=*{item},
-structure=*{structure}">
+            <div class="row" th:with="form=*{form}">
 
                 <!-- Content -->
-                <div class="col-md-7">
+                <div class="col-md-7" >
 
                     <h2>
                         <span th:text="#{seed.structure.__${structure?.name}__}">Title</span>
                     </h2>
 
-                    <!-- Fields -->
-                    <th:block th:each="attribute,attributeItr : ${structure?.attributes}"
-                              th:with="
-                              field=${editor.fields[__${attribute.name}__]},
-                              nestedPath=''">
-
-                        <th:block th:switch="${attribute.class.simpleName}">
-                            <th:block th:case="'TextAttribute'">
-                                <th:block th:unless="${attribute.multiline}">
-                                    <th:block th:replace="admin/item/editor/text-field" />
-                                </th:block>
-                                <th:block th:if="${attribute.multiline}">
-                                    <th:block th:replace="admin/item/editor/text-field" />
-                                </th:block>
-                            </th:block>
-                            <th:block th:case="'RelationAttribute'">
-                                <th:block th:replace="admin/item/editor/relation-field" />
-                            </th:block>
-                        </th:block>
-
+                    <th:block th:with="nestedPath=form">
+                        <th:block th:replace="admin/item/form" />
                     </th:block>
 
 
@@ -74,11 +54,11 @@ structure=*{structure}">
                             <i class="fa fa-times"></i>
                             Close
                         </a>
-                        <a class="btn btn-info"
-                           th:href="@{/item(id=*{item.id})}">
-                            <i class="fa fa-eye"></i>
-                            Preview
-                        </a>
+                        <!--<a class="btn btn-info"-->
+                           <!--th:href="@{/item(id=*{item.id})}">-->
+                            <!--<i class="fa fa-eye"></i>-->
+                            <!--Preview-->
+                        <!--</a>-->
                     </div>
                 </div>
 
@@ -112,7 +92,7 @@ structure=*{structure}">
                         <tr>
                             <th>Chronicle</th>
                             <td>
-                                <span th:text="${item.chronicle}">Structure</span>
+                                <span th:text="*{item.chronicle}">Structure</span>
                             </td>
                         </tr>
 
