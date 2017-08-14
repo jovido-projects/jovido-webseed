@@ -16,7 +16,7 @@ public class TextAttribute extends Attribute {
     }
 
     @Override
-    public Value createValue() {
-        return new TextValue();
+    public Payload createValue() {
+        return new TextPayload();
     }
 }

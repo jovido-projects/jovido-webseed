@@ -38,12 +38,12 @@ public class ItemEditor {
             String name = attribute.getName();
             Property property = item.getProperty(name);
             PropertyField field = new PropertyField();
-            for (Value value : property.getValues()) {
-                if (value instanceof RelationValue) {
+            for (Payload value : property.getPayloads()) {
+                if (value instanceof RelationPayload) {
 
                 } else {
-                    ValuePayload payload = new ValuePayload();
-                    payload.setValue(value);
+                    PayloadValue payload = new PayloadValue();
+                    payload.setPayload(value);
                     field.addPayload(payload);
                 }
             }

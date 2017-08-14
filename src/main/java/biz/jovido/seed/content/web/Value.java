@@ -3,10 +3,10 @@ package biz.jovido.seed.content.web;
 /**
  * @author Stephan Grundner
  */
-public abstract class Payload {
+public abstract class Value {
 
     public enum Type {
-        VALUE,
+        PAYLOAD,
         EDITOR
     }
 
@@ -21,7 +21,7 @@ public abstract class Payload {
         return field;
     }
 
-    public Payload(Type type) {
+    public Value(Type type) {
         this.type = type;
     }
 }

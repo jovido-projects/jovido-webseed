@@ -34,7 +34,7 @@ public class RelationAttribute extends Attribute {
     }
 
     @Override
-    public RelationValue createValue() {
-        return new RelationValue();
+    public RelationPayload createValue() {
+        return new RelationPayload();
     }
 }

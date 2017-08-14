@@ -3,7 +3,7 @@ package biz.jovido.seed.content.web;
 /**
  * @author Stephan Grundner
  */
-public class EditorPayload extends Payload {
+public class EditorValue extends Value {
 
     private ItemEditor editor;
 
@@ -15,7 +15,7 @@ public class EditorPayload extends Payload {
         this.editor = editor;
     }
 
-    public EditorPayload() {
+    public EditorValue() {
         super(Type.EDITOR);
     }
 }

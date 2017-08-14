@@ -18,7 +18,7 @@ public class PropertyField {
 
     private Property property;
 
-    private final List<Payload> payloads = new ArrayList<>();
+    private final List<Value> values = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -36,12 +36,12 @@ public class PropertyField {
         this.property = property;
     }
 
-    public List<Payload> getPayloads() {
-        return Collections.unmodifiableList(payloads);
+    public List<Value> getValues() {
+        return Collections.unmodifiableList(values);
     }
 
-    public void addPayload(Payload payload) {
-        if (payloads.add(payload)) {
+    public void addPayload(Value payload) {
+        if (values.add(payload)) {
             payload.field = this;
         }
     }
