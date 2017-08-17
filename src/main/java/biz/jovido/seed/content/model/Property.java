@@ -2,6 +2,7 @@ package biz.jovido.seed.content.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public final class Property {
     private final List<Payload> payloads = new ArrayList<>();
 
     @Transient
-    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport();
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     public Long getId() {
         return id;
@@ -43,7 +44,7 @@ public final class Property {
     }
 
     public List<Payload> getPayloads() {
-        return payloads;
+        return Collections.unmodifiableList(payloads);
     }
 
     public Payload getPayload(int index) {
@@ -53,9 +54,36 @@ public final class Property {
     public boolean addPayload(Payload payload) {
         if (payloads.add(payload)) {
             payload.property = this;
+            changeSupport.notifyPayloadAdded(payload);
             return true;
         }
 
         return false;
+    }
+
+    public boolean removePayload(int index) {
+        Payload payload = payloads.remove(index);
+        if (payload != null) {
+            payload.property = null;
+            changeSupport.notifyPayloadRemoved(payload, index);
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removePayload(Payload payload) {
+        int index = payloads.indexOf(payload);
+        return removePayload(index);
+    }
+
+
+
+    public boolean addChangeListener(PropertyChangeListener listener) {
+        return changeSupport.addListener(listener);
+    }
+
+    public boolean removeChangeListener(PropertyChangeListener listener) {
+        return changeSupport.removeListener(listener);
     }
 }

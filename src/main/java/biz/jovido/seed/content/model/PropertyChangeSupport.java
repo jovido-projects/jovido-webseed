@@ -8,6 +8,8 @@ import java.util.Set;
  */
 public class PropertyChangeSupport {
 
+    private final Property property;
+
     private final Set<PropertyChangeListener> listeners = new HashSet<>();
 
     public boolean addListener(PropertyChangeListener listener) {
@@ -18,7 +20,25 @@ public class PropertyChangeSupport {
         return listeners.remove(listener);
     }
 
-    public void notifyValueAdded() {
+    public void notifyPayloadAdded(Payload payload) {
+        for (PropertyChangeListener listener : listeners) {
+            listener.payloadAdded(new PayloadAddedEvent(property, payload));
+        }
+    }
 
+    public void notifyPayloadRemoved(Payload payload, int index) {
+        for (PropertyChangeListener listener : listeners) {
+            listener.payloadRemoved(new PayloadRemovedEvent(property, payload, index));
+        }
+    }
+
+    public void notifyPayloadMoved(Payload payload, int from) {
+        for (PropertyChangeListener listener : listeners) {
+            listener.payloadMoved(new PayloadMovedEvent(property, payload));
+        }
+    }
+
+    public PropertyChangeSupport(Property property) {
+        this.property = property;
     }
 }

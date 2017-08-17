@@ -5,8 +5,8 @@ package biz.jovido.seed.content.model;
  */
 public class TextAttributeConfigurer extends AttributeConfigurer<TextAttribute, TextAttributeConfigurer> {
 
-    public TextAttributeConfigurer setMultiline(boolean multiline) {
-        attribute.setMultiline(multiline);
+    public TextAttributeConfigurer setLines(int lines) {
+        attribute.setLines(lines);
 
         return this;
     }

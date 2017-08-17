@@ -5,18 +5,22 @@ package biz.jovido.seed.content.model;
  */
 public class TextAttribute extends Attribute {
 
-    private boolean multiline;
+    private int lines = 1;
 
-    public boolean isMultiline() {
-        return multiline;
+    public int getLines() {
+        return lines;
     }
 
-    public void setMultiline(boolean multiline) {
-        this.multiline = multiline;
+    public void setLines(int lines) {
+        this.lines = lines;
+    }
+
+    public boolean isMultiline() {
+        return lines > 1;
     }
 
     @Override
-    public Payload createValue() {
+    public Payload createPayload() {
         return new TextPayload();
     }
 }

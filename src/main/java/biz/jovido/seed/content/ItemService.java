@@ -33,6 +33,10 @@ public class ItemService {
         return getStructure(bundle);
     }
 
+    public Structure getStructure(String structureName) {
+        return structureService.getStructure(structureName);
+    }
+
     private void applyProperties(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
@@ -45,7 +49,7 @@ public class ItemService {
             List<Payload> values = property.getPayloads();
             int remaining = attribute.getRequired() - values.size();
             while (remaining-- > 0) {
-                Payload value = attribute.createValue();
+                Payload value = attribute.createPayload();
                 property.addPayload(value);
             }
         }

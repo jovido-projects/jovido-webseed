@@ -5,7 +5,7 @@ package biz.jovido.seed.content.model;
  */
 public interface PropertyChangeListener {
 
-    void valueSet();
-    void valueAdded();
-    void valueMoved();
+    void payloadAdded(PayloadAddedEvent event);
+    void payloadRemoved(PayloadRemovedEvent event);
+    void payloadMoved(PayloadMovedEvent event);
 }

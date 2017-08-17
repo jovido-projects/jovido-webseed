@@ -4,11 +4,11 @@
         <span th:text="${field.name}">Field name</span>
     </div>
     <div class="panel-body">
-        <th:block th:each="payload,payloadItr : ${field.payloads}">
+        <th:block th:each="value,valueItr : ${field.values}">
             <div class="form-group">
-                <label th:text="${payloadItr.index}">Label</label>
+                <label th:text="${valueItr.index}">Label</label>
                 <input type="text" class="form-control"
-                       th:field="*{form.fields[__${field.name}__].payloads[__${payloadItr.index}__].value.data}">
+                       th:field="*{fields[__${field.name}__].values[__${valueItr.index}__].payload.value}">
             </div>
         </th:block>
     </div>

@@ -29,4 +29,8 @@ public final class Relation {
     public Item getTarget() {
         return target;
     }
+
+    public void setTarget(Item target) {
+        this.target = target;
+    }
 }

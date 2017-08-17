@@ -1,7 +1,7 @@
 package biz.jovido.seed.content.web;
 
 import biz.jovido.seed.content.ItemService;
-import biz.jovido.seed.content.model.Structure;
+import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -57,14 +57,48 @@ public class ItemEditorController {
         return new RedirectView("");
     }
 
-    @RequestMapping(path = "append")
-    protected RedirectView append(@ModelAttribute ItemEditor editor,
+    @RequestMapping(path = "append-payload", params = {"!structure"})
+    protected RedirectView appendPayload(@ModelAttribute ItemEditor editor,
+                                         BindingResult bindingResult,
+                                         @RequestParam(name = "property") String propertyName) {
+
+        Item item = editor.getItem();
+        Property property = item.getProperty(propertyName);
+        Structure structure = itemService.getStructure(item);
+        Attribute attribute = structure.getAttribute(propertyName);
+        property.addPayload(attribute.createPayload());
+
+        return new RedirectView("");
+    }
+
+    @RequestMapping(path = "remove-payload")
+    protected RedirectView removePayload(@ModelAttribute ItemEditor editor,
+                                         BindingResult bindingResult,
+                                         @RequestParam(name = "property") String propertyName,
+                                         @RequestParam(name = "index") int index) {
+        Item item = editor.getItem();
+        Property property = item.getProperty(propertyName);
+        property.removePayload(index);
+
+        return new RedirectView("");
+    }
+
+    @RequestMapping(path = "append-payload")
+    protected RedirectView appendPayload(@ModelAttribute ItemEditor editor,
                                   BindingResult bindingResult,
-                                  @RequestParam(name = "attribute") String attributeName,
+                                  @RequestParam(name = "property") String propertyName,
                                   @RequestParam(name = "structure") String structureName) {
 
+        Item item = editor.getItem();
+        Property property = item.getProperty(propertyName);
 
-//        maintenance.append(attributeName, structureName);
+        RelationPayload payload = new RelationPayload();
+        Relation relation = new Relation();
+
+        Item target = itemService.createItem(structureName, Locale.GERMAN);
+        relation.setTarget(target);
+        payload.setValue(relation);
+        property.addPayload(payload);
 
         return new RedirectView("");
     }
