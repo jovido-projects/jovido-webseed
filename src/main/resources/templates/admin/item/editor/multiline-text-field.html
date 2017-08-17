@@ -1,40 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span th:text="${field.name}">Field name</span>
-    </div>
-        <div class="list-group">
-            <th:block th:each="value,valueItr : ${field.values}">
-                <div class="list-group-item">
-                    <div class="form-group">
-                        <!--<label th:text="${valueItr.index}">Label</label>-->
-                        <textarea class="form-control" th:field="*{fields[__${field.name}__].values[__${valueItr.index}__].payload.value}"></textarea>
-                    </div>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-default" formmethod="post"
-                                th:formaction="@{remove-payload(
-                                property=${field.name},
-                                index=${valueItr.index})}">
-                            <i class="fa fa-remove"></i>
-                            <span>Remove</span>
-                        </button>
-                    </div>
-                </div>
-
-            </th:block>
-            <div class="list-group-item">
-                <div class="btn-group">
-                    <button class="btn btn-default" formmethod="post"
-                            th:formaction="@{append-payload(
-                            property=${field.name})}">
-                        Append
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-
-
+<div class="form-group">
+    <label th:text="${field.name}">Label</label>
+    <textarea class="form-control" th:field="*{fields[__${field.name}__].value}"></textarea>
 </div>
 </html>

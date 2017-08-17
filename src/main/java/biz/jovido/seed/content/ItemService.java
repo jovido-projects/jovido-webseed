@@ -37,20 +37,14 @@ public class ItemService {
         return structureService.getStructure(structureName);
     }
 
-    private void applyProperties(Item item) {
+    private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
             Attribute attribute = structure.getAttribute(attributeName);
-            Property property = item.getProperty(attribute.getName());
-            if (property == null) {
-                item.setProperty(attribute.getName(),
-                        property = new Property());
-            }
-            List<Payload> values = property.getPayloads();
-            int remaining = attribute.getRequired() - values.size();
-            while (remaining-- > 0) {
-                Payload value = attribute.createPayload();
-                property.addPayload(value);
+            Payload payload = item.getPayload(attributeName);
+            if (payload == null) {
+                payload = attribute.createPayload();
+                item.setPayload(attributeName, payload);
             }
         }
     }
@@ -63,7 +57,7 @@ public class ItemService {
         Item item = new Item();
         item.setChronicle(chronicle);
 
-        applyProperties(item);
+        applyPayloads(item);
 
         return item;
     }

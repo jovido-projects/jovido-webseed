@@ -16,12 +16,12 @@ public final class Item {
     @ManyToOne(optional = false)
     private Chronicle chronicle;
 
-    @OneToMany(mappedBy = "target")
+    @ManyToMany(mappedBy = "targets")
     private final List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @MapKey(name = "name")
-    private final Map<String, Property> properties = new HashMap<>();
+    @MapKey(name = "attributeName")
+    private final Map<String, Payload> payloads = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -39,24 +39,43 @@ public final class Item {
         this.chronicle = chronicle;
     }
 
-    public Map<String, Property> getProperties() {
-        return Collections.unmodifiableMap(properties);
+    public Map<String, Payload> getPayloads() {
+        return Collections.unmodifiableMap(payloads);
     }
 
-    public Property getProperty(String name) {
-        return properties.get(name);
+    public Payload getPayload(String attributeName) {
+        return payloads.get(attributeName);
     }
 
-    public void setProperty(String name, Property property) {
-        Property replaced = properties.put(name, property);
+    public void setPayload(String attributeName, Payload payload) {
+        Payload replaced = payloads.put(attributeName, payload);
         if (replaced != null) {
             replaced.item = null;
-            replaced.name = null;
+            replaced.attributeName = null;
         }
 
-        if (property != null) {
-            property.item = this;
-            property.name = name;
+        if (payload != null) {
+            payload.item = this;
+            payload.attributeName = attributeName;
         }
     }
+
+    public Object getValue(String attributeName) {
+        Payload payload = getPayload(attributeName);
+        if (payload == null) {
+            throw new PayloadNotFoundException(attributeName);
+        }
+
+        return payload.getValue();
+    }
+
+    public void setValue(String attributeName, Object value) {
+        Payload payload = getPayload(attributeName);
+        if (payload == null) {
+            throw new PayloadNotFoundException(attributeName);
+        }
+
+        payload.setValue(value);
+    }
+
 }

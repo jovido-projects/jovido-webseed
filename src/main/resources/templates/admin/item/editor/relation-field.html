@@ -5,18 +5,11 @@
         <span th:text="${field.name}">Field name</span>
     </div>
     <div class="panel-body">
-        <th:block th:each="value,valueItr : ${field.values}">
-            <!--<div class="form-group">-->
-                <!--<label th:text="${valueItr.index}">Label</label>-->
-                <!--<input type="text" class="form-control"-->
-                       <!--th:field="*{fields[__${field.name}__].values[__${valueItr.index}__].payload.value.target}">-->
-            <!--</div>-->
 
-            <p th:with="nestedPath='__${nestedPath}__fields[__${field.name}__].values[__${valueItr.index}__].'">
-                [[${nestedPath}]]
-            </p>
-
-        </th:block>
+        <p th:each="relation : ${field.relations}">
+            [[${relation}]]
+            [[${relation.fields}]]
+        </p>
 
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -24,14 +17,16 @@
             </button>
             <ul class="dropdown-menu">
                 <li th:each="allowedStructure : ${field.allowedStructures}">
-                    <a th:href="@{append-payload(
-                    property=${field.name},
+                    <a th:href="@{add-relation(
+                    attribute=${field.name},
                     structure=${allowedStructure.name})}">
                         <span th:text="${allowedStructure.name}">Name</span>
                     </a>
                 </li>
             </ul>
         </div>
+
+
     </div>
 </div>
 </html>

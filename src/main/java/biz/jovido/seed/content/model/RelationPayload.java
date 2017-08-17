@@ -20,5 +20,7 @@ public class RelationPayload extends Payload {
     @Override
     public void setValue(Object data) {
         relation = (Relation) data;
+
+        relation.source = this;
     }
 }

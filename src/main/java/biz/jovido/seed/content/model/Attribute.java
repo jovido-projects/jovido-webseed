@@ -8,8 +8,6 @@ public abstract class Attribute {
     private Structure structure;
 
     private String name;
-    private int capacity = Integer.MAX_VALUE;
-    private int required = 1;
 
     private int ordinal;
 
@@ -19,22 +17,6 @@ public abstract class Attribute {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public int getRequired() {
-        return required;
-    }
-
-    public void setRequired(int required) {
-        this.required = required;
     }
 
     public int getOrdinal() {

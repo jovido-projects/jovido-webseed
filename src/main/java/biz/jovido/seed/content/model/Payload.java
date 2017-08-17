@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "kind")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "ordinal"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "attribute_name"}))
 public abstract class Payload {
 
     @Id
@@ -16,9 +16,10 @@ public abstract class Payload {
     private Long id;
 
     @ManyToOne(optional = false)
-    Property property;
+    Item item;
 
-    private int ordinal;
+    @Column(name = "attribute_name")
+    String attributeName;
 
     public Long getId() {
         return id;
@@ -28,16 +29,12 @@ public abstract class Payload {
         this.id = id;
     }
 
-    public Property getProperty() {
-        return property;
+    public Item getItem() {
+        return item;
     }
 
-    public int getOrdinal() {
-        return ordinal;
-    }
-
-    public void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
+    public String getAttributeName() {
+        return attributeName;
     }
 
     public abstract Object getValue();

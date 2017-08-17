@@ -1,6 +1,10 @@
 package biz.jovido.seed.content.model;
 
+import biz.jovido.seed.util.ObservableListProxy;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -15,8 +19,14 @@ public final class Relation {
     @OneToOne(mappedBy = "relation")
     RelationPayload source;
 
-    @ManyToOne
-    Item target;
+//    @ManyToOne
+//    Item target;
+    @ManyToMany
+    private final List<Item> targets = new ArrayList<>();
+
+    @Transient
+    private final ObservableListProxy<Item> targetsObservation =
+            new ObservableListProxy<>(() -> targets);
 
     public Long getId() {
         return id;
@@ -26,11 +36,12 @@ public final class Relation {
         return source;
     }
 
-    public Item getTarget() {
-        return target;
+    public ObservableListProxy<Item> getTargets() {
+        return targetsObservation;
     }
 
-    public void setTarget(Item target) {
-        this.target = target;
+    @Deprecated
+    public void addTarget(Item target) {
+        getTargets().add(target);
     }
 }
