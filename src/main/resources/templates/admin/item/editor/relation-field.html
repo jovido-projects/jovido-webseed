@@ -1,32 +1,55 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3>Relation field</h3>
-        <span th:text="${field.name}">Field name</span>
-    </div>
-    <div class="panel-body">
+<label>
+    <span th:text="${field.name}">Field name</span>
+</label>
+<div class="">
+    <ul class="list-group" >
 
-        <p th:each="relation : ${field.relations}">
-            [[${relation}]]
-            [[${relation.fields}]]
-        </p>
+        <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__"
+            th:each="relation,relationItr : ${field.relations}">
 
-        <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Append <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li th:each="allowedStructure : ${field.allowedStructures}">
-                    <a th:href="@{add-relation(
+            <h4>
+                <span th:text="${relationItr.index + 1}">Relation index</span>.
+                <span th:text="${relation.structure.name}">Relation name</span>
+
+                <div class="btn-group btn-group-xs pull-right">
+                    <button class="btn btn-default">
+                        <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-default">
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn btn-default">
+                        <i class="fa fa-remove"></i>
+                    </button>
+                </div>
+            </h4>
+
+            <th:block th:with="nestedPath='__${nestedPath}__fields[__${field.name}__].relations[__${relationItr.index}__].'">
+                <th:block th:replace="admin/item/editor::fields" />
+            </th:block>
+
+        </li>
+
+        <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Append <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li th:each="allowedStructure : ${field.allowedStructures}">
+                        <a th:href="@{add-relation(
+                    nested-path=${nestedPath},
                     attribute=${field.name},
                     structure=${allowedStructure.name})}">
-                        <span th:text="${allowedStructure.name}">Name</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+                            <span th:text="${allowedStructure.name}">Name</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
 
 
-    </div>
+    </ul>
 </div>
 </html>

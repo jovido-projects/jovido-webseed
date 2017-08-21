@@ -16,6 +16,12 @@ public final class Item {
     @ManyToOne(optional = false)
     private Chronicle chronicle;
 
+    @ManyToOne
+    private Item parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private final List<Item> children = new ArrayList<>();
+
     @ManyToMany(mappedBy = "targets")
     private final List<Relation> relations = new ArrayList<>();
 
@@ -37,6 +43,18 @@ public final class Item {
 
     public void setChronicle(Chronicle chronicle) {
         this.chronicle = chronicle;
+    }
+
+    public Item getParent() {
+        return parent;
+    }
+
+    public void setParent(Item parent) {
+        this.parent = parent;
+    }
+
+    public List<Item> getChildren() {
+        return Collections.unmodifiableList(children);
     }
 
     public Map<String, Payload> getPayloads() {
@@ -77,5 +95,4 @@ public final class Item {
 
         payload.setValue(value);
     }
-
 }

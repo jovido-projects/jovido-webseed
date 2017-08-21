@@ -2,6 +2,6 @@
 <div class="form-group">
     <label th:text="${field.name}">Label</label>
     <input type="text" class="form-control"
-           th:field="*{fields[__${field.name}__].value}">
+           th:field="*{__${nestedPath}__fields[__${field.name}__].value}">
 </div>
 </html>

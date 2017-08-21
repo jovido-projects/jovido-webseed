@@ -1,5 +1,6 @@
 package biz.jovido.seed.content.web;
 
+import biz.jovido.seed.PropertyUtils;
 import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.content.model.Item;
 import biz.jovido.seed.content.model.Relation;
@@ -61,12 +62,17 @@ public class EditorController {
 
     @RequestMapping(path = "add-relation")
     protected String addRelation(@ModelAttribute ItemEditor editor,
+                                 @RequestParam(name = "nested-path") String nestedPath,
                                  @RequestParam(name = "attribute") String attributeName,
                                  @RequestParam(name = "structure") String structureName,
                                  BindingResult bindingResult) {
 
         Item item = editor.getItem();
-        RelationPayload payload = (RelationPayload) item.getPayload(attributeName);
+//        RelationPayload payload = (RelationPayload) item.getPayload(attributeName);
+        String propertyPath = String.format("%sfields[%s]", nestedPath, attributeName);
+//        RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
+        RelationsField relationsField = (RelationsField) PropertyUtils.getPropertyValue(editor, propertyPath);
+        RelationPayload payload = (RelationPayload) relationsField.getPayload();
         Relation relation = payload.getValue();
         if (relation == null) {
             relation = new Relation();
