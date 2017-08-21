@@ -1,5 +1,6 @@
 package biz.jovido.seed.content.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -9,7 +10,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class RelationPayload extends Payload {
 
-    @OneToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
     private Relation relation;
 
     @Override

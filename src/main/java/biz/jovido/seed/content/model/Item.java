@@ -13,7 +13,7 @@ public final class Item {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Chronicle chronicle;
 
     private String structureName;
@@ -65,6 +65,14 @@ public final class Item {
 
     public List<Item> getChildren() {
         return Collections.unmodifiableList(children);
+    }
+
+    public List<Relation> getRelations() {
+        return Collections.unmodifiableList(relations);
+    }
+
+    /*default*/ void addRelation(Relation relation) {
+        relations.add(relation);
     }
 
     public Map<String, Payload> getPayloads() {

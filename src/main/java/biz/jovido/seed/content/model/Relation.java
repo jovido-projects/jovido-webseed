@@ -21,7 +21,7 @@ public final class Relation {
 
 //    @ManyToOne
 //    Item target;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private final List<Item> targets = new ArrayList<>();
 
     @Transient
@@ -42,6 +42,8 @@ public final class Relation {
 
     @Deprecated
     public void addTarget(Item target) {
-        getTargets().add(target);
+        if (getTargets().add(target)) {
+            target.addRelation(this);
+        }
     }
 }
