@@ -15,7 +15,7 @@ public abstract class Payload {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     Item item;
 
     @Column(name = "attribute_name")

@@ -16,7 +16,7 @@ public final class Bundle {
     @GeneratedValue
     private Long id;
 
-    private String structureName;
+//    private String structureName;
 
     @OneToMany(mappedBy = "bundle")
     @MapKey(name = "locale")
@@ -30,13 +30,13 @@ public final class Bundle {
         this.id = id;
     }
 
-    public String getStructureName() {
-        return structureName;
-    }
-
-    public void setStructureName(String structureName) {
-        this.structureName = structureName;
-    }
+//    public String getStructureName() {
+//        return structureName;
+//    }
+//
+//    public void setStructureName(String structureName) {
+//        this.structureName = structureName;
+//    }
 
     public Map<Locale, Chronicle> getChronicles() {
         return Collections.unmodifiableMap(chronicles);

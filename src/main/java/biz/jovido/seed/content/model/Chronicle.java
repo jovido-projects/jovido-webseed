@@ -16,7 +16,7 @@ public final class Chronicle {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     Bundle bundle;
 
     @Convert(converter = LocaleConverter.class)

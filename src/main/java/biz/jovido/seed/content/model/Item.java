@@ -13,8 +13,10 @@ public final class Item {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Chronicle chronicle;
+
+    private String structureName;
 
     @ManyToOne
     private Item parent;
@@ -43,6 +45,14 @@ public final class Item {
 
     public void setChronicle(Chronicle chronicle) {
         this.chronicle = chronicle;
+    }
+
+    public String getStructureName() {
+        return structureName;
+    }
+
+    public void setStructureName(String structureName) {
+        this.structureName = structureName;
     }
 
     public Item getParent() {

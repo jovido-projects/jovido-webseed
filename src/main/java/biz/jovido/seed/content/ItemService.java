@@ -3,6 +3,7 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -22,15 +23,14 @@ public class ItemService {
     @Autowired
     private StructureService structureService;
 
-    public Structure getStructure(Bundle bundle) {
-        String name = bundle.getStructureName();
-        return structureService.getStructure(name);
-    }
+//    public Structure getStructure(Bundle bundle) {
+//        String name = bundle.getStructureName();
+//        return structureService.getStructure(name);
+//    }
 
     public Structure getStructure(Item item) {
-        Chronicle chronicle = item.getChronicle();
-        Bundle bundle = chronicle.getBundle();
-        return getStructure(bundle);
+        String name = item.getStructureName();
+        return structureService.getStructure(name);
     }
 
     public Structure getStructure(String structureName) {
@@ -49,13 +49,14 @@ public class ItemService {
         }
     }
 
-    public Item createItem(Bundle bundle, Locale locale) {
+    private Item createItem(Bundle bundle, String structureName, Locale locale) {
         Chronicle chronicle = new Chronicle();
         chronicle.setLocale(locale);
         bundle.putChronicle(chronicle);
 
         Item item = new Item();
         item.setChronicle(chronicle);
+        item.setStructureName(structureName);
 
         applyPayloads(item);
 
@@ -64,8 +65,8 @@ public class ItemService {
 
     public Item createItem(String structureName, Locale locale) {
         Bundle bundle = new Bundle();
-        bundle.setStructureName(structureName);
-        return createItem(bundle, locale);
+//        bundle.setStructureName(structureName);
+        return createItem(bundle, structureName, locale);
     }
 
     public List<Locale> getAllSupportedLocales() {
@@ -74,6 +75,7 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Item saveItem(Item item) {
         return entityManager.merge(item);
     }

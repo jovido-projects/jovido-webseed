@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
@@ -28,6 +26,11 @@ public class EditorController {
 
     @Autowired
     private ItemService itemService;
+
+    @InitBinder
+    private void initBinder(WebDataBinder dataBinder) {
+//        dataBinder.
+    }
 
     @ModelAttribute
     protected ItemEditor editor() {
@@ -57,6 +60,7 @@ public class EditorController {
     protected String save(@ModelAttribute ItemEditor editor,
                           BindingResult bindingResult) {
 
+        itemService.saveItem(editor.getItem());
         return REDIRECT_TO_INDEX;
     }
 
@@ -79,6 +83,7 @@ public class EditorController {
             payload.setValue(relation);
         }
         Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
+        target.setChronicle(null);
         relation.addTarget(target);
 
         return REDIRECT_TO_INDEX;
