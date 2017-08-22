@@ -1,7 +1,7 @@
 package biz.jovido.seed;
 
-import biz.jovido.seed.content.ItemService;
-import biz.jovido.seed.content.StructureService;
+import biz.jovido.seed.content.service.ItemService;
+import biz.jovido.seed.content.service.StructureService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

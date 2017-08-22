@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.service;
 
 import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;

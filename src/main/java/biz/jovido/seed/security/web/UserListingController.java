@@ -1,6 +1,7 @@
-package biz.jovido.seed.security.model;
+package biz.jovido.seed.security.web;
 
-import biz.jovido.seed.security.SecurityService;
+import biz.jovido.seed.security.model.User;
+import biz.jovido.seed.security.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;

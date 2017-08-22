@@ -1,4 +1,4 @@
-package biz.jovido.seed;
+package biz.jovido.seed.configuration;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
@@ -21,6 +22,7 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 @EnableJpaRepositories("biz.jovido.seed")
 @EnableJpaAuditing
 @EnableSpringHttpSession
+@EnableWebSecurity
 public class SeedConfigurationSupport implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;

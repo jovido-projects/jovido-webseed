@@ -1,6 +1,8 @@
-package biz.jovido.seed.security.model;
+package biz.jovido.seed.security.web;
 
-import biz.jovido.seed.security.SecurityService;
+import biz.jovido.seed.security.model.Role;
+import biz.jovido.seed.security.model.User;
+import biz.jovido.seed.security.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -57,6 +59,16 @@ public class UserEditorController {
                 .collect(Collectors.toList()));
 
         return "redirect:";
+    }
+
+    @RequestMapping(path = "close")
+    protected String close(@ModelAttribute UserEditor editor,
+                           BindingResult bindingResult) {
+
+        editor.setUser(securityService.createUser());
+        editor.setSelectedAuthorities(null);
+
+        return "redirect:/admin/users";
     }
 
     @RequestMapping(path = "save")

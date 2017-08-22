@@ -1,4 +1,4 @@
-package biz.jovido.seed;
+package biz.jovido.seed.util;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;

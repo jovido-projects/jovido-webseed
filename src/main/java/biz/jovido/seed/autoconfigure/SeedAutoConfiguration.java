@@ -1,6 +1,6 @@
 package biz.jovido.seed.autoconfigure;
 
-import biz.jovido.seed.EnableSeed;
+import biz.jovido.seed.configuration.EnableSeed;
 import org.springframework.context.annotation.Configuration;
 
 /**

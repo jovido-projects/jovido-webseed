@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.service;
 
 import biz.jovido.seed.content.model.Structure;
 import biz.jovido.seed.content.model.StructureConfiguration;

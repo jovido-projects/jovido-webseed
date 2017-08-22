@@ -1,4 +1,4 @@
-package biz.jovido.seed;
+package biz.jovido.seed.configuration;
 
 import org.springframework.context.annotation.Import;
 

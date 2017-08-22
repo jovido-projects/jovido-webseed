@@ -1,8 +1,8 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="page(body=~{::default})"
+      th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
-<div th:fragment="default">
+<div th:fragment="main">
     <div class="container">
         <form th:object="${itemEditor}" method="post">
 
@@ -72,6 +72,11 @@
                                 th:formaction="@{delete}" >
                             <i class="fa fa-trash"></i>
                             Delete
+                        </button>
+                        <button class="btn btn-default"
+                                th:formaction="@{close}" >
+                            <i class="fa fa-times"></i>
+                            Close
                         </button>
                         <!--<a class="btn btn-info"-->
                            <!--th:href="@{/item(id=*{item.id})}">-->

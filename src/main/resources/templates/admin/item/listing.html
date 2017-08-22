@@ -1,8 +1,8 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="page(body=~{::default})"
+      th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
-<div th:fragment="default">
+<div th:fragment="main">
     <div class="container">
         <form th:object="${itemListing}" method="post">
 

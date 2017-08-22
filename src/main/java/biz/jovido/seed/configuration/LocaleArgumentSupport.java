@@ -1,4 +1,4 @@
-package biz.jovido.seed;
+package biz.jovido.seed.configuration;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;

@@ -1,4 +1,4 @@
-package biz.jovido.seed.security;
+package biz.jovido.seed.security.service;
 
 import biz.jovido.seed.security.model.Role;
 import biz.jovido.seed.security.model.RoleRepository;

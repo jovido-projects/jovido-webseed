@@ -1,7 +1,7 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.PropertyUtils;
-import biz.jovido.seed.content.ItemService;
+import biz.jovido.seed.util.PropertyUtils;
+import biz.jovido.seed.content.service.ItemService;
 import biz.jovido.seed.content.model.Item;
 import biz.jovido.seed.content.model.Relation;
 import biz.jovido.seed.content.model.RelationPayload;
@@ -73,6 +73,15 @@ public class ItemEditorController {
         editor.setItem(item);
 
         return "redirect:";
+    }
+
+    @RequestMapping(path = "close")
+    protected String close(@ModelAttribute ItemEditor editor,
+                          BindingResult bindingResult) {
+
+        editor.setItem(null);
+
+        return "redirect:/admin/items";
     }
 
     @RequestMapping(path = "add-relation")

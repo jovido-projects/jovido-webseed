@@ -1,5 +1,7 @@
 package biz.jovido.seed;
 
+import biz.jovido.seed.configuration.EnableSeed;
+
 /**
  * @author Stephan Grundner
  */

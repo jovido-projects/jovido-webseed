@@ -1,6 +1,6 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.content.ItemService;
+import biz.jovido.seed.content.service.ItemService;
 import biz.jovido.seed.content.model.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

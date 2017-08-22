@@ -1,10 +1,9 @@
-package biz.jovido.seed;
+package biz.jovido.seed.conversion;
 
 import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * @author Stephan Grundner

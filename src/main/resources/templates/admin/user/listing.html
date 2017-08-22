@@ -1,8 +1,8 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="page(body=~{::default})"
+      th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
-<div th:fragment="default">
+<div th:fragment="main">
     <div class="container">
         <form th:object="${userListing}" method="post">
 
@@ -10,6 +10,8 @@
                 <li><a href="#">Home</a></li>
                 <li class="active"><a th:href="@{/admin/users}">Users</a></li>
             </ol>
+
+            <h1>Users</h1>
 
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
@@ -32,7 +34,7 @@
                                     <a class="btn btn-primary"
                                             th:href="@{/admin/user/create}">
                                         <i class="fa fa-plus"></i>
-                                        New User
+                                        New user
                                     </a>
                                 </div>
                             </th>

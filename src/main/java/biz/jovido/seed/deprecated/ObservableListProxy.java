@@ -1,4 +1,4 @@
-package biz.jovido.seed.util;
+package biz.jovido.seed.deprecated;
 
 import java.util.Collection;
 import java.util.List;

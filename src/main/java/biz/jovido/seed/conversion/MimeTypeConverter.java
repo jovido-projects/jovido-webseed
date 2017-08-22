@@ -1,4 +1,4 @@
-package biz.jovido.seed;
+package biz.jovido.seed.conversion;
 
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;

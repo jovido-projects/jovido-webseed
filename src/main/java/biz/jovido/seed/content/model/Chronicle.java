@@ -1,6 +1,6 @@
 package biz.jovido.seed.content.model;
 
-import biz.jovido.seed.LocaleConverter;
+import biz.jovido.seed.conversion.LocaleConverter;
 
 import javax.persistence.*;
 import java.util.Locale;

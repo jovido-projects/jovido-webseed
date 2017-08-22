@@ -1,4 +1,6 @@
-package biz.jovido.seed.security.model;
+package biz.jovido.seed.security.web;
+
+import biz.jovido.seed.security.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
