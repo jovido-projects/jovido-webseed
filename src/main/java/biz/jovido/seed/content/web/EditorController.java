@@ -18,7 +18,7 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Controller
-@RequestMapping("/admin/items")
+@RequestMapping("/admin/item")
 @SessionAttributes(types = {ItemEditor.class})
 public class EditorController {
 
