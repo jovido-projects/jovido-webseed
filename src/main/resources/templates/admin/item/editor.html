@@ -4,7 +4,7 @@
 
 <div th:fragment="main">
     <div class="container">
-        <form th:object="${itemEditor}" method="post">
+        <form th:object="${itemEditor}" method="post" th:with="item=*{item}">
 
             <ol class="breadcrumb">
                 <li><a href="#">Home</a></li>
@@ -13,6 +13,18 @@
                     <span th:text="*{item}">Item</span>
                 </li>
             </ol>
+
+            <th:block th:if="${item.id != null}">
+                <h1>
+                    <span th:text="#{seed.structure.__${item.structureName}__}">Title</span>
+                    <span th:text="${item.id}">ID</span>
+                </h1>
+            </th:block>
+            <th:block th:if="${item.id == null}">
+                <h1>
+                    New <span th:text="#{seed.structure.__${item.structureName}__}">Title</span>
+                </h1>
+            </th:block>
 
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
@@ -24,10 +36,6 @@
 
                 <!-- Content -->
                 <div class="col-md-7" >
-
-                    <h2>
-                        <span th:text="#{seed.structure.__${structure?.name}__}">Title</span>
-                    </h2>
 
                     <th:block th:with="nestedPath='item',nestingLevel=0">
                         <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
@@ -96,28 +104,33 @@
                     <table class="table ">
                         <tbody>
                         <tr>
-                            <th>ID</th>
-                            <td>
-                                <span th:text="*{item.id}">ID</span>
-                            </td>
+                            <th width="35%">ID</th>
+                            <td th:text="*{item.id}"></td>
                         </tr>
                         <tr>
                             <th>Locale</th>
-                            <td>
-                                <span th:text="*{item.chronicle.locale.displayName}">Locale</span>
-                            </td>
+                            <td th:text="*{item.chronicle.locale.displayName}"></td>
                         </tr>
                         <tr>
                             <th>Structure</th>
-                            <td>
-                                <span th:text="${structure?.name}">Structure</span>
-                            </td>
+                            <td th:text="*{item.structureName}"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Created by</th>
+                            <td th:text="*{item.createdBy?.username}"></td>
                         </tr>
                         <tr>
-                            <th>Chronicle</th>
-                            <td>
-                                <span th:text="*{item.chronicle}">Structure</span>
-                            </td>
+                            <th>Last modified by</th>
+                            <td th:text="*{item.lastModifiedBy?.username}"></td>
+                        </tr>
+                        <tr>
+                            <th>Last modified at</th>
+                            <td th:text="*{item.lastModifiedAt}"></td>
+                        </tr>
+                        <tr>
+                            <th>Created at</th>
+                            <td th:text="*{item.createdAt}"></td>
                         </tr>
 
                         </tbody>

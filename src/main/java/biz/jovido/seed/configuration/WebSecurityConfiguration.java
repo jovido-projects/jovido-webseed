@@ -25,7 +25,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").authenticated()
                 .anyRequest().permitAll()
                 .and().formLogin().loginPage("/login")
-                .and().logout().permitAll()
+                .and().logout().logoutSuccessUrl("/").permitAll()
                 .and().csrf().disable();
     }
 }

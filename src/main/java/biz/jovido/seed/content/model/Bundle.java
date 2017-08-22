@@ -1,5 +1,9 @@
 package biz.jovido.seed.content.model;
 
+import biz.jovido.seed.security.model.User;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,17 +14,20 @@ import java.util.Map;
  * @author Stephan Grundner
  */
 @Entity
+@EntityListeners({AuditingEntityListener.class})
 public final class Bundle {
 
     @Id
     @GeneratedValue
     private Long id;
 
-//    private String structureName;
-
     @OneToMany(mappedBy = "bundle")
     @MapKey(name = "locale")
     private final Map<Locale, Chronicle> chronicles = new HashMap<>();
+
+    @CreatedBy
+    @ManyToOne(optional = false)
+    private User createdBy;
 
     public Long getId() {
         return id;
@@ -30,16 +37,12 @@ public final class Bundle {
         this.id = id;
     }
 
-//    public String getStructureName() {
-//        return structureName;
-//    }
-//
-//    public void setStructureName(String structureName) {
-//        this.structureName = structureName;
-//    }
-
     public Map<Locale, Chronicle> getChronicles() {
         return Collections.unmodifiableMap(chronicles);
+    }
+
+    public Chronicle getChronicle(Locale locale) {
+        return chronicles.get(locale);
     }
 
     public void putChronicle(Chronicle chronicle) {
@@ -50,5 +53,13 @@ public final class Bundle {
         }
 
         chronicle.bundle = this;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

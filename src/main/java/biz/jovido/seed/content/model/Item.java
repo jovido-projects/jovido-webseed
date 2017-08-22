@@ -1,5 +1,12 @@
 package biz.jovido.seed.content.model;
 
+import biz.jovido.seed.security.model.User;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -7,6 +14,7 @@ import java.util.*;
  * @author Stephan Grundner
  */
 @Entity
+@EntityListeners({AuditingEntityListener.class})
 public final class Item {
 
     @Id
@@ -31,6 +39,20 @@ public final class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Payload> payloads = new HashMap<>();
+
+    @CreatedBy
+    @ManyToOne(optional = false)
+    private User createdBy;
+
+    @LastModifiedBy
+    @ManyToOne(optional = false)
+    private User lastModifiedBy;
+
+    @CreatedDate
+    private Date createdAt;
+
+    @LastModifiedDate
+    private Date lastModifiedAt;
 
     public Long getId() {
         return id;
@@ -113,5 +135,37 @@ public final class Item {
         }
 
         payload.setValue(value);
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public User getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(User lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getLastModifiedAt() {
+        return lastModifiedAt;
+    }
+
+    public void setLastModifiedAt(Date lastModifiedAt) {
+        this.lastModifiedAt = lastModifiedAt;
     }
 }

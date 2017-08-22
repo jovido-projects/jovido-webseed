@@ -155,51 +155,76 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>-->
-                <!--<li><a href="#">Link</a></li>-->
+            <th:block th:if="${@securityService.authenticated}">
+                <ul class="nav navbar-nav">
+                    <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>-->
+                    <!--<li><a href="#">Link</a></li>-->
 
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle"
-                       data-toggle="dropdown"
-                       role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-lock"></i>
-                        <span>Security</span>
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a th:href="@{/admin/users}">
-                                <i class="fa fa-users"></i>
-                                <span>Users</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fa fa-shield"></i>
+                            <span>Security</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a th:href="@{/admin/users}">
+                                    <i class="fa fa-users"></i>
+                                    <span>Users</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle"
-                       data-toggle="dropdown"
-                       role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-cog"></i>
-                        <span>Content</span>
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a th:href="@{/admin/items}">
-                                <i class="fa fa-cogs"></i>
-                                <span>Items</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fa fa-database"></i>
+                            <span>Content</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a th:href="@{/admin/items}">
+                                    <i class="fa fa-files-o"></i>
+                                    <span>Items</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-            </ul>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" >
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+
+                            <i class="fa fa-user"></i>
+                            <span th:text="${@securityService.currentUser?.name}">User name</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a th:href="@{/logout}">
+                                    <i class="fa fa-sign-out"></i>
+                                    <span>Sign out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </th:block>
+
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>

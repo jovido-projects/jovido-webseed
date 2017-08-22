@@ -11,6 +11,8 @@
                 <li class="active"><a th:href="@{/admin/items}">Items</a></li>
             </ol>
 
+            <h1>Items</h1>
+
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
                     <span th:text="${err}">Error</span>
@@ -26,14 +28,16 @@
                         <thead>
                         <tr>
                             <th width="1%">ID</th>
-                            <th width="5%">Structure</th>
-                            <th width="5%">Locale</th>
-                            <th>Status</th>
+                            <th>Structure</th>
+                            <th nowrap="nowrap">Locale</th>
+                            <th nowrap="nowrap">Created by</th>
+                            <th nowrap="nowrap">Last modified at</th>
+                            <th width="99%"></th>
                             <th>
                                 <div class="btn-group btn-group-xs pull-right">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa fa-plus"></i>
-                                        Action <span class="caret"></span>
+                                        New item <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li th:each="structure : ${@structureService.findStandaloneStructures()}">
@@ -57,9 +61,9 @@
                             <td>
                                 <span th:text="${item.chronicle.locale.displayName}">Locale</span>
                             </td>
-                            <td>
-                                <span>Active</span>
-                            </td>
+                            <td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>
+                            <td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>
+                            <td></td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">
                                     <button class="btn btn-default"

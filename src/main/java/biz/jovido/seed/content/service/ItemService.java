@@ -2,6 +2,7 @@ package biz.jovido.seed.content.service;
 
 import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class ItemService {
 
     @Autowired
     private StructureService structureService;
+
+    @Autowired
+    private AuditingHandler auditingHandler;
+
 
 //    public Structure getStructure(Bundle bundle) {
 //        String name = bundle.getStructureName();
@@ -93,6 +98,7 @@ public class ItemService {
 
     @Transactional
     public Item saveItem(Item item) {
+        auditingHandler.markModified(item);
         return entityManager.merge(item);
     }
 
