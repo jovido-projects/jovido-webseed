@@ -34,6 +34,13 @@ public class StructureConfiguration implements StructureConfigurer {
         return new RelationAttributeConfigurer(this, attribute);
     }
 
+    @Override
+    public StructureConfigurer setStandalone(boolean standalone) {
+        structure.setStandalone(standalone);
+
+        return this;
+    }
+
     public StructureConfiguration(Structure structure, StructureService structureService) {
         this.structure = structure;
         this.structureService = structureService;

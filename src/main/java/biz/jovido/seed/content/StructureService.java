@@ -5,8 +5,12 @@ import biz.jovido.seed.content.model.StructureConfiguration;
 import biz.jovido.seed.content.model.StructureConfigurer;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -22,6 +26,16 @@ public class StructureService {
 
     private void putStructure(Structure structure) {
         structures.put(structure.getName(), structure);
+    }
+
+    public Collection<Structure> getAllStructures() {
+        return Collections.unmodifiableCollection(structures.values());
+    }
+
+    public List<Structure> findStandaloneStructures() {
+        return getAllStructures().stream()
+                .filter(Structure::isStandalone)
+                .collect(Collectors.toList());
     }
 
     public StructureConfigurer configure(String name) {

@@ -4,11 +4,11 @@
 
 <div th:fragment="default">
     <div class="container">
-        <form th:object="${itemListing}" method="post">
+        <form th:object="${userListing}" method="post">
 
             <ol class="breadcrumb">
                 <li><a href="#">Home</a></li>
-                <li class="active"><a th:href="@{/admin/items}">Items</a></li>
+                <li class="active"><a th:href="@{/admin/users}">Users</a></li>
             </ol>
 
             <ul th:if="${#fields.hasErrors('*')}">
@@ -26,45 +26,31 @@
                         <thead>
                         <tr>
                             <th width="1%">ID</th>
-                            <th width="5%">Structure</th>
-                            <th width="5%">Locale</th>
-                            <th>Status</th>
+                            <th width="1%">Username</th>
                             <th>
                                 <div class="btn-group btn-group-xs pull-right">
-                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="btn btn-primary"
+                                            th:href="@{/admin/user/create}">
                                         <i class="fa fa-plus"></i>
-                                        Action <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li th:each="structure : ${@structureService.findStandaloneStructures()}">
-                                            <a th:href="@{/admin/item/create(structure=${structure.name})}">
-                                                <span th:text="${structure.name}">Structure Name</span>
-                                            </a>
-                                        </li>
-                                    </ul>
+                                        New User
+                                    </a>
                                 </div>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="item : *{items}">
+                        <tr th:each="user : *{users}">
                             <td>
-                                <span th:text="${item.id}">ID</span>
+                                <span th:text="${user.id}">ID</span>
                             </td>
                             <td>
-                                <span th:text="${item.structureName}">Structure</span>
-                            </td>
-                            <td>
-                                <span th:text="${item.chronicle.locale.displayName}">Locale</span>
-                            </td>
-                            <td>
-                                <span>Active</span>
+                                <span th:text="${user.name}">Username</span>
                             </td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">
                                     <button class="btn btn-default"
-                                            th:formaction="@{/admin/item/edit(
-                                            item=${item.id})}">
+                                            th:formaction="@{/admin/user/edit(
+                                            user=${user.id})}">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                     <button class="btn btn-default">

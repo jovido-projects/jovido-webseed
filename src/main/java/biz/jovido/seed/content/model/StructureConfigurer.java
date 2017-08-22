@@ -7,6 +7,7 @@ public interface StructureConfigurer {
 
     TextAttributeConfigurer addTextAttribute(String name);
     RelationAttributeConfigurer addRelationAttribute(String name);
+    StructureConfigurer setStandalone(boolean standalone);
 
     Structure getStructure();
 }

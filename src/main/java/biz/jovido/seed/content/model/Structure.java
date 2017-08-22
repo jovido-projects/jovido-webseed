@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class Structure {
 
     private String name;
+    private boolean standalone;
 
     private final Map<String, Attribute> attributes = new HashMap<>();
 
@@ -21,6 +22,14 @@ public class Structure {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isStandalone() {
+        return standalone;
+    }
+
+    public void setStandalone(boolean standalone) {
+        this.standalone = standalone;
     }
 
     public List<String> getAttributeNames() {

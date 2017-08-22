@@ -29,6 +29,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
         return configuration.addRelationAttribute(name);
     }
 
+    @Override
+    public StructureConfigurer setStandalone(boolean standalone) {
+        return configuration.setStandalone(standalone);
+    }
+
     public AttributeConfigurer(StructureConfiguration configuration, A attribute) {
         this.configuration = configuration;
         this.attribute = attribute;
