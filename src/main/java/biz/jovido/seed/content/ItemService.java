@@ -2,6 +2,8 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,9 @@ public class ItemService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Autowired
     private StructureService structureService;
@@ -76,6 +81,10 @@ public class ItemService {
         return createItem(bundle, structureName, locale);
     }
 
+    public Item getItem(Long id) {
+        return itemRepository.findOne(id);
+    }
+
     public List<Locale> getAllSupportedLocales() {
         return Stream.of("de", "en", "it", "es")
                 .map(Locale::forLanguageTag)
@@ -85,6 +94,11 @@ public class ItemService {
     @Transactional
     public Item saveItem(Item item) {
         return entityManager.merge(item);
+    }
+
+    public Page<Item> findAllItems(int offset, int max) {
+//        return itemRepository.findAll(new PageRequest(offset, max));
+        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
     }
 
     public ItemService(StructureService structureService) {

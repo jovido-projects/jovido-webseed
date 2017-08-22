@@ -1,6 +1,8 @@
 package biz.jovido.seed.content.model;
 
 import biz.jovido.seed.util.ObservableListProxy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,14 +21,13 @@ public final class Relation {
     @OneToOne(mappedBy = "relation")
     RelationPayload source;
 
-//    @ManyToOne
-//    Item target;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private final List<Item> targets = new ArrayList<>();
 
-    @Transient
-    private final ObservableListProxy<Item> targetsObservation =
-            new ObservableListProxy<>(() -> targets);
+//    @Transient
+//    private final ObservableListProxy<Item> targetsObservation =
+//            new ObservableListProxy<>(() -> targets);
 
     public Long getId() {
         return id;
@@ -36,7 +37,7 @@ public final class Relation {
         return source;
     }
 
-    public ObservableListProxy<Item> getTargets() {
-        return targetsObservation;
+    public List<Item> getTargets() {
+        return targets;
     }
 }

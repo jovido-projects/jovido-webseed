@@ -13,13 +13,25 @@
                 <span th:text="${structure.name}">Relation name</span>
 
                 <div class="btn-group btn-group-xs pull-right">
-                    <button class="btn btn-default">
+                    <button class="btn btn-default"
+                            th:formaction="@{move-relation-up(
+                            nested-path=${nestedPath},
+                            attribute=${attribute.name},
+                            index=${targetItr.index})}">
                         <i class="fa fa-arrow-up"></i>
                     </button>
-                    <button class="btn btn-default">
+                    <button class="btn btn-default"
+                            th:formaction="@{move-relation-down(
+                            nested-path=${nestedPath},
+                            attribute=${attribute.name},
+                            index=${targetItr.index})}">
                         <i class="fa fa-arrow-down"></i>
                     </button>
-                    <button class="btn btn-default">
+                    <button class="btn btn-default"
+                            th:formaction="@{remove-relation(
+                            nested-path=${nestedPath},
+                            attribute=${attribute.name},
+                            index=${targetItr.index})}">
                         <i class="fa fa-remove"></i>
                     </button>
                 </div>

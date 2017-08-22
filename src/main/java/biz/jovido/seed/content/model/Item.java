@@ -25,6 +25,7 @@ public final class Item {
     private final List<Item> children = new ArrayList<>();
 
     @ManyToMany(mappedBy = "targets")
+//    @Fetch(value = FetchMode.SUBSELECT)
     private final List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
