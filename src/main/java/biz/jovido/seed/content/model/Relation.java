@@ -39,11 +39,4 @@ public final class Relation {
     public ObservableListProxy<Item> getTargets() {
         return targetsObservation;
     }
-
-    @Deprecated
-    public void addTarget(Item target) {
-        if (getTargets().add(target)) {
-            target.addRelation(this);
-        }
-    }
 }

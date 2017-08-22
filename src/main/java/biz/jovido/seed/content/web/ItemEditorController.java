@@ -1,8 +1,12 @@
 package biz.jovido.seed.content.web;
 
+import biz.jovido.seed.PropertyUtils;
 import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.content.model.Item;
+import biz.jovido.seed.content.model.Relation;
+import biz.jovido.seed.content.model.RelationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -61,6 +65,16 @@ public class ItemEditorController {
                                  @RequestParam(name = "structure") String structureName,
                                  BindingResult bindingResult) {
 
+        String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
+        RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
+        Relation relation = payload.getValue();
+        if (relation == null) {
+            relation = new Relation();
+            payload.setValue(relation);
+        }
+        Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
+        target.setChronicle(null);
+        relation.getTargets().add(target);
 
         return "redirect:";
     }

@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "kind")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "attribute_name"}))
-public abstract class Payload {
+public abstract class Payload<T> {
 
     @Id
     @GeneratedValue
@@ -37,6 +37,6 @@ public abstract class Payload {
         return attributeName;
     }
 
-    public abstract Object getValue();
-    public abstract void setValue(Object value);
+    public abstract T getValue();
+    public abstract void setValue(T value);
 }
