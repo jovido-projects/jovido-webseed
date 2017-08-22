@@ -1,16 +1,16 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <label>
-    <span th:text="${field.name}">Field name</span>
+    <span th:text="${attribute.name}">Field name</span>
 </label>
 <div class="">
     <ul class="list-group" >
 
         <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__"
-            th:each="relation,relationItr : ${field.relations}">
+            th:each="target,targetItr : ${payload?.value?.targets}">
 
             <h4>
-                <span th:text="${relationItr.index + 1}">Relation index</span>.
-                <span th:text="${relation.structure.name}">Relation name</span>
+                <span th:text="${targetItr.index + 1}">Target index</span>.
+                <!--<span th:text="${relation.structure.name}">Relation name</span>-->
 
                 <div class="btn-group btn-group-xs pull-right">
                     <button class="btn btn-default">
@@ -25,7 +25,7 @@
                 </div>
             </h4>
 
-            <th:block th:with="nestedPath='__${nestedPath}__fields[__${field.name}__].relations[__${relationItr.index}__].'">
+            <th:block th:with="nestedPath='__${nestedPath}__.payloads[__${attribute.name}__].targets[__${targetItr.index}__].'">
                 <th:block th:replace="admin/item/editor::fields" />
             </th:block>
 
@@ -37,12 +37,12 @@
                     Append <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li th:each="allowedStructure : ${field.allowedStructures}">
+                    <li th:each="structureName : ${attribute.acceptedStructureNames}">
                         <a th:href="@{add-relation(
                     nested-path=${nestedPath},
-                    attribute=${field.name},
-                    structure=${allowedStructure.name})}">
-                            <span th:text="${allowedStructure.name}">Name</span>
+                    attribute=${attribute.name},
+                    structure=${structureName})}">
+                            <span th:text="${structureName}">Name</span>
                         </a>
                     </li>
                 </ul>

@@ -37,6 +37,13 @@ public class ItemService {
         return structureService.getStructure(structureName);
     }
 
+    public Attribute getAttribute(Payload payload) {
+        Item item = payload.getItem();
+        Structure structure = getStructure(item);
+        String attributeName = payload.getAttributeName();
+        return structure.getAttribute(attributeName);
+    }
+
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {

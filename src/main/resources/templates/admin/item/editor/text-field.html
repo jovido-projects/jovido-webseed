@@ -1,7 +1,7 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="form-group">
-    <label th:text="${field.name}">Label</label>
+    <label th:text="${attribute.name}">Label</label>
     <input type="text" class="form-control"
-           th:field="*{__${nestedPath}__fields[__${field.name}__].value}">
+           th:field="*{__${nestedPath}__.payloads[__${attribute.name}__].value}">
 </div>
 </html>
