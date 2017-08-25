@@ -13,12 +13,19 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
         return configuration.getStructure();
     }
 
-//    @SuppressWarnings("unchecked")
-//    public C setCapacity(int capacity) {
-//        attribute.setCapacity(capacity);
-//
-//        return (C) this;
-//    }
+    @SuppressWarnings("unchecked")
+    public C setCapacity(int capacity) {
+        attribute.setCapacity(capacity);
+
+        return (C) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public C setRequired(int required) {
+        attribute.setRequired(required);
+
+        return (C) this;
+    }
 
     @Override
     public TextAttributeConfigurer addTextAttribute(String name) {

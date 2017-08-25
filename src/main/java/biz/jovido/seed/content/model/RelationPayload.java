@@ -8,19 +8,21 @@ import javax.persistence.OneToOne;
  * @author Stephan Grundner
  */
 @Entity
-public class RelationPayload extends Payload<Relation> {
+public class RelationPayload extends Payload {
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Relation relation;
+    private Item item;
 
     @Override
-    public Relation getValue() {
-        return relation;
+    public Item getValue() {
+        return item;
     }
 
     @Override
-    public void setValue(Relation value) {
-        relation = value;
-        relation.source = this;
+    public void setValue(Object value) {
+        item = (Item) value;
+//        item.source = this;
+
+        item.relations.add(this);
     }
 }

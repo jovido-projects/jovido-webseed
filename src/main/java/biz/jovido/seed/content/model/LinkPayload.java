@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
  * @author Stephan Grundner
  */
 @Entity
-public class LinkPayload extends Payload<Link> {
+public class LinkPayload extends Payload {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Link link;
@@ -19,7 +19,7 @@ public class LinkPayload extends Payload<Link> {
     }
 
     @Override
-    public void setValue(Link value) {
-        link = value;
+    public void setValue(Object value) {
+        link = (Link) value;
     }
 }

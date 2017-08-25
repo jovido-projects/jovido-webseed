@@ -1,7 +1,53 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="form-group">
-    <label th:text="${attribute.name}">Label</label>
-    <input type="text" class="form-control"
-           th:field="*{__${nestedPath}__.payloads[__${attribute.name}__].value}">
-</div>
+<label>
+    <span th:text="${attribute.name}">Field name</span>
+</label>
+<ul class="list-group">
+    <li class="list-group-item" th:each="payload,payloadItr : ${sequence.payloads}">
+        <div class="input-group">
+            <div class="input-group-addon">
+                <!--<span th:text="${payloadItr.index + 1}">#</span>-->
+                <span th:text="${payload.ordinal + 1}">#</span>
+            </div>
+            <input type="text" class="form-control"
+                   th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
+            <div class="input-group-btn input-group-xs">
+                <button class="btn btn-default"
+                        th:disabled="${payloadItr.index == 0} ? disabled : _"
+                        th:formaction="@{move-payload-up(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <button class="btn btn-default"
+                        th:disabled="${payloadItr.index == sequence.length() - 1} ? disabled : _"
+                        th:formaction="@{move-payload-down(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+                    <i class="fa fa-arrow-down"></i>
+                </button>
+                <button class="btn btn-default"
+                        th:formaction="@{remove-payload(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+                    <i class="fa fa-remove"></i>
+                </button>
+            </div>
+        </div>
+    </li>
+    <li class="list-group-item">
+        <div class="btn-group">
+            <button class="btn btn-default"
+                    th:formaction="@{append(
+                    nested-path=${nestedPath},
+                    attribute=${attribute.name})}">
+                <span>Append</span>
+                <span th:text="${attribute.name}">Attribute name</span>
+            </button>
+        </div>
+    </li>
+</ul>
 </html>

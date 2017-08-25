@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.*;
@@ -32,13 +33,9 @@ public final class Item {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final List<Item> children = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "targets")
-//    @Fetch(value = FetchMode.SUBSELECT)
-    private final List<Relation> relations = new ArrayList<>();
-
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
-    private final Map<String, Payload> payloads = new HashMap<>();
+    private final Map<String, Sequence> sequences = new HashMap<>();
 
     @CreatedBy
     @ManyToOne(optional = false)
@@ -53,6 +50,9 @@ public final class Item {
 
     @LastModifiedDate
     private Date lastModifiedAt;
+
+    @OneToMany(mappedBy = "item")
+    List<RelationPayload> relations = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -90,51 +90,53 @@ public final class Item {
         return Collections.unmodifiableList(children);
     }
 
-    public List<Relation> getRelations() {
-        return Collections.unmodifiableList(relations);
+    public Map<String, Sequence> getSequences() {
+        return Collections.unmodifiableMap(sequences);
     }
 
-    /*default*/ void addRelation(Relation relation) {
-        relations.add(relation);
+    public Sequence getSequence(String attributeName) {
+        return sequences.get(attributeName);
     }
 
-    public Map<String, Payload> getPayloads() {
-        return Collections.unmodifiableMap(payloads);
-    }
-
-    public Payload getPayload(String attributeName) {
-        return payloads.get(attributeName);
-    }
-
-    public void setPayload(String attributeName, Payload payload) {
-        Payload replaced = payloads.put(attributeName, payload);
+    public void setSequence(String attributeName, Sequence sequence) {
+        Sequence replaced = sequences.put(attributeName, sequence);
         if (replaced != null) {
-            replaced.item = null;
-            replaced.attributeName = null;
+            replaced.setItem(null);
+            replaced.setAttributeName(null);
         }
 
-        if (payload != null) {
-            payload.item = this;
-            payload.attributeName = attributeName;
+        if (sequence != null) {
+            sequence.setItem(this);
+            sequence.setAttributeName(attributeName);
         }
     }
 
-    public Object getValue(String attributeName) {
-        Payload payload = getPayload(attributeName);
-        if (payload == null) {
-            throw new PayloadNotFoundException(attributeName);
-        }
+    public Object getValue(String attributeName, int index) {
+        Sequence sequence = getSequence(attributeName);
+        Assert.notNull(sequence, String.format(
+                "No sequence was set for attribute [%s]", attributeName));
 
+        List<Payload> payloads = sequence.getPayloads();
+        Payload payload = payloads.get(index);
         return payload.getValue();
     }
 
-    public void setValue(String attributeName, Object value) {
-        Payload payload = getPayload(attributeName);
-        if (payload == null) {
-            throw new PayloadNotFoundException(attributeName);
-        }
+    public Object getValue(String attributeName) {
+        return getValue(attributeName, 0);
+    }
 
+    public void setValue(String attributeName, int index, Object value) {
+        Sequence sequence = getSequence(attributeName);
+        Assert.notNull(sequence, String.format(
+                "No sequence was set for attribute [%s]", attributeName));
+
+        List<Payload> payloads = sequence.getPayloads();
+        Payload payload = payloads.get(index);
         payload.setValue(value);
+    }
+
+    public <T> void setValue(String attributeName, T value) {
+        setValue(attributeName, 0, value);
     }
 
     public User getCreatedBy() {

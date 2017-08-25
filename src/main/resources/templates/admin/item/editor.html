@@ -39,15 +39,15 @@
 
                     <th:block th:with="nestedPath='item',nestingLevel=0">
                         <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
-                            <th:block th:each="e : *{__${nestedPath}__.payloads}"
-                                      th:with="payload=${e.value}">
+                            <th:block th:each="e : *{__${nestedPath}__.sequences}"
+                                      th:with="sequence=${e.value}">
 
-                                <th:block th:with="attribute=${@itemService.getAttribute(payload)}">
+                                <th:block th:with="attribute=${@itemService.getAttribute(sequence)}">
                                     <th:block th:switch="${attribute?.class?.simpleName}">
                                         <th:block th:case="'TextAttribute'">
-                                            <th:block th:if="${attribute.multiline}">
-                                                <th:block th:replace="admin/item/editor/multiline-text-field" />
-                                            </th:block>
+                                            <!--<th:block th:if="${attribute.multiline}">-->
+                                                <!--<th:block th:replace="admin/item/editor/multiline-text-field" />-->
+                                            <!--</th:block>-->
                                             <th:block th:unless="${attribute.multiline}">
                                                 <th:block th:replace="admin/item/editor/text-field" />
                                             </th:block>

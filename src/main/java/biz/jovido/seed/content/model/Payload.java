@@ -8,18 +8,18 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "kind")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "attribute_name"}))
-public abstract class Payload<T> {
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sequence_id", "ordinal"}))
+public abstract class Payload {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    Item item;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sequence_id")
+    private Sequence sequence;
 
-    @Column(name = "attribute_name")
-    String attributeName;
+    private int ordinal;
 
     public Long getId() {
         return id;
@@ -29,14 +29,22 @@ public abstract class Payload<T> {
         this.id = id;
     }
 
-    public Item getItem() {
-        return item;
+    public Sequence getSequence() {
+        return sequence;
     }
 
-    public String getAttributeName() {
-        return attributeName;
+    /*default*/ void setSequence(Sequence sequence) {
+        this.sequence = sequence;
     }
 
-    public abstract T getValue();
-    public abstract void setValue(T value);
+    public int getOrdinal() {
+        return ordinal;
+    }
+
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
+    }
+
+    public abstract Object getValue();
+    public abstract void setValue(Object value);
 }

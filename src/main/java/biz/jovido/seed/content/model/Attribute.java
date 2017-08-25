@@ -11,6 +11,9 @@ public abstract class Attribute {
 
     private int ordinal;
 
+    private int capacity = Integer.MAX_VALUE;
+    private int required = 0;
+
     public String getName() {
         return name;
     }
@@ -25,6 +28,22 @@ public abstract class Attribute {
 
     public void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getRequired() {
+        return required;
+    }
+
+    public void setRequired(int required) {
+        this.required = required;
     }
 
     public Structure getStructure() {

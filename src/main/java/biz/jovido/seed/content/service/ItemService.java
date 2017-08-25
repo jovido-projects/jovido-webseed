@@ -47,21 +47,31 @@ public class ItemService {
         return structureService.getStructure(structureName);
     }
 
-    public Attribute getAttribute(Payload payload) {
-        Item item = payload.getItem();
+    public Attribute getAttribute(Sequence sequence) {
+        Item item = sequence.getItem();
         Structure structure = getStructure(item);
-        String attributeName = payload.getAttributeName();
+        String attributeName = sequence.getAttributeName();
         return structure.getAttribute(attributeName);
+    }
+
+    public Attribute getAttribute(Payload payload) {
+        return getAttribute(payload.getSequence());
     }
 
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
             Attribute attribute = structure.getAttribute(attributeName);
-            Payload payload = item.getPayload(attributeName);
-            if (payload == null) {
-                payload = attribute.createPayload();
-                item.setPayload(attributeName, payload);
+            Sequence sequence = item.getSequence(attributeName);
+            if (sequence == null) {
+                sequence = new Sequence();
+                item.setSequence(attributeName, sequence);
+            }
+
+            int remaining = attribute.getRequired() - sequence.length();
+            while (remaining-- > 0) {
+                Payload payload = attribute.createPayload();
+                sequence.addPayload(payload);
             }
         }
     }

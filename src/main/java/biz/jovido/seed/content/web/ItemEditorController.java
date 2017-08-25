@@ -1,10 +1,8 @@
 package biz.jovido.seed.content.web;
 
-import biz.jovido.seed.util.PropertyUtils;
+import biz.jovido.seed.content.model.*;
 import biz.jovido.seed.content.service.ItemService;
-import biz.jovido.seed.content.model.Item;
-import biz.jovido.seed.content.model.Relation;
-import biz.jovido.seed.content.model.RelationPayload;
+import biz.jovido.seed.util.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -12,8 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -28,7 +24,8 @@ public class ItemEditorController {
     private ItemService itemService;
 
     @InitBinder
-    private void initBinder(WebDataBinder dataBinder) {}
+    private void initBinder(WebDataBinder dataBinder) {
+    }
 
     @ModelAttribute
     protected ItemEditor editor() {
@@ -55,8 +52,8 @@ public class ItemEditorController {
 
     @RequestMapping(path = "edit")
     protected String edit(@ModelAttribute ItemEditor editor,
-                            @RequestParam(name = "item") Long itemId,
-                            BindingResult bindingResult) {
+                          @RequestParam(name = "item") Long itemId,
+                          BindingResult bindingResult) {
 
         Item item = itemService.getItem(itemId);
         editor.setItem(item);
@@ -77,48 +74,110 @@ public class ItemEditorController {
 
     @RequestMapping(path = "close")
     protected String close(@ModelAttribute ItemEditor editor,
-                          BindingResult bindingResult) {
+                           BindingResult bindingResult) {
 
         editor.setItem(null);
 
         return "redirect:/admin/items";
     }
 
-    @RequestMapping(path = "add-relation")
-    protected String addRelation(@ModelAttribute ItemEditor editor,
-                                 @RequestParam(name = "nested-path") String nestedPath,
-                                 @RequestParam(name = "attribute") String attributeName,
-                                 @RequestParam(name = "structure") String structureName,
-                                 BindingResult bindingResult) {
+    @RequestMapping(path = "append", params = {"structure"})
+    protected String append(@ModelAttribute ItemEditor editor,
+                            @RequestParam(name = "nested-path") String nestedPath,
+                            @RequestParam(name = "attribute") String attributeName,
+                            @RequestParam(name = "structure") String structureName,
+                            BindingResult bindingResult) {
 
-        String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
-        RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
-        Relation relation = payload.getValue();
-        if (relation == null) {
-            relation = new Relation();
-            payload.setValue(relation);
-        }
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
+        Attribute attribute = itemService.getAttribute(sequence);
+        RelationPayload payload = (RelationPayload) attribute.createPayload();
         Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
         target.setChronicle(null);
-        relation.getTargets().add(target);
+        payload.setValue(target);
+        sequence.addPayload(payload);
 
         return "redirect:";
     }
 
-    @RequestMapping(path = "remove-relation")
-    protected String removeRelation(@ModelAttribute ItemEditor editor,
-                                 @RequestParam(name = "nested-path") String nestedPath,
-                                 @RequestParam(name = "attribute") String attributeName,
-                                 @RequestParam(name = "index") int index,
-                                 BindingResult bindingResult) {
+    @RequestMapping(path = "append", params = {"!structure"})
+    protected String append(@ModelAttribute ItemEditor editor,
+                            @RequestParam(name = "nested-path") String nestedPath,
+                            @RequestParam(name = "attribute") String attributeName,
+                            BindingResult bindingResult) {
 
-        String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
-        RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
-        Relation relation = payload.getValue();
-        relation.getTargets().remove(index);
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
+        Attribute attribute = itemService.getAttribute(sequence);
+        Payload payload = attribute.createPayload();
+        sequence.addPayload(payload);
 
         return "redirect:";
     }
+
+    @RequestMapping(path = "move-payload-up")
+    protected String movePayloadUp(@ModelAttribute ItemEditor editor,
+                                   @RequestParam(name = "nested-path") String nestedPath,
+                                   @RequestParam(name = "attribute") String attributeName,
+                                   @RequestParam(name = "index") int index,
+                                   BindingResult bindingResult) {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
+        sequence.movePayload(index, index - 1);
+
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "move-payload-down")
+    protected String movePayloadDown(@ModelAttribute ItemEditor editor,
+                                   @RequestParam(name = "nested-path") String nestedPath,
+                                   @RequestParam(name = "attribute") String attributeName,
+                                   @RequestParam(name = "index") int index,
+                                   BindingResult bindingResult) {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
+        sequence.movePayload(index, index + 1);
+
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "remove-payload")
+    protected String removePayload(@ModelAttribute ItemEditor editor,
+                                   @RequestParam(name = "nested-path") String nestedPath,
+                                   @RequestParam(name = "attribute") String attributeName,
+                                   @RequestParam(name = "index") int index,
+                                   BindingResult bindingResult) {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
+        sequence.removePayload(index);
+
+        return "redirect:";
+    }
+
+
+//    @RequestMapping(path = "add-relation")
+//    protected String addRelation(@ModelAttribute ItemEditor editor,
+//                                 @RequestParam(name = "nested-path") String nestedPath,
+//                                 @RequestParam(name = "attribute") String attributeName,
+//                                 @RequestParam(name = "structure") String structureName,
+//                                 BindingResult bindingResult) {
+//
+//        String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
+//        RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
+////        Relation relation = payload.getValue();
+////        if (relation == null) {
+////            relation = new Relation();
+////            payload.setValue(relation);
+////        }
+////        Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
+////        target.setChronicle(null);
+////        relation.getTargets().add(target);
+//
+//        return "redirect:";
+//    }
 
     @RequestMapping(path = "move-relation-up")
     protected String moveRelationUp(@ModelAttribute ItemEditor editor,
@@ -129,27 +188,27 @@ public class ItemEditorController {
 
         String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
         RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
-        Relation relation = payload.getValue();
-        List<Item> targets = relation.getTargets();
-
-        Collections.swap(targets, index, index - 1);
+//        Relation relation = payload.getValue();
+//        List<Item> targets = relation.getTargets();
+//
+//        Collections.swap(targets, index, index - 1);
 
         return "redirect:";
     }
 
     @RequestMapping(path = "move-relation-down")
     protected String moveRelationDown(@ModelAttribute ItemEditor editor,
-                                    @RequestParam(name = "nested-path") String nestedPath,
-                                    @RequestParam(name = "attribute") String attributeName,
-                                    @RequestParam(name = "index") int index,
-                                    BindingResult bindingResult) {
+                                      @RequestParam(name = "nested-path") String nestedPath,
+                                      @RequestParam(name = "attribute") String attributeName,
+                                      @RequestParam(name = "index") int index,
+                                      BindingResult bindingResult) {
 
         String propertyPath = String.format("%s.payloads[%s]", nestedPath, attributeName);
         RelationPayload payload = (RelationPayload) PropertyUtils.getPropertyValue(editor, propertyPath);
-        Relation relation = payload.getValue();
-        List<Item> targets = relation.getTargets();
-
-        Collections.swap(targets, index, index + 1);
+//        Relation relation = payload.getValue();
+//        List<Item> targets = relation.getTargets();
+//
+//        Collections.swap(targets, index, index + 1);
 
         return "redirect:";
     }
