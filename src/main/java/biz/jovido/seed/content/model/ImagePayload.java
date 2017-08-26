@@ -13,13 +13,11 @@ public class ImagePayload extends Payload {
     @OneToOne(cascade = CascadeType.ALL)
     private Image image;
 
-    @Override
-    public Image getValue() {
+    public Image getImage() {
         return image;
     }
 
-    @Override
-    public void setValue(Object value) {
-        image = (Image) value;
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

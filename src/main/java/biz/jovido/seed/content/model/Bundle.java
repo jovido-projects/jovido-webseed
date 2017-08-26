@@ -5,10 +5,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -20,6 +17,15 @@ public final class Bundle {
     @Id
     @GeneratedValue
     private Long id;
+
+    @ManyToOne
+    private Bundle parent;
+
+    private int ordinal;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    @OrderBy("ordinal")
+    private final List<Bundle> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "bundle")
     @MapKey(name = "locale")
@@ -35,6 +41,35 @@ public final class Bundle {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Bundle getParent() {
+        return parent;
+    }
+
+    /*default*/ void setParent(Bundle parent) {
+        this.parent = parent;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
+    }
+
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
+    }
+
+    public List<Bundle> getChildren() {
+        return Collections.unmodifiableList(children);
+    }
+
+    public boolean addChild(Bundle child) {
+        if (children.add(child)) {
+            child.setParent(this);
+            return true;
+        }
+
+        return false;
     }
 
     public Map<Locale, Chronicle> getChronicles() {

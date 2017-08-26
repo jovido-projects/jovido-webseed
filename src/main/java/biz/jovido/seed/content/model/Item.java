@@ -27,12 +27,6 @@ public final class Item {
 
     private String structureName;
 
-    @ManyToOne
-    private Item parent;
-
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private final List<Item> children = new ArrayList<>();
-
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
@@ -51,8 +45,8 @@ public final class Item {
     @LastModifiedDate
     private Date lastModifiedAt;
 
-    @OneToMany(mappedBy = "item")
-    List<RelationPayload> relations = new ArrayList<>();
+    @OneToMany(mappedBy = "target")
+    List<Relation> relations = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -78,18 +72,6 @@ public final class Item {
         this.structureName = structureName;
     }
 
-    public Item getParent() {
-        return parent;
-    }
-
-    public void setParent(Item parent) {
-        this.parent = parent;
-    }
-
-    public List<Item> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
-
     public Map<String, Sequence> getSequences() {
         return Collections.unmodifiableMap(sequences);
     }
@@ -111,33 +93,33 @@ public final class Item {
         }
     }
 
-    public Object getValue(String attributeName, int index) {
-        Sequence sequence = getSequence(attributeName);
-        Assert.notNull(sequence, String.format(
-                "No sequence was set for attribute [%s]", attributeName));
-
-        List<Payload> payloads = sequence.getPayloads();
-        Payload payload = payloads.get(index);
-        return payload.getValue();
-    }
-
-    public Object getValue(String attributeName) {
-        return getValue(attributeName, 0);
-    }
-
-    public void setValue(String attributeName, int index, Object value) {
-        Sequence sequence = getSequence(attributeName);
-        Assert.notNull(sequence, String.format(
-                "No sequence was set for attribute [%s]", attributeName));
-
-        List<Payload> payloads = sequence.getPayloads();
-        Payload payload = payloads.get(index);
-        payload.setValue(value);
-    }
-
-    public <T> void setValue(String attributeName, T value) {
-        setValue(attributeName, 0, value);
-    }
+//    public Object getValue(String attributeName, int index) {
+//        Sequence sequence = getSequence(attributeName);
+//        Assert.notNull(sequence, String.format(
+//                "No sequence was set for attribute [%s]", attributeName));
+//
+//        List<Payload> payloads = sequence.getPayloads();
+//        Payload payload = payloads.get(index);
+//        return payload.getValue();
+//    }
+//
+//    public Object getValue(String attributeName) {
+//        return getValue(attributeName, 0);
+//    }
+//
+//    public void setValue(String attributeName, int index, Object value) {
+//        Sequence sequence = getSequence(attributeName);
+//        Assert.notNull(sequence, String.format(
+//                "No sequence was set for attribute [%s]", attributeName));
+//
+//        List<Payload> payloads = sequence.getPayloads();
+//        Payload payload = payloads.get(index);
+//        payload.setValue(value);
+//    }
+//
+//    public <T> void setValue(String attributeName, T value) {
+//        setValue(attributeName, 0, value);
+//    }
 
     public User getCreatedBy() {
         return createdBy;

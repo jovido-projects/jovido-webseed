@@ -94,7 +94,8 @@ public class ItemEditorController {
         RelationPayload payload = (RelationPayload) attribute.createPayload();
         Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
         target.setChronicle(null);
-        payload.setValue(target);
+        Relation relation = payload.getRelation();
+        relation.setTarget(target);
         sequence.addPayload(payload);
 
         return "redirect:";

@@ -21,7 +21,7 @@
             </div>
         </h4>
 
-        <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].value'">
+        <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].relation.target'">
             <th:block th:replace="admin/item/editor::fields" />
         </th:block>
 

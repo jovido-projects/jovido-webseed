@@ -11,18 +11,15 @@ import javax.persistence.OneToOne;
 public class RelationPayload extends Payload {
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Item item;
+    private Relation relation;
 
-    @Override
-    public Item getValue() {
-        return item;
+    public Relation getRelation() {
+        return relation;
     }
 
-    @Override
-    public void setValue(Object value) {
-        item = (Item) value;
-//        item.source = this;
+    public void setRelation(Relation relation) {
+        this.relation = relation;
 
-        item.relations.add(this);
+        relation.setSource(this);
     }
 }

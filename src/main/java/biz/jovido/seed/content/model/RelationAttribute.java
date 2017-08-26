@@ -35,6 +35,8 @@ public class RelationAttribute extends Attribute {
 
     @Override
     public RelationPayload createPayload() {
-        return new RelationPayload();
+        RelationPayload payload = new RelationPayload();
+        payload.setRelation(new Relation());
+        return payload;
     }
 }

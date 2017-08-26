@@ -12,13 +12,11 @@ public class TextPayload extends Payload {
 
     private String text;
 
-    @Override
-    public String getValue() {
+    public String getText() {
         return text;
     }
 
-    @Override
-    public void setValue(Object value) {
-        text = (String) value;
+    public void setText(String text) {
+        this.text = text;
     }
 }

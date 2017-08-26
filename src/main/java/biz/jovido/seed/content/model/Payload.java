@@ -45,6 +45,6 @@ public abstract class Payload {
         this.ordinal = ordinal;
     }
 
-    public abstract Object getValue();
-    public abstract void setValue(Object value);
+//    public abstract Object getValue();
+//    public abstract void setValue(Object value);
 }
