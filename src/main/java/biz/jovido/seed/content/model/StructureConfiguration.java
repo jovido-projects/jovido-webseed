@@ -41,6 +41,11 @@ public class StructureConfiguration implements StructureConfigurer {
         return this;
     }
 
+    @Override
+    public Structure build() {
+        return structureService.saveStructure(structure);
+    }
+
     public StructureConfiguration(Structure structure, StructureService structureService) {
         this.structure = structure;
         this.structureService = structureService;

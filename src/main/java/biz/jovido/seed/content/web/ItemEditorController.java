@@ -41,10 +41,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "create")
     protected String create(@ModelAttribute ItemEditor editor,
-                            @RequestParam(name = "structure") String structureName,
+                            @RequestParam(name = "structure") String typeName,
                             BindingResult bindingResult) {
 
-        Item item = itemService.createItem(structureName, Locale.GERMAN);
+        Item item = itemService.createItem(typeName, 1, Locale.GERMAN);
         editor.setItem(item);
 
         return "redirect:";
@@ -85,15 +85,15 @@ public class ItemEditorController {
     protected String append(@ModelAttribute ItemEditor editor,
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName,
-                            @RequestParam(name = "structure") String structureName,
+                            @RequestParam(name = "structure") String typeName,
                             BindingResult bindingResult) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
         Attribute attribute = itemService.getAttribute(sequence);
         RelationPayload payload = (RelationPayload) attribute.createPayload();
-        Item target = itemService.createItem(structureName, LocaleContextHolder.getLocale());
-        target.setChronicle(null);
+        Item target = itemService.createEmbeddedItem(typeName, 1);
+//        target.setChronicle(null);
         Relation relation = payload.getRelation();
         relation.setTarget(target);
         sequence.addPayload(payload);

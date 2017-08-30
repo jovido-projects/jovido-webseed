@@ -16,13 +16,13 @@
 
             <th:block th:if="${item.id != null}">
                 <h1>
-                    <span th:text="#{seed.structure.__${item.structureName}__}">Title</span>
+                    <span th:text="#{seed.structure.__${item.structure.type.name}__}">Title</span>
                     <span th:text="${item.id}">ID</span>
                 </h1>
             </th:block>
             <th:block th:if="${item.id == null}">
                 <h1>
-                    New <span th:text="#{seed.structure.__${item.structureName}__}">Title</span>
+                    New <span th:text="#{seed.structure.__${item.structure.type.name}__}">Title</span>
                 </h1>
             </th:block>
 
@@ -109,11 +109,11 @@
                         </tr>
                         <tr>
                             <th>Locale</th>
-                            <td th:text="*{item.chronicle.locale.displayName}"></td>
+                            <td th:text="*{item.bundle.locale.displayName}"></td>
                         </tr>
                         <tr>
                             <th>Structure</th>
-                            <td th:text="*{item.structureName}"></td>
+                            <td th:text="*{item.structure.type.name}"></td>
                         </tr>
 
                         <tr>
@@ -140,10 +140,10 @@
                     <ul class="list-group">
                         <li th:each="locale : ${@itemService.allSupportedLocales}" class="list-group-item">
 
-                            <th:block th:if="${item?.chronicle?.locale?.equals(locale)}">
+                            <th:block th:if="${item?.bundle?.locale?.equals(locale)}">
                                 :)
                             </th:block>
-                            <th:block th:unless="${item?.chronicle?.locale?.equals(locale)}">
+                            <th:block th:unless="${item?.bundle?.locale?.equals(locale)}">
                                 <!--<th:block th:with="translation=${@itemService.getTranslation(item, locale)}">-->
                                     <!--<span th:text="${locale.displayName}">Locale Name</span>-->
                                     <!--<div class="btn-group btn-group-xs pull-right">-->

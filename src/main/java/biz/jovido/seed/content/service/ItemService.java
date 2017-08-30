@@ -38,13 +38,9 @@ public class ItemService {
 //        return structureService.getStructure(name);
 //    }
 
+    @Deprecated
     public Structure getStructure(Item item) {
-        String name = item.getStructureName();
-        return structureService.getStructure(name);
-    }
-
-    public Structure getStructure(String structureName) {
-        return structureService.getStructure(structureName);
+        return item.getStructure();
     }
 
     public Attribute getAttribute(Sequence sequence) {
@@ -70,31 +66,51 @@ public class ItemService {
 
             int remaining = attribute.getRequired() - sequence.length();
             while (remaining-- > 0) {
-                Payload payload = attribute.createPayload();
-                sequence.addPayload(payload);
+                sequence.addPayload();
             }
         }
     }
 
-    private Item createItem(Bundle bundle, String structureName, Locale locale) {
-        Chronicle chronicle = new Chronicle();
-        chronicle.setLocale(locale);
-        bundle.putChronicle(chronicle);
+    private Item createItem(Bundle bundle, int structureRevision) {
+        Type type = bundle.getType();
+        Structure structure = type.getStructure(structureRevision);
 
         Item item = new Item();
-        item.setChronicle(chronicle);
-        item.setStructureName(structureName);
+        item.setBundle(bundle);
+        item.setStructure(structure);
+        bundle.setDraft(item);
 
         applyPayloads(item);
 
         return item;
     }
 
-    public Item createItem(String structureName, Locale locale) {
+    @Transactional
+    public Item createItem(String typeName, int structureRevision, Locale locale) {
+        Type type = structureService.getType(typeName);
+
         Bundle bundle = new Bundle();
-//        bundle.setStructureName(structureName);
-        return createItem(bundle, structureName, locale);
+        bundle.setType(type);
+        bundle.setLocale(locale);
+        entityManager.persist(bundle);
+
+        return createItem(bundle, structureRevision);
     }
+
+    @Deprecated
+    public Item createEmbeddedItem(String typeName, int structureRevision) {
+        Type type = structureService.getType(typeName);
+        Structure structure = type.getStructure(structureRevision);
+
+        Item item = new Item();
+        item.setBundle(null);
+        item.setStructure(structure);
+
+        applyPayloads(item);
+
+        return item;
+    }
+
 
     public Item getItem(Long id) {
         return itemRepository.findOne(id);
@@ -114,7 +130,8 @@ public class ItemService {
 
     public Page<Item> findAllItems(int offset, int max) {
 //        return itemRepository.findAll(new PageRequest(offset, max));
-        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
+//        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
+        return itemRepository.findAllByBundleIsNotNull(new PageRequest(offset, max));
     }
 
     public ItemService(StructureService structureService) {

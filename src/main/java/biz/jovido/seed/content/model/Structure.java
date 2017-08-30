@@ -1,27 +1,57 @@
 package biz.jovido.seed.content.model;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
  */
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"type_id", "revision"}))
 public class Structure {
 
-    private String name;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @ManyToOne(optional = false,
+            cascade = CascadeType.ALL)
+    @JoinColumn(name = "type_id")
+    private Type type;
+    private int revision;
+
     private boolean standalone;
 
-    private final Map<String, Attribute> attributes = new HashMap<>();
+    @OneToMany(mappedBy = "structure",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    @MapKey(name = "name")
+    @OrderBy("ordinal")
+    private final Map<String, Attribute> attributes = new LinkedHashMap<>();
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    /*default*/ void setType(Type type) {
+        this.type = type;
+    }
+
+    public int getRevision() {
+        return revision;
+    }
+
+    /*default*/ void setRevision(int revision) {
+        this.revision = revision;
     }
 
     public boolean isStandalone() {

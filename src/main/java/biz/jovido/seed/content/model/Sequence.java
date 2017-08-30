@@ -1,5 +1,8 @@
 package biz.jovido.seed.content.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,21 +19,27 @@ public class Sequence {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     private Item item;
 
     @Column(name = "attribute_name")
     private String attributeName;
 
-    @OneToMany(mappedBy = "sequence", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "sequence",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     @OrderBy("ordinal")
+    @Fetch(FetchMode.SELECT)
     private final List<Payload> payloads = new ArrayList<>();
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /*default*/ void setId(Long id) {
         this.id = id;
     }
 
@@ -54,7 +63,18 @@ public class Sequence {
         return Collections.unmodifiableList(payloads);
     }
 
+    @Deprecated
     public void addPayload(Payload payload) {
+        if (payloads.add(payload)) {
+            payload.setSequence(this);
+            payload.setOrdinal(payloads.size() - 1);
+        }
+    }
+
+    public void addPayload() {
+        Structure structure = item.getStructure();
+        Attribute attribute = structure.getAttribute(attributeName);
+        Payload payload = attribute.createPayload();
         if (payloads.add(payload)) {
             payload.setSequence(this);
             payload.setOrdinal(payloads.size() - 1);
@@ -65,6 +85,7 @@ public class Sequence {
         Payload removed = payloads.remove(index);
         if (removed != null) {
             removed.setSequence(null);
+            removed.setOrdinal(-1);
 
             for (int i = index; i < payloads.size(); i++) {
                 Payload payload = payloads.get(i);

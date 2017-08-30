@@ -6,10 +6,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Stephan Grundner
@@ -22,12 +24,17 @@ public final class Item {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Chronicle chronicle;
+    @ManyToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    private Bundle bundle;
 
-    private String structureName;
+    @ManyToOne(optional = false)
+    private Structure structure;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "item",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
 
@@ -45,31 +52,28 @@ public final class Item {
     @LastModifiedDate
     private Date lastModifiedAt;
 
-    @OneToMany(mappedBy = "target")
-    List<Relation> relations = new ArrayList<>();
-
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /*default*/ void setId(Long id) {
         this.id = id;
     }
 
-    public Chronicle getChronicle() {
-        return chronicle;
+    public Bundle getBundle() {
+        return bundle;
     }
 
-    public void setChronicle(Chronicle chronicle) {
-        this.chronicle = chronicle;
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
-    public String getStructureName() {
-        return structureName;
+    public Structure getStructure() {
+        return structure;
     }
 
-    public void setStructureName(String structureName) {
-        this.structureName = structureName;
+    public void setStructure(Structure structure) {
+        this.structure = structure;
     }
 
     public Map<String, Sequence> getSequences() {
@@ -92,34 +96,6 @@ public final class Item {
             sequence.setAttributeName(attributeName);
         }
     }
-
-//    public Object getValue(String attributeName, int index) {
-//        Sequence sequence = getSequence(attributeName);
-//        Assert.notNull(sequence, String.format(
-//                "No sequence was set for attribute [%s]", attributeName));
-//
-//        List<Payload> payloads = sequence.getPayloads();
-//        Payload payload = payloads.get(index);
-//        return payload.getValue();
-//    }
-//
-//    public Object getValue(String attributeName) {
-//        return getValue(attributeName, 0);
-//    }
-//
-//    public void setValue(String attributeName, int index, Object value) {
-//        Sequence sequence = getSequence(attributeName);
-//        Assert.notNull(sequence, String.format(
-//                "No sequence was set for attribute [%s]", attributeName));
-//
-//        List<Payload> payloads = sequence.getPayloads();
-//        Payload payload = payloads.get(index);
-//        payload.setValue(value);
-//    }
-//
-//    public <T> void setValue(String attributeName, T value) {
-//        setValue(attributeName, 0, value);
-//    }
 
     public User getCreatedBy() {
         return createdBy;

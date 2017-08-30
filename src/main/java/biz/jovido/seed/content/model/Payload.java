@@ -15,7 +15,7 @@ public abstract class Payload {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "sequence_id")
     private Sequence sequence;
 
@@ -25,7 +25,7 @@ public abstract class Payload {
         return id;
     }
 
-    public void setId(Long id) {
+    /*default*/ void setId(Long id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public abstract class Payload {
         return ordinal;
     }
 
-    public void setOrdinal(int ordinal) {
+    /*default*/ void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
     }
 

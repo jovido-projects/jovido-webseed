@@ -9,5 +9,6 @@ public interface StructureConfigurer {
     RelationAttributeConfigurer addRelationAttribute(String name);
     StructureConfigurer setStandalone(boolean standalone);
 
+    Structure build();
     Structure getStructure();
 }

@@ -1,10 +1,15 @@
 package biz.jovido.seed.content.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
 /**
  * @author Stephan Grundner
  */
+@Entity
 public class TextAttribute extends Attribute {
 
+    @Column(name = "size")
     private int lines = 1;
 
     public int getLines() {

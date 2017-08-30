@@ -1,16 +1,10 @@
 package biz.jovido.seed.content.service;
 
-import biz.jovido.seed.content.model.Structure;
-import biz.jovido.seed.content.model.StructureConfiguration;
-import biz.jovido.seed.content.model.StructureConfigurer;
+import biz.jovido.seed.content.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -18,34 +12,68 @@ import java.util.stream.Collectors;
 @Service
 public class StructureService {
 
-    private Map<String, Structure> structures = new ConcurrentHashMap<>();
+    @Autowired
+    private TypeRepository typeRepository;
 
-    public Structure getStructure(String name) {
-        return structures.get(name);
+    @Autowired
+    private StructureRepository structureRepository;
+
+    public Type getType(String name) {
+        return typeRepository.findByName(name);
     }
 
-    private void putStructure(Structure structure) {
-        structures.put(structure.getName(), structure);
+    private Type getOrCreateType(String name) {
+        Type type = typeRepository.findByName(name);
+        if (type == null) {
+            type = new Type();
+            type.setName(name);
+            type = typeRepository.saveAndFlush(type);
+        }
+
+        return type;
     }
 
-    public Collection<Structure> getAllStructures() {
-        return Collections.unmodifiableCollection(structures.values());
+    private Type saveType(Type type) {
+        return typeRepository.saveAndFlush(type);
+    }
+
+    public Structure getOrCreateStructure(Type type, int revision) {
+        Structure structure = type.getStructure(revision);
+        if (structure == null) {
+            structure = new Structure();
+            type.setStructure(revision, structure);
+        }
+
+        return structure;
+    }
+
+    public Structure saveStructure(Structure structure) {
+        return structureRepository.saveAndFlush(structure);
+    }
+
+    private void activateStructure(Structure structure) {
+        Type type = structure.getType();
+        type.setActive(structure);
+        Type saved = saveType(type);
+        assert saved != null;
+    }
+
+    public void activateStructure(String typeName, int revision) {
+        Type type = getType(typeName);
+        Structure structure = type.getStructure(revision);
+        activateStructure(structure);
+    }
+
+    public StructureConfigurer configure(String name, int revision) {
+        Type type = getOrCreateType(name);
+        Structure structure = getOrCreateStructure(type, revision);
+
+        return new StructureConfiguration(structure, this);
     }
 
     public List<Structure> findStandaloneStructures() {
-        return getAllStructures().stream()
-                .filter(Structure::isStandalone)
-                .collect(Collectors.toList());
-    }
+        List<Structure> structures = structureRepository.findAllStandalone();
 
-    public StructureConfigurer configure(String name) {
-        Structure structure = getStructure(name);
-        if (structure == null) {
-            structure = new Structure();
-            structure.setName(name);
-            putStructure(structure);
-        }
-
-        return new StructureConfiguration(structure, this);
+        return structures;
     }
 }

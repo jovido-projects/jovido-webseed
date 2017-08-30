@@ -1,17 +1,24 @@
 package biz.jovido.seed.content.model;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Stephan Grundner
  */
+@Entity
 public class RelationAttribute extends Attribute {
 
     private int capacity;
     private int required;
 
-    private final Set<String> accepted = new HashSet<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "accepted_type")
+    private final Set<String> acceptedTypeNames = new HashSet<>();
 
     public int getCapacity() {
         return capacity;
@@ -30,7 +37,7 @@ public class RelationAttribute extends Attribute {
     }
 
     public Set<String> getAcceptedStructureNames() {
-        return accepted;
+        return acceptedTypeNames;
     }
 
     @Override

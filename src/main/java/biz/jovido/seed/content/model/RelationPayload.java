@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class RelationPayload extends Payload {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
     private Relation relation;
 
     public Relation getRelation() {

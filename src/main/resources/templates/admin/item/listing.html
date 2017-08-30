@@ -41,8 +41,8 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li th:each="structure : ${@structureService.findStandaloneStructures()}">
-                                            <a th:href="@{/admin/item/create(structure=${structure.name})}">
-                                                <span th:text="${structure.name}">Structure Name</span>
+                                            <a th:href="@{/admin/item/create(structure=${structure.type.name})}">
+                                                <span th:text="${structure.type.name}">Type Name</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -56,10 +56,10 @@
                                 <span th:text="${item.id}">ID</span>
                             </td>
                             <td>
-                                <span th:text="${item.structureName}">Structure</span>
+                                <span th:text="${item.structure.type.name}">Structure</span>
                             </td>
                             <td>
-                                <span th:text="${item.chronicle.locale.displayName}">Locale</span>
+                                <span th:text="${item.bundle.locale.displayName}">Locale</span>
                             </td>
                             <td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>
                             <td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>
