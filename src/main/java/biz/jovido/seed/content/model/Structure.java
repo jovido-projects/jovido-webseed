@@ -30,6 +30,10 @@ public class Structure {
     @OrderBy("ordinal")
     private final Map<String, Attribute> attributes = new LinkedHashMap<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "accepted_hierarchy_name")
+    private final Set<String> acceptedHierarchyNames = new LinkedHashSet<>();
+
     public Long getId() {
         return id;
     }
@@ -90,5 +94,9 @@ public class Structure {
         return attributes.values().stream()
                 .sorted(Comparator.comparingInt(Attribute::getOrdinal))
                 .collect(Collectors.toList());
+    }
+
+    public Set<String> getAcceptedHierarchyNames() {
+        return acceptedHierarchyNames;
     }
 }

@@ -5,6 +5,7 @@ package biz.jovido.seed.content.model;
  */
 public class RelationAttributeConfigurer extends AttributeConfigurer<RelationAttribute, RelationAttributeConfigurer> {
 
+
     public RelationAttributeConfigurer setCapacity(int capacity) {
         attribute.setCapacity(capacity);
 
@@ -17,13 +18,13 @@ public class RelationAttributeConfigurer extends AttributeConfigurer<RelationAtt
         return this;
     }
 
-    public RelationAttributeConfigurer addAcceptedStructure(String structureName) {
-        attribute.getAcceptedStructureNames().add(structureName);
+    public RelationAttributeConfigurer addAcceptedType(String name) {
+        parentConfigurer
 
         return this;
     }
 
-    public RelationAttributeConfigurer(StructureConfiguration builder, RelationAttribute attribute) {
+    public RelationAttributeConfigurer(StructureConfigurer builder, RelationAttribute attribute) {
         super(builder, attribute);
     }
 

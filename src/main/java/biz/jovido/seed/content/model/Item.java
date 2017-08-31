@@ -8,10 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -37,6 +34,9 @@ public final class Item {
             orphanRemoval = true)
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
+
+    @OneToMany(mappedBy = "item")
+    private final List<Node> nodes = new ArrayList<>();
 
     @CreatedBy
     @ManyToOne(optional = false)
@@ -95,6 +95,30 @@ public final class Item {
             sequence.setItem(this);
             sequence.setAttributeName(attributeName);
         }
+    }
+
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(nodes);
+    }
+
+    public boolean addNode(Node node) {
+        if (nodes.add(node)) {
+            node.setItem(this);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean removeNode(Node node) {
+        if (nodes.remove(node)) {
+            node.setItem(null);
+
+            return true;
+        }
+
+        return false;
     }
 
     public User getCreatedBy() {

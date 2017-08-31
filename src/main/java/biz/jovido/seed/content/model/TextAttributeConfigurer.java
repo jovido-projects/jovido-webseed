@@ -11,7 +11,7 @@ public class TextAttributeConfigurer extends AttributeConfigurer<TextAttribute, 
         return this;
     }
 
-    public TextAttributeConfigurer(StructureConfiguration builder, TextAttribute attribute) {
+    public TextAttributeConfigurer(StructureConfigurer builder, TextAttribute attribute) {
         super(builder, attribute);
     }
 

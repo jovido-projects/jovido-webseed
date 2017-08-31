@@ -33,12 +33,12 @@
                 Append <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li th:each="structureName : ${attribute.acceptedStructureNames}">
+                <li th:each="typeName : ${attribute.acceptedTypeNames}">
                     <a th:href="@{append(
                     nested-path=${nestedPath},
                     attribute=${attribute.name},
-                    structure=${structureName})}">
-                        <span th:text="${structureName}">Name</span>
+                    structure=${typeName})}">
+                        <span th:text="${typeName}">Name</span>
                     </a>
                 </li>
             </ul>

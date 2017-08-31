@@ -28,8 +28,11 @@ public class Node {
     @OrderBy("ordinal")
     private final List<Node> children = new ArrayList<>();
 
-    @OneToOne
-    private Bundle bundle;
+//    @OneToOne
+//    private Bundle bundle;
+
+    @ManyToOne(optional = true)
+    private Item item;
 
     public Long getId() {
         return id;
@@ -55,15 +58,23 @@ public class Node {
         this.parent = parent;
     }
 
-    public List<Node> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
-
     public int getOrdinal() {
         return ordinal;
     }
 
     /*default*/ void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
+    }
+
+    public List<Node> getChildren() {
+        return Collections.unmodifiableList(children);
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    /*default*/ void setItem(Item item) {
+        this.item = item;
     }
 }

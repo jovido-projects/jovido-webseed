@@ -48,7 +48,7 @@
                                             <!--<th:block th:if="${attribute.multiline}">-->
                                                 <!--<th:block th:replace="admin/item/editor/multiline-text-field" />-->
                                             <!--</th:block>-->
-                                            <th:block th:unless="${attribute.multiline}">
+                                            <th:block th_unless="${attribute.multiline}">
                                                 <th:block th:replace="admin/item/editor/text-field" />
                                             </th:block>
                                         </th:block>

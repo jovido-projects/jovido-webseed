@@ -3,12 +3,64 @@ package biz.jovido.seed.content.model;
 /**
  * @author Stephan Grundner
  */
-public interface StructureConfigurer {
+public class StructureConfigurer implements Configuration {
 
-    TextAttributeConfigurer addTextAttribute(String name);
-    RelationAttributeConfigurer addRelationAttribute(String name);
-    StructureConfigurer setStandalone(boolean standalone);
+    private final Configurer parentConfigurer;
+    private final Structure structure;
 
-    Structure build();
-    Structure getStructure();
+    @Override
+    public HierarchyConfigurer forHierarchy(String hierarchyName) {
+        return parentConfigurer.forHierarchy(hierarchyName);
+    }
+
+    @Override
+    public StructureConfigurer forStructure(String typeName, int revision) {
+        return parentConfigurer.forStructure(typeName, revision);
+    }
+
+    @Override
+    public void apply() {
+        parentConfigurer.apply();
+    }
+
+    public Structure getStructure() {
+        return structure;
+    }
+
+    public TextAttributeConfigurer addTextAttribute(String name) {
+        TextAttribute attribute = (TextAttribute) structure.getAttribute(name);
+        if (attribute == null) {
+            attribute = new TextAttribute();
+            structure.setAttribute(name, attribute);
+        }
+
+        return new TextAttributeConfigurer(this, attribute);
+    }
+
+    public RelationAttributeConfigurer addRelationAttribute(String name) {
+        RelationAttribute attribute = (RelationAttribute) structure.getAttribute(name);
+        if (attribute == null) {
+            attribute = new RelationAttribute();
+            structure.setAttribute(name, attribute);
+        }
+
+        return new RelationAttributeConfigurer(this, attribute);
+    }
+
+    public StructureConfigurer setStandalone(boolean standalone) {
+        structure.setStandalone(standalone);
+
+        return this;
+    }
+
+    public StructureConfigurer addAcceptedHierarchy(String name) {
+        structure.getAcceptedHierarchyNames().add(name);
+
+        return this;
+    }
+
+    public StructureConfigurer(Configurer parentConfigurer, Structure structure) {
+        this.parentConfigurer = parentConfigurer;
+        this.structure = structure;
+    }
 }

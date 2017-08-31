@@ -1,6 +1,9 @@
 package biz.jovido.seed.content.service;
 
-import biz.jovido.seed.content.model.*;
+import biz.jovido.seed.content.model.Structure;
+import biz.jovido.seed.content.model.StructureRepository;
+import biz.jovido.seed.content.model.Type;
+import biz.jovido.seed.content.model.TypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,7 @@ public class StructureService {
         return typeRepository.findByName(name);
     }
 
-    private Type getOrCreateType(String name) {
+    public Type getOrCreateType(String name) {
         Type type = typeRepository.findByName(name);
         if (type == null) {
             type = new Type();
@@ -42,6 +45,7 @@ public class StructureService {
         if (structure == null) {
             structure = new Structure();
             type.setStructure(revision, structure);
+            structure = saveStructure(structure);
         }
 
         return structure;
@@ -51,7 +55,7 @@ public class StructureService {
         return structureRepository.saveAndFlush(structure);
     }
 
-    private void activateStructure(Structure structure) {
+    public void activateStructure(Structure structure) {
         Type type = structure.getType();
         type.setActive(structure);
         Type saved = saveType(type);
@@ -62,13 +66,6 @@ public class StructureService {
         Type type = getType(typeName);
         Structure structure = type.getStructure(revision);
         activateStructure(structure);
-    }
-
-    public StructureConfigurer configure(String name, int revision) {
-        Type type = getOrCreateType(name);
-        Structure structure = getOrCreateStructure(type, revision);
-
-        return new StructureConfiguration(structure, this);
     }
 
     public List<Structure> findStandaloneStructures() {

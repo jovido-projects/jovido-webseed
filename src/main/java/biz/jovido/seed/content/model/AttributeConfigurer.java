@@ -3,14 +3,24 @@ package biz.jovido.seed.content.model;
 /**
  * @author Stephan Grundner
  */
-public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigurer<A, C>> implements StructureConfigurer {
+public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigurer<A, C>> implements Configuration {
 
-    protected final StructureConfiguration configuration;
+    protected final StructureConfigurer parentConfigurer;
     protected final A attribute;
 
     @Override
-    public Structure getStructure() {
-        return configuration.getStructure();
+    public HierarchyConfigurer forHierarchy(String hierarchyName) {
+        return parentConfigurer.forHierarchy(hierarchyName);
+    }
+
+    @Override
+    public StructureConfigurer forStructure(String typeName, int revision) {
+        return parentConfigurer.forStructure(typeName, revision);
+    }
+
+    @Override
+    public void apply() {
+        parentConfigurer.apply();
     }
 
     @SuppressWarnings("unchecked")
@@ -27,27 +37,24 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
         return (C) this;
     }
 
-    @Override
     public TextAttributeConfigurer addTextAttribute(String name) {
-        return configuration.addTextAttribute(name);
+        return parentConfigurer.addTextAttribute(name);
     }
 
     public RelationAttributeConfigurer addRelationAttribute(String name) {
-        return configuration.addRelationAttribute(name);
+        return parentConfigurer.addRelationAttribute(name);
     }
 
-    @Override
     public StructureConfigurer setStandalone(boolean standalone) {
-        return configuration.setStandalone(standalone);
+        return parentConfigurer.setStandalone(standalone);
     }
 
-    @Override
-    public Structure build() {
-        return configuration.build();
+    public StructureConfigurer addAcceptedHierarchy(String name) {
+        return parentConfigurer.addAcceptedHierarchy(name);
     }
 
-    public AttributeConfigurer(StructureConfiguration configuration, A attribute) {
-        this.configuration = configuration;
+    public AttributeConfigurer(StructureConfigurer parentConfigurer, A attribute) {
+        this.parentConfigurer = parentConfigurer;
         this.attribute = attribute;
     }
 }
