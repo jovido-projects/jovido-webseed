@@ -12,16 +12,19 @@ public class RelationAttribute extends Attribute {
     private int capacity;
     private int required;
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(name = "accepted_type_name")
-//    private final Set<String> acceptedTypeNames = new HashSet<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "accepted_type",
+            uniqueConstraints = @UniqueConstraint(columnNames = {"attribute_id", "name"}),
+            joinColumns = @JoinColumn(name = "attribute_id"))
+    @Column(name = "name")
+    private final Set<String> acceptedTypeNames = new HashSet<>();
 
-    @OneToMany
-    @JoinTable(name = "accepted_type",
-            joinColumns = @JoinColumn(name = "attribute_id"),
-            inverseJoinColumns = @JoinColumn(name = "type_id"))
-    @MapKey(name = "name")
-    private final Map<String, Type> acceptedTypes = new LinkedHashMap<>();
+//    @OneToMany
+//    @JoinTable(name = "accepted_type",
+//            joinColumns = @JoinColumn(name = "attribute_id"),
+//            inverseJoinColumns = @JoinColumn(name = "type_id"))
+//    @MapKey(name = "name")
+//    private final Map<String, Type> acceptedTypes = new LinkedHashMap<>();
 
     public int getCapacity() {
         return capacity;
@@ -39,16 +42,8 @@ public class RelationAttribute extends Attribute {
         this.required = required;
     }
 
-    public Collection<Type> getAcceptedTypes() {
-        return Collections.unmodifiableCollection(acceptedTypes.values());
-    }
-
-    public Type addAcceptedType(Type type) {
-        return acceptedTypes.put(type.getName(), type);
-    }
-
     public Set<String> getAcceptedTypeNames() {
-        return Collections.unmodifiableSet(acceptedTypes.keySet());
+        return acceptedTypeNames;
     }
 
     @Override

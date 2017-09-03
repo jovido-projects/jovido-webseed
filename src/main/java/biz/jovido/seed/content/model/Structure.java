@@ -31,7 +31,10 @@ public class Structure {
     private final Map<String, Attribute> attributes = new LinkedHashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "accepted_hierarchy_name")
+    @CollectionTable(name = "accepted_hierarchy",
+            uniqueConstraints = @UniqueConstraint(columnNames = {"structure_id", "name"}),
+            joinColumns = @JoinColumn(name = "structure_id"))
+    @Column(name = "name")
     private final Set<String> acceptedHierarchyNames = new LinkedHashSet<>();
 
     public Long getId() {

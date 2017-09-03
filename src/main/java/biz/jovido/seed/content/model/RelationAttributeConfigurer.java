@@ -19,7 +19,7 @@ public class RelationAttributeConfigurer extends AttributeConfigurer<RelationAtt
     }
 
     public RelationAttributeConfigurer addAcceptedType(String name) {
-        parentConfigurer
+        attribute.getAcceptedTypeNames().add(name);
 
         return this;
     }
