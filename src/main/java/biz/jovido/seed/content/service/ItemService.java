@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,13 +31,10 @@ public class ItemService {
     private StructureService structureService;
 
     @Autowired
+    private RootRepository rootRepository;
+
+    @Autowired
     private AuditingHandler auditingHandler;
-
-
-//    public Structure getStructure(Bundle bundle) {
-//        String name = bundle.getStructureName();
-//        return structureService.getStructure(name);
-//    }
 
     @Deprecated
     public Structure getStructure(Item item) {
@@ -69,6 +67,16 @@ public class ItemService {
                 sequence.addPayload();
             }
         }
+    }
+
+    public Item getItem(Long id) {
+        return itemRepository.findOne(id);
+    }
+
+    public Page<Item> findAllItems(int offset, int max) {
+//        return itemRepository.findAll(new PageRequest(offset, max));
+//        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
+        return itemRepository.findAllByBundleIsNotNull(new PageRequest(offset, max));
     }
 
     private Item createItem(Bundle bundle, int structureRevision) {
@@ -111,9 +119,10 @@ public class ItemService {
         return item;
     }
 
-
-    public Item getItem(Long id) {
-        return itemRepository.findOne(id);
+    @Transactional
+    public Item saveItem(Item item) {
+        auditingHandler.markModified(item);
+        return entityManager.merge(item);
     }
 
     public List<Locale> getAllSupportedLocales() {
@@ -122,16 +131,58 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public Item saveItem(Item item) {
-        auditingHandler.markModified(item);
-        return entityManager.merge(item);
+    public List<Node> getNodes(Item item, String hierarchyName) {
+        return item.getNodes().stream()
+                .filter(it -> it != null)
+                .filter(it -> it.getRoot() != null)
+                .filter(it -> hierarchyName.equals(it.getRoot().getHierarchy().getName()))
+                .collect(Collectors.toList());
     }
 
-    public Page<Item> findAllItems(int offset, int max) {
-//        return itemRepository.findAll(new PageRequest(offset, max));
-//        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
-        return itemRepository.findAllByBundleIsNotNull(new PageRequest(offset, max));
+    public Root getRoot(Hierarchy hierarchy, Locale locale) {
+        return rootRepository.findByHierarchyAndLocale(hierarchy, locale);
+    }
+
+    public Root getRoot(String hierarchyName, Locale locale) {
+        Hierarchy hierarchy = structureService.getHierarchy(hierarchyName);
+        return rootRepository.findByHierarchyAndLocale(hierarchy, locale);
+    }
+
+    public Root getOrCreateRoot(Hierarchy hierarchy, Locale locale) {
+        Root root = getRoot(hierarchy, locale);
+        if (root == null) {
+            root = new Root();
+            hierarchy.setRoot(locale, root);
+            hierarchy = structureService.saveHierarchy(hierarchy);
+        }
+
+        return hierarchy.getRoot(locale);
+    }
+
+    public Root getOrCreateRoot(String hierarchyName, Locale locale) {
+        Hierarchy hierarchy = structureService.getOrCreateHierarchy(hierarchyName);
+        return getOrCreateRoot(hierarchy, locale);
+    }
+
+    public Root getRootNodes(Item item, String hierarchyName, Locale locale) {
+        List<Node> nodes = item.getNodes();
+        Root root = null;
+        for (Node node : nodes) {
+            root = node.getRoot();
+            if (root != null && locale == root.getLocale()) {
+                Hierarchy hierarchy = root.getHierarchy();
+                if (hierarchy != null && hierarchyName.equals(hierarchy.getName())) {
+                    break;
+                }
+            }
+        }
+
+        if (root == null) {
+            root = new Root();
+
+        }
+
+        return root;
     }
 
     public ItemService(StructureService structureService) {

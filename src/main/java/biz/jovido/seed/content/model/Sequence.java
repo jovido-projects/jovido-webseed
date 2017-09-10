@@ -63,6 +63,14 @@ public class Sequence {
         return Collections.unmodifiableList(payloads);
     }
 
+    public Payload getPayload(int index) {
+        if (index >= payloads.size()) {
+            return null;
+        }
+
+        return payloads.get(index);
+    }
+
     @Deprecated
     public void addPayload(Payload payload) {
         if (payloads.add(payload)) {

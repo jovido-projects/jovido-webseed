@@ -59,6 +59,12 @@ public class StructureConfigurer implements Configuration {
         return this;
     }
 
+    public StructureConfigurer setLabelName(String labelName) {
+        structure.setLabelName(labelName);
+
+        return this;
+    }
+
     public StructureConfigurer(Configurer parentConfigurer, Structure structure) {
         this.parentConfigurer = parentConfigurer;
         this.structure = structure;

@@ -44,4 +44,23 @@ public class Hierarchy {
     public Map<Locale, Root> getRoots() {
         return Collections.unmodifiableMap(roots);
     }
+
+    public Root getRoot(Locale locale) {
+        return roots.get(locale);
+    }
+
+    public Root setRoot(Locale locale, Root root) {
+        Root replaced = roots.put(locale, root);
+        if (replaced != null) {
+            replaced.setHierarchy(null);
+            replaced.setLocale(null);
+        }
+
+        if (root != null) {
+            root.setHierarchy(this);
+            root.setLocale(locale);
+        }
+
+        return replaced;
+    }
 }

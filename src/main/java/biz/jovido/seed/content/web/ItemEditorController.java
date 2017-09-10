@@ -132,10 +132,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "move-payload-down")
     protected String movePayloadDown(@ModelAttribute ItemEditor editor,
-                                   @RequestParam(name = "nested-path") String nestedPath,
-                                   @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index,
-                                   BindingResult bindingResult) {
+                                     @RequestParam(name = "nested-path") String nestedPath,
+                                     @RequestParam(name = "attribute") String attributeName,
+                                     @RequestParam(name = "index") int index,
+                                     BindingResult bindingResult) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
@@ -154,6 +154,36 @@ public class ItemEditorController {
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) PropertyUtils.getPropertyValue(editor, propertyPath);
         sequence.removePayload(index);
+
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "add-node")
+    protected String addNode(@ModelAttribute ItemEditor editor,
+                             @RequestParam(name = "hierarchy") String hierarchyName,
+                             @RequestParam(name = "parent-node", required = false) Long parentNodeId,
+                             BindingResult bindingResult) {
+
+        Item item = editor.getItem();
+        Locale locale = item.getBundle().getLocale();
+
+        if (parentNodeId == null || parentNodeId == -1) {
+            Root root = itemService.getOrCreateRoot(hierarchyName, locale);
+            Node node = new Node();
+            item.addNode(node);
+            root.addNode(node);
+
+        } else {
+            Node parentNode = item.getNodes().stream()
+                    .flatMap(it -> it.getChildren().stream())
+                    .filter(it -> it.getId() == parentNodeId)
+                    .findFirst().orElse(null);
+
+            Node node = new Node();
+            Root root = parentNode.getRoot();
+            root.addNode(node);
+            item.addNode(node);
+        }
 
         return "redirect:";
     }

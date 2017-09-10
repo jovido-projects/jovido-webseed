@@ -22,6 +22,7 @@ public class Structure {
     private int revision;
 
     private boolean standalone;
+    private String labelName;
 
     @OneToMany(mappedBy = "structure",
             cascade = CascadeType.ALL,
@@ -67,6 +68,14 @@ public class Structure {
 
     public void setStandalone(boolean standalone) {
         this.standalone = standalone;
+    }
+
+    public String getLabelName() {
+        return labelName;
+    }
+
+    public void setLabelName(String labelName) {
+        this.labelName = labelName;
     }
 
     public List<String> getAttributeNames() {

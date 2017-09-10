@@ -16,7 +16,8 @@ public class Configurer implements Configuration {
 
     @Override
     public HierarchyConfigurer forHierarchy(String hierarchyName) {
-        return null;
+        Hierarchy hierarchy = structureService.getOrCreateHierarchy(hierarchyName);
+        return new HierarchyConfigurer(this, hierarchy);
     }
 
     @Override

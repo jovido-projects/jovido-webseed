@@ -35,7 +35,7 @@ public final class Item {
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final List<Node> nodes = new ArrayList<>();
 
     @CreatedBy
@@ -151,5 +151,16 @@ public final class Item {
 
     public void setLastModifiedAt(Date lastModifiedAt) {
         this.lastModifiedAt = lastModifiedAt;
+    }
+
+    public String getLabel() {
+        String labelName = getStructure().getLabelName();
+        Sequence sequence = getSequence(labelName);
+        Payload payload = sequence.getPayload(0);
+        if (payload != null && payload instanceof TextPayload) {
+            return ((TextPayload) payload).getText();
+        }
+
+        return null;
     }
 }

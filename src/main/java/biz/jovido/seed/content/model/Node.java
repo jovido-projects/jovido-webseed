@@ -15,7 +15,7 @@ public class Node {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Root root;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -54,7 +54,7 @@ public class Node {
         return parent;
     }
 
-    public void setParent(Node parent) {
+    /*default*/ void setParent(Node parent) {
         this.parent = parent;
     }
 
@@ -68,6 +68,13 @@ public class Node {
 
     public List<Node> getChildren() {
         return Collections.unmodifiableList(children);
+    }
+
+    public void addChild(Node child) {
+        if (children.add(child)) {
+            child.setRoot(root);
+            child.setParent(this);
+        }
     }
 
     public Item getItem() {

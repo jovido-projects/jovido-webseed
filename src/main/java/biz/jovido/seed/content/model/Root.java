@@ -12,6 +12,7 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"hierarchy_id", "locale"}))
 public class Root {
 
     @Id
@@ -19,6 +20,7 @@ public class Root {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "hierarchy_id")
     private Hierarchy hierarchy;
 
     @Convert(converter = LocaleConverter.class)
@@ -56,5 +58,10 @@ public class Root {
 
     public List<Node> getNodes() {
         return Collections.unmodifiableList(nodes);
+    }
+
+    public void addNode(Node node) {
+        nodes.add(node);
+        node.setRoot(this);
     }
 }
