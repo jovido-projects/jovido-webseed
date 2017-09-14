@@ -35,7 +35,8 @@ public final class Item {
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "item_node")
     private final List<Node> nodes = new ArrayList<>();
 
     @CreatedBy
@@ -103,7 +104,7 @@ public final class Item {
 
     public boolean addNode(Node node) {
         if (nodes.add(node)) {
-            node.setItem(this);
+//            node.setItem(this);
 
             return true;
         }
@@ -113,7 +114,7 @@ public final class Item {
 
     public boolean removeNode(Node node) {
         if (nodes.remove(node)) {
-            node.setItem(null);
+//            node.setItem(null);
 
             return true;
         }

@@ -104,7 +104,7 @@
 
                         <table class="table table-condensed">
                             <tr th:each="node : ${@itemService.getNodes(item, hierarchyName)}">
-                                <td th:text="${node?.item?.label}">Name</td>
+                                <td th:text="${node?.label}">Name</td>
                                 <td>&nbsp;</td>
                             </tr>
                             <tr>
@@ -119,7 +119,7 @@
                                                         <option th:each="node : ${nodes}" th:if="${node.id != null}"
                                                                 th:value="${node.id}">
                                                             [[${level}]] -
-                                                            [[${node?.item?.label}]]
+                                                            [[${node?.label}]]
                                                         </option>
                                                     </th:block>
                                                 </th:block>
@@ -133,6 +133,7 @@
                                 <td>
                                     <div class="btn-group btn-group-sm pull-right">
                                         <button class="btn btn-default"
+                                                th:disabled="${item.id == null} ? disabled : _"
                                                 th:formaction="@{add-node(
                                                 hierarchy=${hierarchyName})}">
                                             <i class="fa fa-plus"></i>

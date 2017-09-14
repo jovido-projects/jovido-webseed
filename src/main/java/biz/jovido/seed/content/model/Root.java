@@ -1,6 +1,8 @@
 package biz.jovido.seed.content.model;
 
 import biz.jovido.seed.conversion.LocaleConverter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class Root {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "hierarchy_id")
     private Hierarchy hierarchy;
 
@@ -30,6 +32,7 @@ public class Root {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     @OrderBy("ordinal")
+//    @Fetch(FetchMode.SUBSELECT)
     private final List<Node> nodes = new ArrayList<>();
 
     public Long getId() {

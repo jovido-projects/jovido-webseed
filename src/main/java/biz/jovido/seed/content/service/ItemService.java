@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -35,6 +36,9 @@ public class ItemService {
 
     @Autowired
     private AuditingHandler auditingHandler;
+
+    @Autowired
+    private NodeRepository nodeRepository;
 
     @Deprecated
     public Structure getStructure(Item item) {
@@ -100,7 +104,7 @@ public class ItemService {
         Bundle bundle = new Bundle();
         bundle.setType(type);
         bundle.setLocale(locale);
-        entityManager.persist(bundle);
+//        entityManager.persist(bundle);
 
         return createItem(bundle, structureRevision);
     }
@@ -131,12 +135,30 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    public Node getNode(Long id) {
+        return nodeRepository.findOne(id);
+    }
+
     public List<Node> getNodes(Item item, String hierarchyName) {
+        if (item != null && item.getId() == null) {
+            return Collections.EMPTY_LIST;
+        }
+//        return item.getNodes().stream()
+//                .filter(it -> it != null)
+//                .filter(it -> it.getRoot() != null)
+//                .filter(it -> hierarchyName.equals(it.getRoot().getHierarchy().getName()))
+//                .collect(Collectors.toList());
+
+
+//        return nodeRepository.findAllByItemAndRoot_Hierarchy_Name(item, hierarchyName);
+
         return item.getNodes().stream()
-                .filter(it -> it != null)
-                .filter(it -> it.getRoot() != null)
-                .filter(it -> hierarchyName.equals(it.getRoot().getHierarchy().getName()))
+                .filter(it -> it.getRoot().getHierarchy().getName().equals(hierarchyName))
                 .collect(Collectors.toList());
+    }
+
+    public Node saveNode(Node node) {
+        return nodeRepository.saveAndFlush(node);
     }
 
     public Root getRoot(Hierarchy hierarchy, Locale locale) {
@@ -164,26 +186,27 @@ public class ItemService {
         return getOrCreateRoot(hierarchy, locale);
     }
 
-    public Root getRootNodes(Item item, String hierarchyName, Locale locale) {
-        List<Node> nodes = item.getNodes();
-        Root root = null;
-        for (Node node : nodes) {
-            root = node.getRoot();
-            if (root != null && locale == root.getLocale()) {
-                Hierarchy hierarchy = root.getHierarchy();
-                if (hierarchy != null && hierarchyName.equals(hierarchy.getName())) {
-                    break;
-                }
-            }
-        }
-
-        if (root == null) {
-            root = new Root();
-
-        }
-
-        return root;
-    }
+//    @Deprecated
+//    public Root getRootNodes(Item item, String hierarchyName, Locale locale) {
+//        List<Node> nodes = item.getNodes();
+//        Root root = null;
+//        for (Node node : nodes) {
+//            root = node.getRoot();
+//            if (root != null && locale == root.getLocale()) {
+//                Hierarchy hierarchy = root.getHierarchy();
+//                if (hierarchy != null && hierarchyName.equals(hierarchy.getName())) {
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (root == null) {
+//            root = new Root();
+//
+//        }
+//
+//        return root;
+//    }
 
     public ItemService(StructureService structureService) {
         this.structureService = structureService;

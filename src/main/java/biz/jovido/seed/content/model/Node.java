@@ -28,11 +28,11 @@ public class Node {
     @OrderBy("ordinal")
     private final List<Node> children = new ArrayList<>();
 
-//    @OneToOne
-//    private Bundle bundle;
+    @OneToOne
+    private Bundle bundle;
 
-    @ManyToOne(optional = true)
-    private Item item;
+//    @ManyToOne(optional = true, cascade = {})
+//    private Item item;
 
     public Long getId() {
         return id;
@@ -77,11 +77,28 @@ public class Node {
         }
     }
 
-    public Item getItem() {
-        return item;
+    public Bundle getBundle() {
+        return bundle;
     }
 
-    /*default*/ void setItem(Item item) {
-        this.item = item;
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
+//    public Item getItem() {
+//        return item;
+//    }
+//
+//    /*default*/ void setItem(Item item) {
+//        this.item = item;
+//    }
+
+    @Deprecated
+    public String getLabel() {
+        Bundle bundle = getBundle();
+        if (bundle != null) {
+            return bundle.getDraft().getLabel();
+        }
+
+        return null;
     }
 }

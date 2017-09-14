@@ -167,23 +167,22 @@ public class ItemEditorController {
         Item item = editor.getItem();
         Locale locale = item.getBundle().getLocale();
 
+        Node node = new Node();
+        node.setBundle(item.getBundle());
+
         if (parentNodeId == null || parentNodeId == -1) {
             Root root = itemService.getOrCreateRoot(hierarchyName, locale);
-            Node node = new Node();
-            item.addNode(node);
             root.addNode(node);
 
         } else {
-            Node parentNode = item.getNodes().stream()
-                    .flatMap(it -> it.getChildren().stream())
-                    .filter(it -> it.getId() == parentNodeId)
-                    .findFirst().orElse(null);
+            Node parentNode = itemService.getNode(parentNodeId);
+            parentNode.addChild(node);
 
-            Node node = new Node();
-            Root root = parentNode.getRoot();
-            root.addNode(node);
-            item.addNode(node);
         }
+
+        node = itemService.saveNode(node);
+
+        item.addNode(node);
 
         return "redirect:";
     }
