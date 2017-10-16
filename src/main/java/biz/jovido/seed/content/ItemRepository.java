@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-//    Page<Item> findAllByChronicleIsNotNull(Pageable pageable);
-    Page<Item> findAllByChronicleIsNotNull(Pageable pageable);
+//    Page<Item> findAllByLeafIsNotNull(Pageable pageable);
+    Page<Item> findAllByLeafIsNotNull(Pageable pageable);
 }

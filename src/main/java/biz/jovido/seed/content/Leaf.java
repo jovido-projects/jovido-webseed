@@ -27,7 +27,7 @@ public class Leaf {
     @OneToOne(optional = false)
     private Item draft;
 
-    @OneToMany(mappedBy = "chronicle")
+    @OneToMany(mappedBy = "leaf")
     private final List<Item> all = new ArrayList<>();
 
     public Long getId() {

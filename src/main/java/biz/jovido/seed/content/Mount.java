@@ -15,7 +15,10 @@ public class Mount {
     @GeneratedValue
     private Long id;
 
+    @ManyToOne
     private Node node;
+
+    @ManyToOne
     private Node parentNode;
 
     @ManyToOne

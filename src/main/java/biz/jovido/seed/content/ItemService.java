@@ -34,8 +34,8 @@ public class ItemService {
     
     public Page<Item> findAllItems(int offset, int max) {
 //        return itemRepository.findAll(new PageRequest(offset, max));
-//        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
-        return itemRepository.findAllByChronicleIsNotNull(new PageRequest(offset, max));
+//        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
+        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
     }
 
     private void applyPayloads(Item item) {
