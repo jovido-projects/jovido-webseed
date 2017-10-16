@@ -1,0 +1,36 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<label>
+    <span th:text="${attribute.name}">Field name</span>
+</label>
+<ul class="list-group">
+    <li class="list-group-item" th:each="payload,payloadItr : ${sequence.payloads}">
+
+        <!--<img src="//via.placeholder.com/350x150" style="padding-bottom:10px;" width="100%">-->
+        <img th:if="${payload?.image != null}" th:src="@{/asset(uuid=${payload.image?.uuid})}" style="padding-bottom:10px;" width="100%">
+        <div class="btn-group">
+            <span class="btn btn-default btn-file">
+                <i class="fa fa-upload"></i>
+                Choose file <input name="file" type="file"
+                                   th:formaction="@{upload(
+                                   type=image,
+                                   nested-path=${nestedPath},
+                                   attribute=${attribute.name},
+                                   index=${payloadItr.index})}">
+            </span>
+        </div>
+
+    </li>
+    <li class="list-group-item" >
+        <div class="btn-group">
+            <button class="btn btn-default"
+                    th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
+                    th:formaction="@{append(
+                    nested-path=${nestedPath},
+                    attribute=${attribute.name})}">
+                <span>Append</span>
+                <span th:text="${attribute.name}">Attribute name</span>
+            </button>
+        </div>
+    </li>
+</ul>
+</html>

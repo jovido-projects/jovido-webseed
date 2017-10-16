@@ -11,7 +11,7 @@
             </div>
             <input type="text" class="form-control"
                    th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].text}">
-            <div class="input-group-btn input-group-xs">
+            <div class="input-group-btn input-group-xs" th:remove="${attribute.capacity <= 1} ? all : _">
                 <button class="btn btn-default"
                         th:disabled="${payloadItr.index == 0} ? disabled : _"
                         th:formaction="@{move-payload-up(
@@ -38,9 +38,10 @@
             </div>
         </div>
     </li>
-    <li class="list-group-item">
+    <li class="list-group-item" >
         <div class="btn-group">
             <button class="btn btn-default"
+                    th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
                     th:formaction="@{append(
                     nested-path=${nestedPath},
                     attribute=${attribute.name})}">

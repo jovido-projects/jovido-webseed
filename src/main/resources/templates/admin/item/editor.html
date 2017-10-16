@@ -1,10 +1,9 @@
 <html xmlns:th="//www.thymeleaf.org"
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
-
-<div th:fragment="main">
+<th:block th:fragment="main">
     <div class="container">
-        <form th:object="${itemEditor}" method="post" th:with="item=*{item},locale=${item.bundle.locale}">
+        <form th:object="${itemEditor}" method="post" th:with="item=*{item},locale=${item.leaf.locale}">
 
             <ol class="breadcrumb">
                 <li><a href="#">Home</a></li>
@@ -37,23 +36,31 @@
                 <!-- Content -->
                 <div class="col-md-7" >
 
+                    <div class="form-group">
+                        <label>Label <span style="color:red !important;">*</span></label>
+                        <input type="text" class="form-control" th:field="*{item.label}">
+                    </div>
+
                     <th:block th:with="nestedPath='item',nestingLevel=0">
                         <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
-                            <th:block th:each="e : *{__${nestedPath}__.sequences}"
+                            <th:block th:each="e,sequenceItr : *{__${nestedPath}__.sequences}"
                                       th:with="sequence=${e.value}">
 
                                 <th:block th:with="attribute=${@itemService.getAttribute(sequence)}">
                                     <th:block th:switch="${attribute?.class?.simpleName}">
                                         <th:block th:case="'TextAttribute'">
-                                            <!--<th:block th:if="${attribute.multiline}">-->
-                                                <!--<th:block th:replace="admin/item/editor/multiline-text-field" />-->
-                                            <!--</th:block>-->
-                                            <th:block th_unless="${attribute.multiline}">
+                                            <th:block th:if="${attribute.multiline}">
+                                                <th:block th:replace="admin/item/editor/multiline-text-field" />
+                                            </th:block>
+                                            <th:block th:unless="${attribute.multiline}">
                                                 <th:block th:replace="admin/item/editor/text-field" />
                                             </th:block>
                                         </th:block>
-                                        <th:block th:case="'RelationAttribute'">
-                                            <th:block th:replace="admin/item/editor/relation-field" />
+                                        <th:block th:case="'ItemAttribute'">
+                                            <th:block th:replace="admin/item/editor/item-field" />
+                                        </th:block>
+                                        <th:block th:case="'ImageAttribute'">
+                                            <th:block th:replace="admin/item/editor/image-field" />
                                         </th:block>
                                     </th:block>
                                 </th:block>
@@ -71,9 +78,9 @@
                             Save
                         </button>
                         <!--<button class="btn btn-success"-->
-                                <!--th:formaction="@{activate}">-->
-                            <!--<i class="fa fa-bullhorn"></i>-->
-                            <!--Activate-->
+                        <!--th:formaction="@{activate}">-->
+                        <!--<i class="fa fa-bullhorn"></i>-->
+                        <!--Activate-->
                         <!--</button>-->
                         <button class="btn btn-danger"
                                 disabled="disabled"
@@ -87,9 +94,9 @@
                             Close
                         </button>
                         <!--<a class="btn btn-info"-->
-                           <!--th:href="@{/item(id=*{item.id})}">-->
-                            <!--<i class="fa fa-eye"></i>-->
-                            <!--Preview-->
+                        <!--th:href="@{/item(id=*{item.id})}">-->
+                        <!--<i class="fa fa-eye"></i>-->
+                        <!--Preview-->
                         <!--</a>-->
                     </div>
                 </div>
@@ -97,127 +104,42 @@
                 <!-- Sidebar -->
                 <div class="col-md-5">
 
-                    <h3>Hierarchies</h3>
-                    <div th:each="hierarchyName : ${item.structure.acceptedHierarchyNames}">
-                        <h4 th:text="${hierarchyName}">Hierarchy Name</h4>
+                    <th:block th:each="hierarchy : ${@hierarchyService.allHierarchies}">
+                        <th:block th:with="branch=${@hierarchyService.getBranch(hierarchy, item.locale)}">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    [[${hierarchy.name}]] - [[${branch}]]
+                                    <hr />
 
+                                    <!--<th:block th:each="node:${@hierarchyService.getNodes(item, hierarchy)}">-->
+                                    <ul>
+                                        <li th:each="node:${item.nodes}">
+                                            [[${@hierarchyService.getPath(node)}]]
+                                        </li>
+                                    </ul>
 
-                        <table class="table table-condensed">
-                            <tr th:each="node : ${@itemService.getNodes(item, hierarchyName)}">
-                                <td th:text="${node?.label}">Name</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td width="90%">
-                                    <select class="form-control input-sm btn-block" name="parent-node">
-                                        <option value="-1">Parent: ROOT</option>
-
-                                        <th:block >
-                                            <th:block th:fragment="foobar(nodes,level)">
-                                                <th:block th:with="nodes=${item.nodes},level=1">
-                                                    <th:block>
-                                                        <option th:each="node : ${nodes}" th:if="${node.id != null}"
-                                                                th:value="${node.id}">
-                                                            [[${level}]] -
-                                                            [[${node?.label}]]
-                                                        </option>
-                                                    </th:block>
-                                                </th:block>
-                                            </th:block>
-
-                                        </th:block>
-
-
+                                    <select class="form-control" th:field="*{parentNodeUuid}">
+                                        <option value="">NULL</option>
+                                        <option th:each="node:${item.nodes}" th:value="${node.uuid}">
+                                            [[${@hierarchyService.getPath(node)}]]
+                                        </option>
                                     </select>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm pull-right">
-                                        <button class="btn btn-default"
-                                                th:disabled="${item.id == null} ? disabled : _"
-                                                th:formaction="@{add-node(
-                                                hierarchy=${hierarchyName})}">
-                                            <i class="fa fa-plus"></i>
-                                            Add node
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
 
-                    </div>
 
-                    <h2>
-                        <span>&nbsp;</span>
-                    </h2>
+                                    <button class="btn btn-default" th:formaction="@{add-node(branch=${branch.id}, parent=null)}">
+                                        <i class="fa fa-plus"></i>
+                                        Add node
+                                    </button>
+                                </div>
 
-                    <table class="table ">
-                        <tbody>
-                        <tr>
-                            <th width="35%">ID</th>
-                            <td th:text="*{item.id}"></td>
-                        </tr>
-                        <tr>
-                            <th>Locale</th>
-                            <td th:text="*{item.bundle.locale.displayName}"></td>
-                        </tr>
-                        <tr>
-                            <th>Structure</th>
-                            <td th:text="*{item.structure.type.name}"></td>
-                        </tr>
 
-                        <tr>
-                            <th>Created by</th>
-                            <td th:text="*{item.createdBy?.username}"></td>
-                        </tr>
-                        <tr>
-                            <th>Last modified by</th>
-                            <td th:text="*{item.lastModifiedBy?.username}"></td>
-                        </tr>
-                        <tr>
-                            <th>Last modified at</th>
-                            <td th:text="*{item.lastModifiedAt}"></td>
-                        </tr>
-                        <tr>
-                            <th>Created at</th>
-                            <td th:text="*{item.createdAt}"></td>
-                        </tr>
+                            </div>
+                        </th:block>
+                    </th:block>
 
-                        </tbody>
-                    </table>
-
-                    <h3>Translations</h3>
-                    <ul class="list-group">
-                        <li th:each="locale : ${@itemService.allSupportedLocales}" class="list-group-item">
-
-                            <th:block th:if="${item?.bundle?.locale?.equals(locale)}">
-                                :)
-                            </th:block>
-                            <th:block th:unless="${item?.bundle?.locale?.equals(locale)}">
-                                <!--<th:block th:with="translation=${@itemService.getTranslation(item, locale)}">-->
-                                    <!--<span th:text="${locale.displayName}">Locale Name</span>-->
-                                    <!--<div class="btn-group btn-group-xs pull-right">-->
-                                        <!--<button class="btn btn-default">-->
-                                            <!--<i class="fa fa-plus"></i>-->
-                                            <!--Add translation-->
-                                        <!--</button>-->
-                                    <!--</div>-->
-                                <!--</th:block>-->
-                            </th:block>
-
-                        </li>
-                    </ul>
-
-                    <!--<div class="form-group">-->
-                    <!--<label>Title</label>-->
-                    <!--<input class="form-control" type="text" th:field="*{editor.item.title}">-->
-                    <!--</div>-->
-                    <!--<div class="form-group">-->
-                    <!--<label>Path</label>-->
-                    <!--<input class="form-control" type="text" th:field="*{editor.item.path}">-->
-                    <!--</div>-->
                 </div>
             </div>
         </form>
     </div>
-</div>
+</th:block>
 </html>

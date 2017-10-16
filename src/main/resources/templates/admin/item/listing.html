@@ -2,7 +2,7 @@
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
-<div th:fragment="main">
+<th:block th:fragment="main">
     <div class="container">
         <form th:object="${itemListing}" method="post">
 
@@ -28,7 +28,8 @@
                         <thead>
                         <tr>
                             <th width="1%">ID</th>
-                            <th>Structure</th>
+                            <th nowrap="nowrap">Label</th>
+                            <th nowrap="nowrap">Structure</th>
                             <th nowrap="nowrap">Locale</th>
                             <th nowrap="nowrap">Created by</th>
                             <th nowrap="nowrap">Last modified at</th>
@@ -40,8 +41,8 @@
                                         New item <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li th:each="structure : ${@structureService.findStandaloneStructures()}">
-                                            <a th:href="@{/admin/item/create(structure=${structure.type.name})}">
+                                        <li th:each="structure : ${@typeService.findPublishableStructures()}">
+                                            <a th:href="@{/admin/item/create(type=${structure.type.name})}">
                                                 <span th:text="${structure.type.name}">Type Name</span>
                                             </a>
                                         </li>
@@ -56,13 +57,16 @@
                                 <span th:text="${item.id}">ID</span>
                             </td>
                             <td>
+                                <span th:text="${item.label}">Label</span>
+                            </td>
+                            <td>
                                 <span th:text="${item.structure.type.name}">Structure</span>
                             </td>
                             <td>
-                                <span th:text="${item.bundle.locale.displayName}">Locale</span>
+                                <span th:text="${item.leaf.locale.displayName}">Locale</span>
                             </td>
-                            <td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>
-                            <td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>
+                            <!--<td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>-->
+                            <!--<td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>-->
                             <td></td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">
@@ -84,5 +88,5 @@
             </div>
         </form>
     </div>
-</div>
+</th:block>
 </html>
