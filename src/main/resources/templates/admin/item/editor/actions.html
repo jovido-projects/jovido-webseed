@@ -1,0 +1,34 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div class="btn-group">
+    <button class="btn btn-primary"
+            th:formaction="@{save}">
+        <i class="fa fa-floppy-o"></i>
+        Save
+    </button>
+
+    <!--<button class="btn btn-danger"-->
+            <!--disabled="disabled"-->
+            <!--th:formaction="@{delete}" >-->
+        <!--<i class="fa fa-trash"></i>-->
+        <!--Delete-->
+    <!--</button>-->
+
+    <button class="btn btn-default"
+            th:formaction="@{close}" >
+        <i class="fa fa-times"></i>
+        Close
+    </button>
+
+    <a class="btn btn-success" target="_blank" th:href="@{/item(id=${item.id})}"
+       th:disabled="${item.id == null} ? disabled : _">
+        <i class="fa fa-eye"></i>
+        Preview
+    </a>
+
+    <a class="btn btn-primary" target="_self" th:href="@{publish}"
+       th:disabled="${item.id == null} ? disabled : _">
+        <i class="fa fa-retweet"></i>
+        Publish
+    </a>
+</div>
+</html>

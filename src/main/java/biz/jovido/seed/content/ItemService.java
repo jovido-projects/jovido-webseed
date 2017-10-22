@@ -120,7 +120,6 @@ public class ItemService {
 //        auditingHandler.markCreated(item);
         current = entityManager.merge(current);
 
-
         History history = current.getHistory();
 //        entityManager.refresh(history);
 

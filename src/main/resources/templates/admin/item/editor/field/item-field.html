@@ -1,15 +1,14 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <label>
-    [[${sequenceItr.index}]]
     <span th:text="${attribute.name}">Field name</span>
 </label>
 <ul class="list-group" >
 
-    <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__"
-        th:each="payload,payloadItr : ${sequence.payloads}">
+    <li th:class="'list-group-item nesting-level-__${nestingLevel}__'"
+        th:each="payload,payloadItr : ${sequence.payloads}" th:classappend="${nestingLevel % 2 != 0}? gray : _">
 
-        <h4>
-
+        <h5>
+            <strong># [[${payloadItr.index + 1}]]</strong>
             <div class="btn-group btn-group-xs pull-right">
                 <button class="btn btn-default"
                         disabled="disabled">
@@ -27,8 +26,9 @@
                     <i class="fa fa-remove"></i>
                 </button>
             </div>
-        </h4>
+        </h5>
 
+        <hr />
         <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
             <th:block th:replace="admin/item/editor::fields" />
         </th:block>
@@ -41,12 +41,12 @@
                 Append <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li th:each="typeName : ${attribute.acceptedTypeNames}">
+                <li th:each="structureName : ${attribute.acceptedTypeNames}">
                     <a th:href="@{append(
                     nested-path=${nestedPath},
                     attribute=${attribute.name},
-                    type=${typeName})}">
-                        <span th:text="${typeName}">Name</span>
+                    structure=${structureName})}">
+                        <span th:text="#{seed.structure.__${structureName}__}">Name</span>
                     </a>
                 </li>
             </ul>
