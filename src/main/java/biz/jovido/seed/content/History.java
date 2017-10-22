@@ -4,6 +4,7 @@ import biz.jovido.seed.LocaleConverter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -17,6 +18,9 @@ public class History {
     @GeneratedValue
     private Long id;
 
+//    @Column(unique = true, nullable = false)
+//    private String code;
+
     @Column(name = "language_tag")
     @Convert(converter = LocaleConverter.class)
     private Locale locale;
@@ -28,7 +32,10 @@ public class History {
     private Item current;
 
     @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
-    private final List<Item> all = new ArrayList<>();
+    private final List<Node> nodes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
+    private final List<Item> items = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -62,7 +69,20 @@ public class History {
         this.current = current;
     }
 
-    public List<Item> getAll() {
-        return all;
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(nodes);
+    }
+
+    public boolean addNode(Node node) {
+        if (nodes.add(node)) {
+            node.setHistory(this);
+            return true;
+        }
+
+        return false;
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 }

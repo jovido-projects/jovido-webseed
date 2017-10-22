@@ -114,14 +114,16 @@
                 <!-- Sidebar -->
                 <div class="col-md-5">
 
-                    <table class="table">
-                        <tr th:each="item : ${item.history.all}">
-                            <td th:text="${item.id}">
+                    <!--History-->
+                    <!--<table class="table">-->
+                        <!--<tr th:each="item : ${item.history.all}">-->
+                            <!--<td th:text="${item.id}">-->
 
-                            </td>
-                        </tr>
-                    </table>
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--</table>-->
 
+                    <!--Menus-->
                     <th:block th:each="hierarchy : ${@hierarchyService.allHierarchies}">
                         <th:block th:with="branch=${@hierarchyService.getBranch(hierarchy, item.locale)}">
                             <div class="panel panel-default">
@@ -129,10 +131,11 @@
                                     [[${hierarchy.name}]] - [[${branch}]]
                                     <hr />
 
+                                    <!--<ul th:each="node : ${branch.roots}">-->
                                     <ul th:each="node : ${branch.roots}">
                                         <th:block th:fragment="node(node)">
-                                            <li style="color: black;" th:class="${item.id == node.item.id} ? active : _">
-                                                [[${node.item.label}]]
+                                            <li style="color: black;" th_class="${item.id == node.item.id} ? active : _">
+                                                [[${node.history.current.label}]] ([[${node?.history?.current?.id}]])
                                                 <div class="btn-group btn-group-xs">
                                                     <button class="btn btn-default"
                                                             th:formaction="@{add-node(

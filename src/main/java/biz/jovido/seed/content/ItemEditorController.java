@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -237,12 +238,13 @@ public class ItemEditorController {
                              @RequestParam(name = "parent-uuid", required = false) UUID parentUuid) {
 
         Item item = editor.getItem();
+        History history = item.getHistory();
         Locale locale = item.getLocale();
         Assert.notNull(locale);
 
         Node node = new Node();
         node.setUuid(UUID.randomUUID());
-        node.setItem(item);
+        node.setHistory(item.getHistory());
 
 
         Branch branch = hierarchyService.getBranch(branchId);
@@ -252,6 +254,8 @@ public class ItemEditorController {
 
         if (parentUuid != null) {
             parent = branch.getNodes().stream()
+                    .filter(Objects::nonNull)
+                    .filter(it -> it.getUuid() != null)
                     .filter(it -> it.getUuid().equals(parentUuid))
                     .findFirst()
                     .orElse(null);
@@ -261,7 +265,7 @@ public class ItemEditorController {
         node.setBranch(branch);
         node = hierarchyService.saveNode(node);
 
-        item.addNode(node);
+        history.addNode(node);
         branch.addNode(node);
 
         hierarchyService.saveBranch(branch);

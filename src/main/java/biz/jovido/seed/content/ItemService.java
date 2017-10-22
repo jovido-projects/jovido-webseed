@@ -27,6 +27,9 @@ public class ItemService {
     private StructureService structureService;
 
     @Autowired
+    private HierarchyService hierarchyService;
+
+    @Autowired
     private EntityManager entityManager;
 
     @Autowired
@@ -35,7 +38,11 @@ public class ItemService {
     public Item getItem(Long id) {
         return itemRepository.findOne(id);
     }
-    
+
+    public Item findPublished(Long historyId) {
+        return itemRepository.findPublished(historyId);
+    }
+
     public Page<Item> findAllItems(int offset, int max) {
         return itemRepository.findAllByHistoryIsNotNull(new PageRequest(offset, max));
     }
@@ -108,20 +115,21 @@ public class ItemService {
     }
 
     @Transactional
-    public Item publishItem(Item item) {
-        Item copy = item.copy();
+    public Item publishItem(final Item item) {
+        Item current = item.copy();
 //        auditingHandler.markCreated(item);
-        copy = entityManager.merge(copy);
+        current = entityManager.merge(current);
 
-        History history = copy.getHistory();
+
+        History history = current.getHistory();
 //        entityManager.refresh(history);
 
         history.setPublished(item);
-        history.setCurrent(copy);
+        history.setCurrent(current);
 
         entityManager.merge(history);
 
-        return copy;
+        return current;
     }
 
     public Attribute getAttribute(Sequence sequence) {

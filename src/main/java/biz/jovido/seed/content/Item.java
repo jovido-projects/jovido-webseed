@@ -37,9 +37,9 @@ public class Item {
 //    @Fetch(FetchMode.SELECT)
 //    private final List<Node> nodes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SELECT)
-    private final List<Node> nodes = new ArrayList<>();
+//    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @Fetch(FetchMode.SELECT)
+//    private final List<Node> nodes = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", targetEntity = Sequence.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
@@ -80,14 +80,20 @@ public class Item {
         this.label = label;
     }
 
-    public List<Node> getNodes() {
-        return Collections.unmodifiableList(nodes);
-    }
+//    public List<Node> getNodes() {
+//        return Collections.unmodifiableList(nodes);
+//    }
 
 //    TODO Check if node for same branch already exists, and if so, throw exception!
-    public boolean addNode(Node node) {
-        return nodes.add(node);
-    }
+//    public boolean addNode(Node node) {
+//        return nodes.add(node);
+//    }
+//
+//    public Node setNode(int index, Node node) {
+//        Node replaced = nodes.set(index, node);
+//
+//        return replaced;
+//    }
 
     public Map<String, Sequence> getSequences() {
         return Collections.unmodifiableMap(sequences);
@@ -126,6 +132,18 @@ public class Item {
         }
 
         return null;
+    }
+
+    public boolean isCurrent() {
+        History history = getHistory();
+        if (history != null) {
+            Item current = history.getCurrent();
+            if (current != null && current.getId() != null) {
+                return current.getId().equals(getId());
+            }
+        }
+
+        return false;
     }
 
     public Item copy() {

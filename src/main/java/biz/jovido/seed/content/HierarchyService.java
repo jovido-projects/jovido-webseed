@@ -70,6 +70,11 @@ public class HierarchyService {
         return branch;
     }
 
+    public Branch getBranch(String hierarchyName, Locale locale) {
+        Hierarchy hierarchy = getHierarchy(hierarchyName);
+        return getBranch(hierarchy, locale);
+    }
+
     public Branch saveBranch(Branch branch) {
         return branchRepository.save(branch);
     }
@@ -84,7 +89,7 @@ public class HierarchyService {
     }
 
     public List<Node> getNodes(Item item, Hierarchy hierarchy) {
-        return item.getNodes().stream()
+        return item.getHistory().getNodes().stream()
                 .filter(it -> it.getBranch().getHierarchy().getName() == hierarchy.getName())
                 .collect(Collectors.toList());
     }
@@ -93,25 +98,25 @@ public class HierarchyService {
         return getNodes(item, getHierarchy(hierarchyName));
     }
 
-    public Node getOrCreateNode(Hierarchy hierarchy, Item item) {
-        Locale locale = item.getLocale();
-        Assert.notNull(locale);
-        Branch branch = getBranch(hierarchy, locale);
-        List<Node> nodes = item.getNodes();
-        Node node = nodes.stream()
-                .filter(it -> locale.equals(it.getBranch().getLocale()))
-                .findFirst()
-                .orElse(null);
-
-        if (node == null) {
-            node = new Node();
-            node.setBranch(branch);
-            node.setItem(item);
-            item.addNode(node);
-        }
-
-        return node;
-    }
+//    public Node getOrCreateNode(Hierarchy hierarchy, Item item) {
+//        Locale locale = item.getLocale();
+//        Assert.notNull(locale);
+//        Branch branch = getBranch(hierarchy, locale);
+//        List<Node> nodes = item.getNodes();
+//        Node node = nodes.stream()
+//                .filter(it -> locale.equals(it.getBranch().getLocale()))
+//                .findFirst()
+//                .orElse(null);
+//
+//        if (node == null) {
+//            node = new Node();
+//            node.setBranch(branch);
+//            node.setItem(item);
+//            item.addNode(node);
+//        }
+//
+//        return node;
+//    }
 
     public Node saveNode(Node node) {
         return nodeRepository.save(node);
@@ -121,7 +126,7 @@ public class HierarchyService {
         Branch branch = node.getBranch();
         LinkedList<String> path = new LinkedList<>();
         while (node != null) {
-            path.addLast(node.getItem().getLabel());
+            path.addLast(node.getHistory().getCurrent().getLabel());
             node = node.getParent();
         }
 
@@ -133,4 +138,24 @@ public class HierarchyService {
     public List<Node> getNodes(Branch branch) {
         return branch.getNodes();
     }
+
+//    public synchronized Node copyNode(Node original, NodeCopyHandler handler) {
+//        Node copy = new Node();
+//        copy.setUuid(UUID.randomUUID());
+//        copy.setBranch(original.getBranch());
+//        copy.setLabel(original.getLabel());
+//
+//        if (handler != null) {
+//            handler.copied(original, copy);
+//        }
+//
+//        List<Node> children = original.getChildren();
+//        for (int i = 0; i < children.size(); i++) {
+//            Node child = children.get(i);
+//            child = copyNode(child, handler);
+//            copy.addChild(child);
+//        }
+//
+//        return copy;
+//    }
 }

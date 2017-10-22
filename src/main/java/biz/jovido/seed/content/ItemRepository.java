@@ -21,4 +21,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "join i.history h " +
             "where i = h.current")
     List<Item> findAllCurrent();
+
+    @Query("from Item i " +
+            "join i.history h " +
+            "where h.id = ?1 " +
+            "and i = h.published")
+    Item findPublished(Long historyId);
 }

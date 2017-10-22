@@ -29,15 +29,15 @@ public class Node {
     @ManyToOne
     private Node parent;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
     private final List<Node> children = new ArrayList<>();
 
     @Column(length = 255 * 8)
     private String label;
 
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @JoinColumn(name = "history_id")
+    private History history;
 
     public Long getId() {
         return id;
@@ -69,10 +69,23 @@ public class Node {
 
     public void setParent(Node parent) {
         this.parent = parent;
+
+        if (parent != null) {
+            parent.addChild(this);
+        }
     }
 
     public List<Node> getChildren() {
         return children;
+    }
+
+    public boolean addChild(Node child) {
+        if (children.add(child)) {
+            child.parent = this;
+            return true;
+        }
+
+        return false;
     }
 
     public Node getRoot() {
@@ -98,11 +111,27 @@ public class Node {
         this.label = label;
     }
 
-    public Item getItem() {
-        return item;
+    public History getHistory() {
+        return history;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setHistory(History history) {
+        this.history = history;
+    }
+
+    public boolean belongsTo(Item item) {
+        History history = getHistory();
+        return ItemUtils.areTheSame(history.getPublished(), item) ||
+                ItemUtils.areTheSame(history.getCurrent(), item);
+    }
+
+    public Node copy() {
+        Node copy = new Node();
+        copy.setUuid(UUID.randomUUID());
+        copy.setBranch(getBranch());
+        copy.setLabel(getLabel());
+        copy.setParent(getParent());
+
+        return copy;
     }
 }
