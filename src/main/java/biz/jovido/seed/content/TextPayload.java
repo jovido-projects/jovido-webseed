@@ -22,4 +22,9 @@ public class TextPayload extends Payload<String> {
     public String getValue() {
         return text;
     }
+
+    @Override
+    public void setValue(String value) {
+        text = value;
+    }
 }

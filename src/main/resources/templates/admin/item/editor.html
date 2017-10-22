@@ -3,7 +3,7 @@
       th:remove="tag">
 <th:block th:fragment="main">
     <div class="container">
-        <form th:object="${itemEditor}" method="post" th:with="item=*{item},locale=${item.leaf.locale}">
+        <form th:object="${itemEditor}" method="post" th:with="item=*{item},locale=${item.history.locale}">
 
             <ol class="breadcrumb">
                 <li><a href="#">Home</a></li>
@@ -15,13 +15,13 @@
 
             <th:block th:if="${item.id != null}">
                 <h1>
-                    <span th:text="#{seed.structure.__${item.structure.type.name}__}">Title</span>
+                    <span th:text="#{seed.structure.__${item.structure.name}__}">Title</span>
                     <span th:text="${item.id}">ID</span>
                 </h1>
             </th:block>
             <th:block th:if="${item.id == null}">
                 <h1>
-                    New <span th:text="#{seed.structure.__${item.structure.type.name}__}">Title</span>
+                    New <span th:text="#{seed.structure.__${item.structure.name}__}">Title</span>
                 </h1>
             </th:block>
 
@@ -35,6 +35,16 @@
 
                 <!-- Content -->
                 <div class="col-md-7" >
+
+                    <div class="form-group">
+                        <label>ID</label>
+                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.id}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Created at</label>
+                        <input type="date" disabled="disabled" class="form-control" th:field="*{item.createdAt}">
+                    </div>
 
                     <div class="form-group">
                         <label>Label <span style="color:red !important;">*</span></label>
@@ -104,6 +114,14 @@
                 <!-- Sidebar -->
                 <div class="col-md-5">
 
+                    <table class="table">
+                        <tr th:each="item : ${item.history.all}">
+                            <td th:text="${item.id}">
+
+                            </td>
+                        </tr>
+                    </table>
+
                     <th:block th:each="hierarchy : ${@hierarchyService.allHierarchies}">
                         <th:block th:with="branch=${@hierarchyService.getBranch(hierarchy, item.locale)}">
                             <div class="panel panel-default">
@@ -111,22 +129,33 @@
                                     [[${hierarchy.name}]] - [[${branch}]]
                                     <hr />
 
-                                    <!--<th:block th:each="node:${@hierarchyService.getNodes(item, hierarchy)}">-->
-                                    <ul>
-                                        <li th:each="node:${item.nodes}">
-                                            [[${@hierarchyService.getPath(node)}]]
-                                        </li>
+                                    <ul th:each="node : ${branch.roots}">
+                                        <th:block th:fragment="node(node)">
+                                            <li style="color: black;" th:class="${item.id == node.item.id} ? active : _">
+                                                [[${node.item.label}]]
+                                                <div class="btn-group btn-group-xs">
+                                                    <button class="btn btn-default"
+                                                            th:formaction="@{add-node(
+                                                        branch=${branch.id},
+                                                        parent-uuid=${node.uuid})}"
+                                                            th:disabled="${item.id == null} ? disabled : _">
+                                                        <i class="fa fa-plus"></i>
+                                                        Append
+                                                    </button>
+                                                </div>
+                                                <ul th:unless="${node?.children?.empty}">
+                                                    <th:block th:each="child : ${node.children}">
+                                                        <th:block th:replace="::node(${child})" />
+                                                    </th:block>
+                                                </ul>
+                                            </li>
+                                        </th:block>
                                     </ul>
 
-                                    <select class="form-control" th:field="*{parentNodeUuid}">
-                                        <option value="">NULL</option>
-                                        <option th:each="node:${item.nodes}" th:value="${node.uuid}">
-                                            [[${@hierarchyService.getPath(node)}]]
-                                        </option>
-                                    </select>
 
-
-                                    <button class="btn btn-default" th:formaction="@{add-node(branch=${branch.id}, parent=null)}">
+                                    <button class="btn btn-default"
+                                            th:formaction="@{add-node(branch=${branch.id}, parent=null)}"
+                                            th:disabled="${item?.id == null} ? disabled : _">
                                         <i class="fa fa-plus"></i>
                                         Add node
                                     </button>
@@ -134,6 +163,20 @@
 
 
                             </div>
+
+                            <div class="btn-group">
+                                <a class="btn btn-success" target="_blank" th:href="@{/item(id=${item.id})}"
+                                        th:disabled="${item.id == null} ? disabled : _">
+                                    <i class="fa fa-eye"></i>
+                                    Preview
+                                </a>
+                                <a class="btn btn-primary" target="_self" th:href="@{publish}"
+                                        th:disabled="${item.id == null} ? disabled : _">
+                                    <i class="fa fa-retweet"></i>
+                                    Publish
+                                </a>
+                            </div>
+
                         </th:block>
                     </th:block>
 

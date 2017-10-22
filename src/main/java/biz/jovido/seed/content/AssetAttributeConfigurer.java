@@ -5,7 +5,7 @@ package biz.jovido.seed.content;
  */
 public abstract class AssetAttributeConfigurer<A extends AssetAttribute, C extends AssetAttributeConfigurer<A, C>> extends AttributeConfigurer<A, C> {
 
-    public AssetAttributeConfigurer(TypeConfigurer builder, A attribute) {
+    public AssetAttributeConfigurer(StructureConfigurer builder, A attribute) {
         super(builder, attribute);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Entity
-public class Leaf {
+public class History {
 
     @Id
     @GeneratedValue
@@ -25,9 +25,9 @@ public class Leaf {
     private Item published;
 
     @OneToOne(optional = false)
-    private Item draft;
+    private Item current;
 
-    @OneToMany(mappedBy = "leaf")
+    @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
     private final List<Item> all = new ArrayList<>();
 
     public Long getId() {
@@ -54,12 +54,12 @@ public class Leaf {
         this.published = published;
     }
 
-    public Item getDraft() {
-        return draft;
+    public Item getCurrent() {
+        return current;
     }
 
-    public void setDraft(Item draft) {
-        this.draft = draft;
+    public void setCurrent(Item current) {
+        this.current = current;
     }
 
     public List<Item> getAll() {

@@ -7,7 +7,7 @@ import java.lang.reflect.Constructor;
 /**
  * @author Stephan Grundner
  */
-public class TypeConfigurer implements TypeConfiguration {
+public class StructureConfigurer implements StructureConfiguration {
 
     private final Configurer parentConfigurer;
     private final Structure structure;
@@ -18,8 +18,8 @@ public class TypeConfigurer implements TypeConfiguration {
     }
 
     @Override
-    public TypeConfigurer forType(String typeName, int revision) {
-        return parentConfigurer.forType(typeName, revision);
+    public StructureConfigurer forStructure(String typeName, int revision) {
+        return parentConfigurer.forStructure(typeName, revision);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TypeConfigurer implements TypeConfiguration {
             structure.setAttribute(name, attribute);
         }
         try {
-            Constructor<C> constructor = configurerType.getDeclaredConstructor(TypeConfigurer.class, attributeType);
+            Constructor<C> constructor = configurerType.getDeclaredConstructor(StructureConfigurer.class, attributeType);
             C configurer = BeanUtils.instantiateClass(constructor, this, attribute);
 
             return configurer;
@@ -68,13 +68,13 @@ public class TypeConfigurer implements TypeConfiguration {
         return addAttribute(LinkAttribute.class, LinkAttributeConfigurer.class, name);
     }
 
-    public TypeConfigurer setPublishable(boolean publishable) {
+    public StructureConfigurer setPublishable(boolean publishable) {
         structure.setPublishable(publishable);
 
         return this;
     }
 
-    public TypeConfigurer(Configurer parentConfigurer, Structure structure) {
+    public StructureConfigurer(Configurer parentConfigurer, Structure structure) {
         this.parentConfigurer = parentConfigurer;
         this.structure = structure;
     }

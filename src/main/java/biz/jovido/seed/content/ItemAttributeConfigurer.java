@@ -11,7 +11,7 @@ public class ItemAttributeConfigurer extends AttributeConfigurer<ItemAttribute, 
         return this;
     }
 
-    public ItemAttributeConfigurer(TypeConfigurer builder, ItemAttribute attribute) {
+    public ItemAttributeConfigurer(StructureConfigurer builder, ItemAttribute attribute) {
         super(builder, attribute);
     }
 }

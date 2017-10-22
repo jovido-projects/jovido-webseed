@@ -70,6 +70,11 @@ public class HierarchyService {
         return branch;
     }
 
+    public Branch saveBranch(Branch branch) {
+        return branchRepository.save(branch);
+    }
+
+
     public Node getNode(Long id) {
         return nodeRepository.findOne(id);
     }
@@ -108,6 +113,10 @@ public class HierarchyService {
         return node;
     }
 
+    public Node saveNode(Node node) {
+        return nodeRepository.save(node);
+    }
+
     public String getPath(Node node) {
         Branch branch = node.getBranch();
         LinkedList<String> path = new LinkedList<>();
@@ -119,5 +128,9 @@ public class HierarchyService {
         path.addLast(branch.getHierarchy().getName());
 
         return path.stream().collect(Collectors.joining(" / "));
+    }
+
+    public List<Node> getNodes(Branch branch) {
+        return branch.getNodes();
     }
 }

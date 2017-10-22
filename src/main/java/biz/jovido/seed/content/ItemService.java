@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,19 +24,24 @@ public class ItemService {
     private ItemRepository itemRepository;
 
     @Autowired
-    private TypeService typeService;
+    private StructureService structureService;
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private AuditingHandler auditingHandler;
 
     public Item getItem(Long id) {
         return itemRepository.findOne(id);
     }
     
     public Page<Item> findAllItems(int offset, int max) {
-//        return itemRepository.findAll(new PageRequest(offset, max));
-//        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
-        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
+        return itemRepository.findAllByHistoryIsNotNull(new PageRequest(offset, max));
+    }
+
+    public List<Item> findAllItems() {
+        return itemRepository.findAllCurrent();
     }
 
     private void applyPayloads(Item item) {
@@ -50,31 +56,33 @@ public class ItemService {
 
             int remaining = attribute.getRequired() - sequence.length();
             while (remaining-- > 0) {
-                sequence.addPayload();
+                Payload payload = attribute.createPayload();
+                sequence.addPayload(payload);
             }
         }
     }
 
-    private Item createItem(Type type, int revision) {
-        Structure structure = type.getStructure(revision);
+    private Item createItem(Structure structure) {
+        History history = new History();
+        history.setLocale(LocaleContextHolder.getLocale());
+        return createItemWithinHistory(structure, history);
+    }
+
+    public Item createItem(String structureName, int structureRevision) {
+        Structure structure = structureService.getStructure(structureName, structureRevision);
         return createItem(structure);
     }
 
-    private Item createItem(String typeName, int revision) {
-        Type type = typeService.getType(typeName);
-        return createItem(type, revision);
+    public Item createItem(String structureName) {
+        Structure structure = structureService.getStructure(structureName);
+        return createItem(structure);
     }
 
-    public Item createItem(String typeName) {
-        int revision = typeService.getActiveRevision(typeName);
-        return createItem(typeName, revision);
-    }
-
-    private Item createItem(Structure structure, Leaf chronicle) {
+    private Item createItemWithinHistory(Structure structure, History history) {
         Item item = new Item();
-        item.setLeaf(chronicle);
-        if (chronicle != null) {
-            chronicle.setDraft(item);
+        item.setHistory(history);
+        if (history != null) {
+            history.setCurrent(item);
         }
 
         item.setStructure(structure);
@@ -84,24 +92,36 @@ public class ItemService {
         return item;
     }
 
-    private Item createItem(Structure structure) {
-        Leaf chronicle = new Leaf();
-        chronicle.setLocale(LocaleContextHolder.getLocale());
-        return createItem(structure, chronicle);
-    }
-
-    public Item createEmbeddedItem(String typeName, int revision) {
-        Type type = typeService.getType(typeName);
-        Structure structure = type.getStructure(revision);
-        return createItem(structure, null);
+    public Item createEmbeddedItem(String structureName, int structureRevision) {
+        Structure structure = structureService.getStructure(structureName, structureRevision);
+        return createItemWithinHistory(structure, null);
     }
 
     @Transactional
     public Item saveItem(Item item) {
-//        auditingHandler.markModified(item);
+        if (item.getId() == null) {
+            auditingHandler.markCreated(item);
+        }
+        auditingHandler.markModified(item);
+//        return itemRepository.saveAndFlush(item);
         return itemRepository.saveAndFlush(item);
-//        entityManager.merge(item);
-//        return item;
+    }
+
+    @Transactional
+    public Item publishItem(Item item) {
+        Item copy = item.copy();
+//        auditingHandler.markCreated(item);
+        copy = entityManager.merge(copy);
+
+        History history = copy.getHistory();
+//        entityManager.refresh(history);
+
+        history.setPublished(item);
+        history.setCurrent(copy);
+
+        entityManager.merge(history);
+
+        return copy;
     }
 
     public Attribute getAttribute(Sequence sequence) {

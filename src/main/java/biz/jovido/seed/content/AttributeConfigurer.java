@@ -3,9 +3,9 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigurer<A, C>> implements TypeConfiguration {
+public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigurer<A, C>> implements StructureConfiguration {
 
-    protected final TypeConfigurer parentConfigurer;
+    protected final StructureConfigurer parentConfigurer;
     protected final A attribute;
 
     @Override
@@ -14,8 +14,8 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
-    public TypeConfigurer forType(String typeName, int revision) {
-        return parentConfigurer.forType(typeName, revision);
+    public StructureConfigurer forStructure(String typeName, int revision) {
+        return parentConfigurer.forStructure(typeName, revision);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
-    public TypeConfigurer setPublishable(boolean publishable) {
+    public StructureConfigurer setPublishable(boolean publishable) {
         return parentConfigurer.setPublishable(publishable);
     }
 
@@ -62,7 +62,7 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
         return parentConfigurer.addLinkAttribute(name);
     }
 
-    public AttributeConfigurer(TypeConfigurer parentConfigurer, A attribute) {
+    public AttributeConfigurer(StructureConfigurer parentConfigurer, A attribute) {
         this.parentConfigurer = parentConfigurer;
         this.attribute = attribute;
     }

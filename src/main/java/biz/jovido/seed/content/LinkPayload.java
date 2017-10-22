@@ -25,4 +25,9 @@ public class LinkPayload extends Payload<Link> {
     public Link getValue() {
         return getLink();
     }
+
+    @Override
+    public void setValue(Link value) {
+        link = value;
+    }
 }

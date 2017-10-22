@@ -19,7 +19,7 @@ public class ItemController {
     @RequestMapping
     protected String itemById(@RequestParam(name = "id") Long id, Model model) {
         Item item = itemService.getItem(id);
-        model.addAttribute("item", item);
+        model.addAttribute("_item", item);
 
         Structure structure = item.getStructure();
         for (Attribute attribute : structure.getAttributes()) {
@@ -27,9 +27,8 @@ public class ItemController {
             Sequence<?> sequence = item.getSequence(attributeName);
             model.addAttribute(attributeName, sequence);
         }
-        Type type = structure.getType();
 
-        String viewName = String.format("%s-%d", type.getName(), structure.getRevision());
+        String viewName = String.format("%s-%d", structure.getName(), structure.getRevision());
 
         return viewName;
     }

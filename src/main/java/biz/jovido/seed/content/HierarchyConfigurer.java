@@ -14,8 +14,8 @@ public class HierarchyConfigurer implements Configuration {
     }
 
     @Override
-    public TypeConfigurer forType(String typeName, int revision) {
-        return parentConfigurer.forType(typeName, revision);
+    public StructureConfigurer forStructure(String typeName, int revision) {
+        return parentConfigurer.forStructure(typeName, revision);
     }
 
     @Override

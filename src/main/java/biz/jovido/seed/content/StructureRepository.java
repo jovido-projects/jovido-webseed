@@ -1,7 +1,6 @@
 package biz.jovido.seed.content;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @Repository
 public interface StructureRepository extends JpaRepository<Structure, Long> {
 
-    Structure findByTypeAndRevision(Type type, int revision);
+    Structure findByNameAndRevision(String name, int revision);
 
 //    @Query("from Structure s " +
 //            "join s.type as t " +

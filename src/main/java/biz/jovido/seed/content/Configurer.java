@@ -9,7 +9,7 @@ import java.util.Set;
 public class Configurer implements Configuration {
 
     private final HierarchyService hierarchyService;
-    private final TypeService typeService;
+    private final StructureService structureService;
 
     private Set<Structure> structures = new HashSet<>();
 
@@ -20,25 +20,24 @@ public class Configurer implements Configuration {
     }
 
     @Override
-    public TypeConfigurer forType(String typeName, int revision) {
-        Type type = typeService.getOrCreateType(typeName);
-        Structure structure = typeService.getOrCreateStructure(type, revision);
+    public StructureConfigurer forStructure(String structureName, int structureRevision) {
+        Structure structure = structureService.getOrCreateStructure(structureName, structureRevision);
         structures.add(structure);
-        return new TypeConfigurer(this, structure);
+        return new StructureConfigurer(this, structure);
     }
 
     @Override
     public void apply() {
         for (Structure structure : structures) {
-            typeService.saveStructure(structure);
-            Type type = structure.getType();
-            int revision = structure.getRevision();
-            typeService.setActiveRevision(type.getName(), revision);
+            structureService.saveStructure(structure);
+            structureService.setActiveStructureRevision(
+                    structure.getName(),
+                    structure.getRevision());
         }
     }
 
-    public Configurer(HierarchyService hierarchyService, TypeService typeService) {
+    public Configurer(HierarchyService hierarchyService, StructureService structureService) {
         this.hierarchyService = hierarchyService;
-        this.typeService = typeService;
+        this.structureService = structureService;
     }
 }

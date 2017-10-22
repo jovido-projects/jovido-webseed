@@ -1,23 +1,24 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"type_id", "revision"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "revision"}))
 public class Structure {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "type_id", updatable = false)
-    private Type type;
+    private String name;
 
     @Column(updatable = false)
     private int revision;
@@ -37,12 +38,12 @@ public class Structure {
         this.id = id;
     }
 
-    public Type getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getRevision() {

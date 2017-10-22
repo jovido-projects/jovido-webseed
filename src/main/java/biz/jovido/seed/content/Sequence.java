@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.AbstractList;
@@ -56,22 +57,48 @@ public class Sequence<T> extends AbstractList<T> {
         this.attributeName = attributeName;
     }
 
+    @Transient
+    public Attribute getAttribute() {
+        Item item = getItem();
+        if (item != null) {
+            Structure structure = item.getStructure();
+            if (structure != null) {
+                String attributeName = getAttributeName();
+                if (StringUtils.hasLength(attributeName)) {
+                    return structure.getAttribute(attributeName);
+                }
+            }
+        }
+
+        return null;
+    }
+
     public List<Payload> getPayloads() {
         return Collections.unmodifiableList(payloads);
     }
 
-    public Payload getPayload(int index) {
+    public Payload<T> getPayload(int index) {
         if (index >= payloads.size()) {
             return null;
         }
 
         return payloads.get(index);
     }
+//
+//    @Deprecated
+//    public Payload addPayload() {
+//        Structure structure = item.getStructure();
+//        Attribute attribute = structure.getAttribute(attributeName);
+//        Payload payload = attribute.createPayload();
+//        if (payloads.add(payload)) {
+//            payload.setSequence(this);
+//            payload.setOrdinal(payloads.size() - 1);
+//        }
+//
+//        return payload;
+//    }
 
-    public Payload addPayload() {
-        Structure structure = item.getStructure();
-        Attribute attribute = structure.getAttribute(attributeName);
-        Payload payload = attribute.createPayload();
+    public Payload<T> addPayload(Payload<T> payload) {
         if (payloads.add(payload)) {
             payload.setSequence(this);
             payload.setOrdinal(payloads.size() - 1);
@@ -81,7 +108,7 @@ public class Sequence<T> extends AbstractList<T> {
     }
 
     public void removePayload(int index) {
-        Payload removed = payloads.remove(index);
+        Payload<T> removed = payloads.remove(index);
         if (removed != null) {
             removed.setSequence(null);
             removed.setOrdinal(-1);
@@ -113,5 +140,16 @@ public class Sequence<T> extends AbstractList<T> {
     @Override
     public int size() {
         return length();
+    }
+
+    public Sequence<T> copy() {
+        Sequence<T> copy = new Sequence<>();
+        for (int i = 0; i < length(); i++) {
+            Payload<T> payload = getPayload(i);
+            if (payload != null) {
+                copy.addPayload(payload.copy());
+            }
+        }
+        return copy;
     }
 }

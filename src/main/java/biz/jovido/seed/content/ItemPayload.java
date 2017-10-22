@@ -25,4 +25,9 @@ public class ItemPayload extends Payload<Item> {
     public Item getValue() {
         return getItem();
     }
+
+    @Override
+    public void setValue(Item value) {
+        item = value;
+    }
 }

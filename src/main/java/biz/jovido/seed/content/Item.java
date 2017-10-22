@@ -2,6 +2,8 @@ package biz.jovido.seed.content;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,6 +12,7 @@ import java.util.*;
  * @author Stephan Grundner
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Item {
 
     @Id
@@ -17,7 +20,7 @@ public class Item {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Leaf leaf;
+    private History history;
 
     @ManyToOne(optional = false)
     private Structure structure;
@@ -42,6 +45,9 @@ public class Item {
     @MapKey(name = "attributeName")
     private final Map<String, Sequence> sequences = new HashMap<>();
 
+    @CreatedDate
+    private Date createdAt;
+
     public Long getId() {
         return id;
     }
@@ -50,12 +56,12 @@ public class Item {
         this.id = id;
     }
 
-    public Leaf getLeaf() {
-        return leaf;
+    public History getHistory() {
+        return history;
     }
 
-    public void setLeaf(Leaf leaf) {
-        this.leaf = leaf;
+    public void setHistory(History history) {
+        this.history = history;
     }
 
     public Structure getStructure() {
@@ -104,13 +110,38 @@ public class Item {
         }
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Locale getLocale() {
-        Leaf chronicle = getLeaf();
+        History chronicle = getHistory();
         if (chronicle != null) {
 
             return chronicle.getLocale();
         }
 
         return null;
+    }
+
+    public Item copy() {
+        Item copy = new Item();
+        copy.setStructure(getStructure());
+        copy.setHistory(getHistory());
+        copy.setLabel(getLabel());
+
+        Structure structure = getStructure();
+        for (String attributeName : structure.getAttributeNames()) {
+            Sequence sequence = getSequence(attributeName);
+            if (sequence != null) {
+                copy.setSequence(attributeName, sequence.copy());
+            }
+        }
+
+        return copy;
     }
 }

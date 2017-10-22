@@ -35,7 +35,7 @@ public class Node {
     @Column(length = 255 * 8)
     private String label;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Item item;
 
@@ -48,10 +48,6 @@ public class Node {
     }
 
     public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-
         return uuid;
     }
 

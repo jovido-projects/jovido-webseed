@@ -41,9 +41,9 @@
                                         New item <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li th:each="structure : ${@typeService.findPublishableStructures()}">
-                                            <a th:href="@{/admin/item/create(type=${structure.type.name})}">
-                                                <span th:text="${structure.type.name}">Type Name</span>
+                                        <li th:each="structure : ${@structureService.findPublishableStructures()}">
+                                            <a th:href="@{/admin/item/create(structure=${structure.name})}">
+                                                <span th:text="${structure.name}">Type Name</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -60,10 +60,10 @@
                                 <span th:text="${item.label}">Label</span>
                             </td>
                             <td>
-                                <span th:text="${item.structure.type.name}">Structure</span>
+                                <span th:text="${item.structure.name}">Structure</span>
                             </td>
                             <td>
-                                <span th:text="${item.leaf.locale.displayName}">Locale</span>
+                                <span th:text="${item.history.locale.displayName}">Locale</span>
                             </td>
                             <!--<td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>-->
                             <!--<td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>-->

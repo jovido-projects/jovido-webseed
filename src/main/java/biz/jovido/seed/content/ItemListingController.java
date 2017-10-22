@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.util.List;
+
 /**
  * @author Stephan Grundner
  */
@@ -28,8 +30,11 @@ public class ItemListingController {
     protected String index(@ModelAttribute ItemListing listing,
                            BindingResult bindingResult) {
 
-        Page<Item> page = itemService.findAllItems(0, Integer.MAX_VALUE);
-        listing.setPage(page);
+//        Page<Item> page = itemService.findAllItems(0, Integer.MAX_VALUE);
+//        listing.setPage(page);
+
+        List<Item> items = itemService.findAllItems();
+        listing.setItems(items);
 
         return "admin/item/listing";
     }

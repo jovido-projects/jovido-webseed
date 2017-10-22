@@ -3,9 +3,9 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public interface TypeConfiguration extends Configuration {
+public interface StructureConfiguration extends Configuration {
 
-    TypeConfigurer setPublishable(boolean publishable);
+    StructureConfigurer setPublishable(boolean publishable);
 
     TextAttributeConfigurer addTextAttribute(String name);
     ImageAttributeConfigurer addImageAttribute(String name);

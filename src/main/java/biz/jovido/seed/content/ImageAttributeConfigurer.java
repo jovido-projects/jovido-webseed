@@ -5,7 +5,7 @@ package biz.jovido.seed.content;
  */
 public class ImageAttributeConfigurer extends AssetAttributeConfigurer<ImageAttribute, ImageAttributeConfigurer> {
 
-    public ImageAttributeConfigurer(TypeConfigurer builder, ImageAttribute attribute) {
+    public ImageAttributeConfigurer(StructureConfigurer builder, ImageAttribute attribute) {
         super(builder, attribute);
     }
 }

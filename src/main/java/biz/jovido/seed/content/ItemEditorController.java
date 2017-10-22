@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -47,9 +46,9 @@ public class ItemEditorController {
     @RequestMapping(path = "/create")
     protected String create(@ModelAttribute ItemEditor editor,
                             BindingResult bindingResult,
-                            @RequestParam(name = "type") String typeName) {
+                            @RequestParam(name = "structure") String structureName) {
 
-        Item item = itemService.createItem(typeName);
+        Item item = itemService.createItem(structureName);
         editor.setItem(item);
 
         return "redirect:";
@@ -115,24 +114,26 @@ public class ItemEditorController {
 //        return "redirect:";
 //    }
 
-    @RequestMapping(path = "append", params = {"type"})
+    @RequestMapping(path = "append", params = {"structure"})
     protected String append(@ModelAttribute ItemEditor editor,
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName,
-                            @RequestParam(name = "type") String typeName,
+                            @RequestParam(name = "structure") String structureName,
                             BindingResult bindingResult) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
 
-        Item item = itemService.createEmbeddedItem(typeName, 1);
-        ItemPayload payload = (ItemPayload) sequence.addPayload();
+        Item item = itemService.createEmbeddedItem(structureName, 1);
+        Attribute attribute = sequence.getAttribute();
+        ItemPayload payload = (ItemPayload) attribute.createPayload();
         payload.setItem(item);
+        sequence.addPayload(payload);
 
         return "redirect:";
     }
 
-    @RequestMapping(path = "append", params = {"!type"})
+    @RequestMapping(path = "append", params = {"!structure"})
     protected String append(@ModelAttribute ItemEditor editor,
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName,
@@ -140,7 +141,9 @@ public class ItemEditorController {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        sequence.addPayload();
+        Attribute attribute = sequence.getAttribute();
+        Payload payload = attribute.createPayload();
+        sequence.addPayload(payload);
 
         return "redirect:";
     }
@@ -231,34 +234,50 @@ public class ItemEditorController {
     protected String addNode(@ModelAttribute ItemEditor editor,
                              BindingResult bindingResult,
                              @RequestParam(name = "branch") Long branchId,
-                             @RequestParam(name = "parent") Long parentId) {
+                             @RequestParam(name = "parent-uuid", required = false) UUID parentUuid) {
 
         Item item = editor.getItem();
         Locale locale = item.getLocale();
         Assert.notNull(locale);
 
         Node node = new Node();
+        node.setUuid(UUID.randomUUID());
         node.setItem(item);
+
+
+        Branch branch = hierarchyService.getBranch(branchId);
+
 
         Node parent = null;
 
-        Branch branch = hierarchyService.getBranch(branchId);
-        UUID parentNodeUuid = editor.getParentNodeUuid();
-        if (parentNodeUuid != null) {
-            parent = item.getNodes().stream()
-                    .filter(it -> it.getUuid().equals(parentNodeUuid))
+        if (parentUuid != null) {
+            parent = branch.getNodes().stream()
+                    .filter(it -> it.getUuid().equals(parentUuid))
                     .findFirst()
                     .orElse(null);
         }
-//        if (parentId != null) {
-//            parent = hierarchyService.getNode(parentId);
-//        }
         node.setParent(parent);
 
-
-        branch.addNode(node);
+        node.setBranch(branch);
+        node = hierarchyService.saveNode(node);
 
         item.addNode(node);
+        branch.addNode(node);
+
+        hierarchyService.saveBranch(branch);
+
+        return "redirect:";
+    }
+
+
+    @RequestMapping(path = "publish")
+    protected String publish(@ModelAttribute ItemEditor editor,
+                             BindingResult bindingResult) {
+
+        Item item = editor.getItem();
+        Item current = itemService.publishItem(item);
+
+        editor.setItem(current);
 
         return "redirect:";
     }

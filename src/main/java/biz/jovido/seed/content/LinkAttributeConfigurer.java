@@ -5,7 +5,7 @@ package biz.jovido.seed.content;
  */
 public class LinkAttributeConfigurer extends AttributeConfigurer<LinkAttribute, LinkAttributeConfigurer> {
 
-    public LinkAttributeConfigurer(TypeConfigurer builder, LinkAttribute attribute) {
+    public LinkAttributeConfigurer(StructureConfigurer builder, LinkAttribute attribute) {
         super(builder, attribute);
     }
 }
