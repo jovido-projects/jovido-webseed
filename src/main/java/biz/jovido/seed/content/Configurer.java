@@ -14,13 +14,13 @@ public class Configurer implements Configuration {
     private Set<Structure> structures = new HashSet<>();
 
     @Override
-    public HierarchyConfigurer forHierarchy(String hierarchyName) {
+    public HierarchyConfigurer createHierarchy(String hierarchyName) {
         Hierarchy hierarchy = hierarchyService.getOrCreateHierarchy(hierarchyName);
         return new HierarchyConfigurer(this, hierarchy);
     }
 
     @Override
-    public StructureConfigurer forStructure(String structureName, int structureRevision) {
+    public StructureConfigurer createStructure(String structureName, int structureRevision) {
         Structure structure = structureService.getOrCreateStructure(structureName, structureRevision);
         structures.add(structure);
         return new StructureConfigurer(this, structure);

@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.url.Alias;
+import biz.jovido.seed.content.url.AliasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,9 @@ public class ItemController {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private AliasService aliasService;
 
     @RequestMapping(params = {"id", "!history"})
     protected String itemById(@RequestParam(name = "id") Long id, Model model) {
@@ -50,5 +55,12 @@ public class ItemController {
         String viewName = String.format("%s-%d", structure.getName(), structure.getRevision());
 
         return viewName;
+    }
+
+    @RequestMapping(params = {"alias"})
+    protected String itemByAlias(@RequestParam(name = "alias") Long aliasId, Model model) {
+        Alias alias = aliasService.getAlias(aliasId);
+
+        return itemByHistory(alias.getHistory().getId(), model);
     }
 }

@@ -2,53 +2,117 @@
 <label>
     <span th:text="${attribute.name}">Field name</span>
 </label>
-<ul class="list-group">
-    <li class="list-group-item" th:each="payload,payloadItr : ${sequence.payloads}">
-        <div class="input-group">
-            <div class="input-group-addon">
-                <!--<span th:text="${payloadItr.index + 1}">#</span>-->
-                <span th:text="${payload.ordinal + 1}">#</span>
-            </div>
-            <input type="text" class="form-control"
-                   th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].text}">
-            <div class="input-group-btn input-group-xs" th:remove="${attribute.capacity <= 1} ? all : _">
-                <button class="btn btn-default"
-                        th:disabled="${payloadItr.index == 0} ? disabled : _"
-                        th:formaction="@{move-payload-up(
+<!--<ul class="list-group">-->
+    <!--<li class="list-group-item" th:each="payload,payloadItr : ${sequence.payloads}">-->
+        <!--<div class="input-group">-->
+            <!--<div class="input-group-addon">-->
+                <!--&lt;!&ndash;<span th:text="${payloadItr.index + 1}">#</span>&ndash;&gt;-->
+                <!--<span th:text="${payload.ordinal + 1}">#</span>-->
+            <!--</div>-->
+            <!--<input type="text" class="form-control"-->
+                   <!--th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].text}">-->
+            <!--<div class="input-group-btn input-group-xs" th:remove="${attribute.capacity <= 1} ? all : _">-->
+                <!--<button class="btn btn-default"-->
+                        <!--th:disabled="${payloadItr.index == 0} ? disabled : _"-->
+                        <!--th:formaction="@{move-payload-up(-->
+                        <!--nested-path=${nestedPath},-->
+                        <!--attribute=${attribute.name},-->
+                        <!--index=${payloadItr.index})}">-->
+                    <!--<i class="fa fa-arrow-up"></i>-->
+                <!--</button>-->
+                <!--<button class="btn btn-default"-->
+                        <!--th:disabled="${payloadItr.index == sequence.length() - 1} ? disabled : _"-->
+                        <!--th:formaction="@{move-payload-down(-->
+                        <!--nested-path=${nestedPath},-->
+                        <!--attribute=${attribute.name},-->
+                        <!--index=${payloadItr.index})}">-->
+                    <!--<i class="fa fa-arrow-down"></i>-->
+                <!--</button>-->
+                <!--<button class="btn btn-default"-->
+                        <!--th:formaction="@{remove-payload(-->
+                        <!--nested-path=${nestedPath},-->
+                        <!--attribute=${attribute.name},-->
+                        <!--index=${payloadItr.index})}">-->
+                    <!--<i class="fa fa-remove"></i>-->
+                <!--</button>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<span class="help-block">A block of help text that breaks onto a new line and may extend beyond one line.</span>-->
+    <!--</li>-->
+    <!--<li class="list-group-item" th:if="${attribute.capacity > 1}">-->
+        <!--<div class="btn-group">-->
+            <!--<button class="btn btn-default"-->
+                    <!--th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"-->
+                    <!--th:formaction="@{append(-->
+                    <!--nested-path=${nestedPath},-->
+                    <!--attribute=${attribute.name})}">-->
+                <!--<span>Append</span>-->
+                <!--<span th:text="${attribute.name}">Attribute name</span>-->
+            <!--</button>-->
+        <!--</div>-->
+    <!--</li>-->
+<!--</ul>-->
+
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <th:block  th:each="payload,payloadItr : ${sequence.payloads}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <!--<span th:text="${payloadItr.index + 1}">#</span>-->
+                                <span th:text="${payload.ordinal + 1}">#</span>
+                            </div>
+                            <input type="text" class="form-control"
+                                   th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].text}">
+                            <div class="input-group-btn input-group-xs" th:remove="${attribute.capacity <= 1} ? all : _">
+                                <button class="btn btn-default"
+                                        th:disabled="${payloadItr.index == 0} ? disabled : _"
+                                        th:formaction="@{move-payload-up(
                         nested-path=${nestedPath},
                         attribute=${attribute.name},
                         index=${payloadItr.index})}">
-                    <i class="fa fa-arrow-up"></i>
-                </button>
-                <button class="btn btn-default"
-                        th:disabled="${payloadItr.index == sequence.length() - 1} ? disabled : _"
-                        th:formaction="@{move-payload-down(
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                                <button class="btn btn-default"
+                                        th:disabled="${payloadItr.index == sequence.length() - 1} ? disabled : _"
+                                        th:formaction="@{move-payload-down(
                         nested-path=${nestedPath},
                         attribute=${attribute.name},
                         index=${payloadItr.index})}">
-                    <i class="fa fa-arrow-down"></i>
-                </button>
-                <button class="btn btn-default"
-                        th:formaction="@{remove-payload(
+                                    <i class="fa fa-arrow-down"></i>
+                                </button>
+                                <button class="btn btn-default"
+                                        th:formaction="@{remove-payload(
                         nested-path=${nestedPath},
                         attribute=${attribute.name},
                         index=${payloadItr.index})}">
-                    <i class="fa fa-remove"></i>
-                </button>
-            </div>
-        </div>
-    </li>
-    <li class="list-group-item" >
-        <div class="btn-group">
-            <button class="btn btn-default"
-                    th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
-                    th:formaction="@{append(
+                                    <i class="fa fa-remove"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+            <th:block th:if="${attribute.capacity > 1}">
+                <div class="btn-group">
+                    <button class="btn btn-default"
+                            th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
+                            th:formaction="@{append(
                     nested-path=${nestedPath},
                     attribute=${attribute.name})}">
-                <span>Append</span>
-                <span th:text="${attribute.name}">Attribute name</span>
-            </button>
+                        <span>Append</span>
+                        <span th:text="${attribute.name}">Attribute name</span>
+                    </button>
+                </div>
+            </th:block>
         </div>
-    </li>
-</ul>
+    </div>
+</div>
+
+
 </html>

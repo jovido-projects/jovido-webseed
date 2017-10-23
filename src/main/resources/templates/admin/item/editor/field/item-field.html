@@ -8,7 +8,9 @@
         th:each="payload,payloadItr : ${sequence.payloads}" th:classappend="${nestingLevel % 2 != 0}? gray : _">
 
         <h5>
-            <strong># [[${payloadItr.index + 1}]]</strong>
+            <th:block th:if="${attribute.capacity > 1}">
+                <strong># [[${payloadItr.index + 1}]]</strong>
+            </th:block>
             <div class="btn-group btn-group-xs pull-right">
                 <button class="btn btn-default"
                         disabled="disabled">
@@ -35,9 +37,13 @@
 
     </li>
 
-    <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__">
+    <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__" >
         <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
+                    class="btn btn-default dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
                 Append <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">

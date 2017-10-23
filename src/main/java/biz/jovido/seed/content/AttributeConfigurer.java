@@ -9,13 +9,13 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     protected final A attribute;
 
     @Override
-    public HierarchyConfigurer forHierarchy(String hierarchyName) {
-        return parentConfigurer.forHierarchy(hierarchyName);
+    public HierarchyConfigurer createHierarchy(String hierarchyName) {
+        return parentConfigurer.createHierarchy(hierarchyName);
     }
 
     @Override
-    public StructureConfigurer forStructure(String typeName, int revision) {
-        return parentConfigurer.forStructure(typeName, revision);
+    public StructureConfigurer createStructure(String typeName, int revision) {
+        return parentConfigurer.createStructure(typeName, revision);
     }
 
     @Override

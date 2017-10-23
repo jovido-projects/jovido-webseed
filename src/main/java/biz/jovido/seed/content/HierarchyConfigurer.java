@@ -9,13 +9,13 @@ public class HierarchyConfigurer implements Configuration {
     private final Hierarchy hierarchy;
 
     @Override
-    public HierarchyConfigurer forHierarchy(String hierarchyName) {
-        return parentConfigurer.forHierarchy(hierarchyName);
+    public HierarchyConfigurer createHierarchy(String hierarchyName) {
+        return parentConfigurer.createHierarchy(hierarchyName);
     }
 
     @Override
-    public StructureConfigurer forStructure(String typeName, int revision) {
-        return parentConfigurer.forStructure(typeName, revision);
+    public StructureConfigurer createStructure(String typeName, int revision) {
+        return parentConfigurer.createStructure(typeName, revision);
     }
 
     @Override

@@ -1,5 +1,9 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.url.Alias;
+import biz.jovido.seed.content.url.AliasService;
+import biz.jovido.seed.content.url.Host;
+import biz.jovido.seed.content.url.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
@@ -29,6 +33,12 @@ public class ItemService {
 
     @Autowired
     private HierarchyService hierarchyService;
+
+    @Autowired
+    private AliasService aliasService;
+
+    @Autowired
+    private HostService hostService;
 
     @Autowired
     private EntityManager entityManager;
@@ -142,6 +152,15 @@ public class ItemService {
         history.setCurrent(current);
 
         entityManager.merge(history);
+
+        String path = item.getPath();
+        if (StringUtils.hasLength(path)) {
+            for (Host host : hostService.getAllHosts()) {
+                Alias alias = aliasService.getOrCreateAlias(host, path);
+                alias.setHistory(history);
+                aliasService.saveAlias(alias);
+            }
+        }
 
         return current;
     }
