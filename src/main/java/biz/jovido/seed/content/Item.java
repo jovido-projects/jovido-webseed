@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.util.UnmodifiableMapProxy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,7 +14,7 @@ import java.util.*;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Item {
+public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     @Id
     @GeneratedValue
@@ -28,18 +29,8 @@ public class Item {
     @Column(length = 255 * 8)
     private String label;
 
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinTable(name = "item_node",
-//            joinColumns = @JoinColumn(name = "item_id"),
-//            inverseJoinColumns = @JoinColumn(name = "node_id"),
-//            uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "node_id"}))
-//    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @Fetch(FetchMode.SELECT)
-//    private final List<Node> nodes = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @Fetch(FetchMode.SELECT)
-//    private final List<Node> nodes = new ArrayList<>();
+    @Column(length = 255 * 4)
+    private String path;
 
     @OneToMany(mappedBy = "item", targetEntity = Sequence.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
@@ -78,6 +69,14 @@ public class Item {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
 //    public List<Node> getNodes() {
@@ -151,6 +150,7 @@ public class Item {
         copy.setStructure(getStructure());
         copy.setHistory(getHistory());
         copy.setLabel(getLabel());
+        copy.setPath(getPath());
 
         Structure structure = getStructure();
         for (String attributeName : structure.getAttributeNames()) {
@@ -161,5 +161,10 @@ public class Item {
         }
 
         return copy;
+    }
+
+    @Override
+    protected Map<String, Sequence> getMap() {
+        return sequences;
     }
 }

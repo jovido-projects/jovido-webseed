@@ -72,6 +72,9 @@ public class HierarchyService {
 
     public Branch getBranch(String hierarchyName, Locale locale) {
         Hierarchy hierarchy = getHierarchy(hierarchyName);
+        if (hierarchy == null) {
+            throw new RuntimeException("No such hierarchy: " + hierarchyName);
+        }
         return getBranch(hierarchy, locale);
     }
 

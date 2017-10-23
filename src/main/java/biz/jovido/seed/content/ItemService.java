@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -102,6 +103,20 @@ public class ItemService {
     public Item createEmbeddedItem(String structureName, int structureRevision) {
         Structure structure = structureService.getStructure(structureName, structureRevision);
         return createItemWithinHistory(structure, null);
+    }
+
+    public String getRelativeUrl(Item item) {
+        String path = item.getPath();
+        if (StringUtils.isEmpty(path)) {
+            History history = item.getHistory();
+            return String.format("/item?history=%s", history.getId());
+        }
+
+        if (!path.startsWith("/")) {
+            return String.format("/%s", path);
+        }
+
+        return path;
     }
 
     @Transactional

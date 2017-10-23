@@ -1,0 +1,99 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${itemHierarchyForm}" method="post" th:with="item=${itemHierarchyForm.item}">
+
+            <th:block th:replace="admin/item/head" />
+
+            <ul class="nav nav-tabs">
+                <li role="presentation" >
+                    <a th:href="@{/admin/item/(id=${item.id})}">Content</a>
+                </li>
+                <li role="presentation" class="active">
+                    <a href="#">Hierarchy</a>
+                </li>
+                <li role="presentation" class="disabled">
+                    <a href="#">Revisions</a>
+                </li>
+            </ul>
+
+            <p>&nbsp;</p>
+
+            <ul th:if="${#fields.hasErrors('*')}">
+                <li th:each="err : ${#fields.detailedErrors('*')}" >
+                    <span th:text="${err}">Error</span>
+                </li>
+            </ul>
+
+            <div class="row">
+
+                <!-- Items -->
+                <div class="col-md-12" >
+
+                    <th:block th:each="hierarchy : ${@hierarchyService.allHierarchies}">
+                        <th:block th:with="branch=${@hierarchyService.getBranch(hierarchy, item.locale)}">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    [[#{seed.hierarchy.__${hierarchy.name}__}]]
+                                </div>
+                                <div class="panel-body">
+
+                                    <!--<ul th:each="node : ${branch.roots}">-->
+                                    <ul th:each="node : ${branch.roots}">
+                                        <th:block th:fragment="node(node)">
+                                            <li style="color: black;" th_class="${item.id == node.item.id} ? active : _">
+                                                [[${node.history.current.label}]]
+                                                <div class="btn-group btn-group-xs">
+                                                    <th:block th:if="${node.belongsTo(item)}">
+                                                        <button class="btn btn-default">
+                                                            <i class="fa fa-arrow-up"></i>
+                                                        </button>
+                                                        <button class="btn btn-default">
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </th:block>
+                                                    <button class="btn btn-default"
+                                                            th:formaction="@{add-node(
+                                                        branch=${branch.id},
+                                                        parent-uuid=${node.uuid})}"
+                                                            th:disabled="${item.id == null} ? disabled : _">
+                                                        <i class="fa fa-plus"></i>
+                                                        Append
+                                                    </button>
+
+                                                </div>
+                                                <ul th:unless="${node?.children?.empty}">
+                                                    <th:block th:each="child : ${node.children}">
+                                                        <th:block th:replace="::node(${child})" />
+                                                    </th:block>
+                                                </ul>
+                                            </li>
+                                        </th:block>
+                                    </ul>
+
+                                    <button class="btn btn-default"
+                                            th:formaction="@{add-node(branch=${branch.id}, parent=null)}"
+                                            th:disabled="${item?.id == null} ? disabled : _">
+                                        <i class="fa fa-plus"></i>
+                                        Add node
+                                    </button>
+                                </div>
+
+
+                            </div>
+
+                        </th:block>
+                    </th:block>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

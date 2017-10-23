@@ -4,22 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author Stephan Grundner
  */
 @Controller
-@RequestMapping(path = "/admin/item")
+@RequestMapping(path = "/admin/item/")
 @SessionAttributes(types = {ItemEditor.class})
 public class ItemEditorController {
 
@@ -27,13 +24,42 @@ public class ItemEditorController {
     private ItemService itemService;
 
     @Autowired
-    private HierarchyService hierarchyService;
+    private AssetService assetService;
 
     @ModelAttribute
-    protected ItemEditor editor() {
+    protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
+                                @RequestParam(name = "new", required = false) String structureName) {
         ItemEditor editor = new ItemEditor();
 
+        if (itemId != null) {
+            Item item = itemService.getItem(itemId);
+            editor.setItem(item);
+        } else if (StringUtils.hasText(structureName)) {
+            Item item = itemService.createItem(structureName);
+            editor.setItem(item);
+        }
+
         return editor;
+    }
+
+    private String redirect(Item item) {
+        if (item != null) {
+            Long id = item.getId();
+            if (id != null) {
+                return String.format("redirect:?id=%d", id);
+            } else {
+                Structure structure = item.getStructure();
+                if (structure != null) {
+                    return String.format("redirect:?new=%s", structure.getName());
+                }
+            }
+        }
+
+        return "redirect:/admin/items/";
+    }
+
+    private String redirect(ItemEditor editor) {
+        return redirect(editor.getItem());
     }
 
     @RequestMapping
@@ -52,7 +78,7 @@ public class ItemEditorController {
         Item item = itemService.createItem(structureName);
         editor.setItem(item);
 
-        return "redirect:";
+        return redirect(item);
     }
 
 //    @ExceptionHandler(Exception.class)
@@ -63,7 +89,6 @@ public class ItemEditorController {
 //        return modelAndView;
 //    }
 
-
     @RequestMapping(path = "edit")
     protected String edit(@ModelAttribute ItemEditor editor,
                           @RequestParam(name = "item") Long itemId,
@@ -72,7 +97,7 @@ public class ItemEditorController {
         Item item = itemService.getItem(itemId);
         editor.setItem(item);
 
-        return "redirect:";
+        return redirect(item);
     }
 
     @RequestMapping(path = "save")
@@ -83,7 +108,7 @@ public class ItemEditorController {
         item = itemService.saveItem(item);
         editor.setItem(item);
 
-        return "redirect:";
+        return redirect(item);
     }
 
     @RequestMapping(path = "close")
@@ -131,7 +156,7 @@ public class ItemEditorController {
         payload.setItem(item);
         sequence.addPayload(payload);
 
-        return "redirect:";
+        return redirect(item);
     }
 
     @RequestMapping(path = "append", params = {"!structure"})
@@ -146,7 +171,7 @@ public class ItemEditorController {
         Payload payload = attribute.createPayload();
         sequence.addPayload(payload);
 
-        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "move-payload-up")
@@ -160,7 +185,7 @@ public class ItemEditorController {
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
         sequence.movePayload(index, index - 1);
 
-        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "move-payload-down")
@@ -174,7 +199,7 @@ public class ItemEditorController {
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
         sequence.movePayload(index, index + 1);
 
-        return "redirect:";
+        return redirect(editor);
     }
 
     @RequestMapping(path = "remove-payload")
@@ -188,12 +213,8 @@ public class ItemEditorController {
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
         sequence.removePayload(index);
 
-        return "redirect:";
+        return redirect(editor);
     }
-
-
-    @Autowired
-    private AssetService assetService;
 
     @Transactional
     @PostMapping(path = "upload", params = {"type=image"})
@@ -227,52 +248,8 @@ public class ItemEditorController {
 //        payload.setImage(image);
 
 
-        return "redirect:";
+        return redirect(editor);
     }
-
-
-    @RequestMapping(path = "add-node", params = {})
-    protected String addNode(@ModelAttribute ItemEditor editor,
-                             BindingResult bindingResult,
-                             @RequestParam(name = "branch") Long branchId,
-                             @RequestParam(name = "parent-uuid", required = false) UUID parentUuid) {
-
-        Item item = editor.getItem();
-        History history = item.getHistory();
-        Locale locale = item.getLocale();
-        Assert.notNull(locale);
-
-        Node node = new Node();
-        node.setUuid(UUID.randomUUID());
-        node.setHistory(item.getHistory());
-
-
-        Branch branch = hierarchyService.getBranch(branchId);
-
-
-        Node parent = null;
-
-        if (parentUuid != null) {
-            parent = branch.getNodes().stream()
-                    .filter(Objects::nonNull)
-                    .filter(it -> it.getUuid() != null)
-                    .filter(it -> it.getUuid().equals(parentUuid))
-                    .findFirst()
-                    .orElse(null);
-        }
-        node.setParent(parent);
-
-        node.setBranch(branch);
-        node = hierarchyService.saveNode(node);
-
-        history.addNode(node);
-        branch.addNode(node);
-
-        hierarchyService.saveBranch(branch);
-
-        return "redirect:";
-    }
-
 
     @RequestMapping(path = "publish")
     protected String publish(@ModelAttribute ItemEditor editor,
@@ -283,6 +260,6 @@ public class ItemEditorController {
 
         editor.setItem(current);
 
-        return "redirect:";
+        return redirect(editor);
     }
 }

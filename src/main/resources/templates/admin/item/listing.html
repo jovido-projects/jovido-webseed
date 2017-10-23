@@ -33,7 +33,7 @@
                             <th nowrap="nowrap">Locale</th>
                             <th nowrap="nowrap">Created by</th>
                             <th nowrap="nowrap">Last modified at</th>
-                            <th width="99%"></th>
+                            <th width="1%"></th>
                             <th>
                                 <div class="btn-group btn-group-xs pull-right">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -57,7 +57,12 @@
                                 <span th:text="${item.id}">ID</span>
                             </td>
                             <td>
-                                <span th:text="${item.label}">Label</span>
+                                <span>
+                                    <a th:text="${item.label}"
+                                       th_href="@{/item(history=${item.history.id})}"
+                                       th:href="${@itemService.getRelativeUrl(item)}"
+                                       target="_blank">Label</a>
+                                </span>
                             </td>
                             <td>
                                 <span th:text="${item.structure.name}">Structure</span>
@@ -65,8 +70,8 @@
                             <td>
                                 <span th:text="${item.history.locale.displayName}">Locale</span>
                             </td>
-                            <!--<td nowrap="nowrap" th:text="${item.createdBy?.name}"></td>-->
-                            <!--<td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>-->
+                            <td nowrap="nowrap" th_text="${item.createdBy?.name}"></td>
+                            <td nowrap="nowrap" th_text="${item.lastModifiedAt}"></td>
                             <td></td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">
@@ -75,9 +80,9 @@
                                             item=${item.id})}">
                                         <i class="fa fa-pencil"></i>
                                     </button>
-                                    <button class="btn btn-default">
-                                        <i class="fa fa-remove"></i>
-                                    </button>
+                                    <!--<button class="btn btn-default">-->
+                                        <!--<i class="fa fa-remove"></i>-->
+                                    <!--</button>-->
                                 </div>
                             </td>
                         </tr>
