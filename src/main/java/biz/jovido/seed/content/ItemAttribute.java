@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * @author Stephan Grundner
  */
-@Entity
+//@Entity
 public class ItemAttribute extends Attribute {
 
     @ElementCollection(fetch = FetchType.EAGER)

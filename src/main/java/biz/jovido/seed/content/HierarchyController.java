@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -52,40 +51,38 @@ public class HierarchyController {
     @RequestMapping(path = "add-node", params = {})
     protected String addNode(@ModelAttribute HierarchyForm form,
                              BindingResult bindingResult,
-                             @RequestParam(name = "branch") Long branchId,
+                             @RequestParam(name = "hierarchy") Long hierarchyId,
                              @RequestParam(name = "parent-uuid", required = false) UUID parentUuid) {
 
         Item item = form.getItem();
-        ItemHistory history = item.getHistory();
+        Leaf leaf = item.getLeaf();
         Locale locale = item.getLocale();
         Assert.notNull(locale);
 
+        Hierarchy hierarchy = hierarchyService.getHierarchy(hierarchyId);
+
         Node node = new Node();
         node.setUuid(UUID.randomUUID());
-        node.setHistory(item.getHistory());
-
-        Branch branch = hierarchyService.getBranch(branchId);
+        node.setHierarchy(hierarchy);
+        node.setLeaf(item.getLeaf());
 
         Node parent = null;
 
-        if (parentUuid != null) {
-            parent = branch.getNodes().stream()
-                    .filter(Objects::nonNull)
-                    .filter(it -> it.getUuid() != null)
-                    .filter(it -> it.getUuid().equals(parentUuid))
-                    .findFirst()
-                    .orElse(null);
-        }
-
-        node.setParent(parent);
-
-        node.setBranch(branch);
+//        if (parentUuid != null) {
+//            parent = branch.getNodes().stream()
+//                    .filter(Objects::nonNull)
+//                    .filter(it -> it.getUuid() != null)
+//                    .filter(it -> it.getUuid().equals(parentUuid))
+//                    .findFirst()
+//                    .orElse(null);
+//        }
+//
+//        node.setParent(parent);
+//
+//        node.setBranch(branch);
         node = hierarchyService.saveNode(node);
 
-        history.addNode(node);
-        branch.addNode(node);
-
-        hierarchyService.saveBranch(branch);
+        leaf.addNode(node);
 
         return redirect(form);
     }

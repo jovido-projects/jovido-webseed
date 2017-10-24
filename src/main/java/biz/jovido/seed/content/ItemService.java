@@ -50,20 +50,35 @@ public class ItemService {
         return itemRepository.findOne(id);
     }
 
-    public Item findPublished(Long historyId) {
-        return itemRepository.findPublished(historyId);
+    public Item findPublished(Long leafId) {
+        return itemRepository.findPublished(leafId);
     }
 
     public Page<Item> findAllItems(int offset, int max) {
-        return itemRepository.findAllByHistoryIsNotNull(new PageRequest(offset, max));
+        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
     }
 
     public List<Item> findAllItems() {
         return itemRepository.findAllCurrent();
     }
 
+    public Structure getStructure(Item item) {
+        if (item != null) {
+            String structureName = item.getStructureName();
+            return structureService.getStructure(structureName);
+        }
+
+        return null;
+    }
+
+    public Sequence<?> getLabel(Item item) {
+        Structure structure = getStructure(item);
+        String attributeName = structure.getLabelAttributeName();
+        return item.getSequence(attributeName);
+    }
+
     private void applyPayloads(Item item) {
-        Structure structure = item.getStructure();
+        Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
             Attribute attribute = structure.getAttribute(attributeName);
             Sequence sequence = item.getSequence(attributeName);
@@ -80,15 +95,19 @@ public class ItemService {
         }
     }
 
-    private Item createItem(Structure structure) {
-        ItemHistory history = new ItemHistory();
-        history.setLocale(LocaleContextHolder.getLocale());
-        return createItemWithinHistory(structure, history);
+    public Sequence getSequence(Item item, String attributeName) {
+        Sequence sequence = item.getSequence(attributeName);
+        if (sequence == null) {
+            throw new RuntimeException("No sequence found for: " + attributeName);
+        }
+
+        return sequence;
     }
 
-    public Item createItem(String structureName, int structureRevision) {
-        Structure structure = structureService.getStructure(structureName, structureRevision);
-        return createItem(structure);
+    private Item createItem(Structure structure) {
+        Leaf leaf = new Leaf();
+        leaf.setLocale(LocaleContextHolder.getLocale());
+        return createItemWithinHistory(structure, leaf);
     }
 
     public Item createItem(String structureName) {
@@ -96,30 +115,29 @@ public class ItemService {
         return createItem(structure);
     }
 
-    private Item createItemWithinHistory(Structure structure, ItemHistory history) {
+    private Item createItemWithinHistory(Structure structure, Leaf leaf) {
         Item item = new Item();
-        item.setHistory(history);
-        if (history != null) {
-            history.setCurrent(item);
+        item.setLeaf(leaf);
+        item.setStructureName(structure.getName());
+        if (leaf != null) {
+            leaf.setCurrent(item);
         }
-
-        item.setStructure(structure);
 
         applyPayloads(item);
 
         return item;
     }
 
-    public Item createEmbeddedItem(String structureName, int structureRevision) {
-        Structure structure = structureService.getStructure(structureName, structureRevision);
+    public Item createEmbeddedItem(String structureName) {
+        Structure structure = structureService.getStructure(structureName);
         return createItemWithinHistory(structure, null);
     }
 
     public String getRelativeUrl(Item item) {
         String path = item.getPath();
         if (StringUtils.isEmpty(path)) {
-            ItemHistory history = item.getHistory();
-            return String.format("/item?history=%s", history.getId());
+            Leaf history = item.getLeaf();
+            return String.format("/item?leaf=%s", history.getId());
         }
 
         if (!path.startsWith("/")) {
@@ -136,16 +154,53 @@ public class ItemService {
         }
         auditingHandler.markModified(item);
 //        return itemRepository.saveAndFlush(item);
-        return itemRepository.saveAndFlush(item);
+//        return itemRepository.saveAndFlush(item);
+        return entityManager.merge(item);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Payload<T> copyPayload(Payload<T> from) {
+        Attribute attribute = getAttribute(from);
+        Payload<T> to = (Payload<T>) attribute.createPayload();
+        to.setValue(from.getValue());
+
+        return to;
+    }
+
+    private <T> Sequence<T> copySequence(Sequence<T> from) {
+        Sequence<T> to = new Sequence<>();
+        to.setAttributeName(from.getAttributeName());
+
+        for (int i = 0; i < from.length(); i++) {
+            Payload<T> payload = from.getPayload(i);
+            to.addPayload(copyPayload(payload));
+        }
+
+        return to;
+    }
+
+    private Item copyItem(Item from) {
+        Item to = new Item();
+        to.setLeaf(from.getLeaf());
+        to.setStructureName(from.getStructureName());
+        to.setPath(from.getPath());
+
+        Structure structure = getStructure(from);
+        for (String attributeName : structure.getAttributeNames()) {
+            Sequence<?> sequence = from.getSequence(attributeName);
+            to.setSequence(attributeName, copySequence(sequence));
+        }
+
+        return to;
     }
 
     @Transactional
     public Item publishItem(final Item item) {
-        Item current = item.copy();
+        Item current = copyItem(item);
 //        auditingHandler.markCreated(item);
         current = entityManager.merge(current);
 
-        ItemHistory history = current.getHistory();
+        Leaf history = current.getLeaf();
 //        entityManager.refresh(history);
 
         history.setPublished(item);
@@ -167,7 +222,7 @@ public class ItemService {
 
     public Attribute getAttribute(Sequence sequence) {
         Item item = sequence.getItem();
-        Structure structure = item.getStructure();
+        Structure structure = getStructure(item);
         String attributeName = sequence.getAttributeName();
         return structure.getAttribute(attributeName);
     }

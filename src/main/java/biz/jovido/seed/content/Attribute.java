@@ -5,9 +5,9 @@ import javax.persistence.*;
 /**
  * @author Stephan Grundner
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"structure_id", "name"}))
+//@Entity
+//@Inheritance(strategy = InheritanceType.JOINED)
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"structure_id", "name"}))
 public abstract class Attribute {
 
     @Id

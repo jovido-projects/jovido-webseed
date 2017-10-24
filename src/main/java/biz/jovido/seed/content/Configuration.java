@@ -6,7 +6,7 @@ package biz.jovido.seed.content;
 public interface Configuration {
 
     HierarchyConfigurer createHierarchy(String hierarchyName);
-    StructureConfigurer createStructure(String typeName, int revision);
+    StructureConfigurer createStructure(String typeName);
 
     void apply();
 }

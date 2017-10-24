@@ -1,13 +1,12 @@
 package biz.jovido.seed.content;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,16 +17,20 @@ import java.util.stream.Collectors;
 public class HierarchyService {
 
     @Autowired
-    private HierarchyRepository hierarchyRepository;
+    private BeanFactory beanFactory;
 
     @Autowired
-    private BranchRepository branchRepository;
+    private HierarchyRepository hierarchyRepository;
 
     @Autowired
     private NodeRepository nodeRepository;
 
     @Autowired
     private EntityManager entityManager;
+
+    public Hierarchy getHierarchy(Long id) {
+        return hierarchyRepository.findOne(id);
+    }
 
     public Hierarchy getHierarchy(String name) {
         return hierarchyRepository.findByName(name);
@@ -52,37 +55,6 @@ public class HierarchyService {
         return hierarchyRepository.findAll();
     }
 
-    public Branch getBranch(Long id) {
-        return branchRepository.findOne(id);
-    }
-
-    public Branch getBranch(Hierarchy hierarchy, Locale locale) {
-        Assert.notNull(locale);
-        Branch branch = hierarchy.getBranch(locale);
-        if (branch == null) {
-            branch = new Branch();
-            branch.setLocale(locale);
-            branch.setHierarchy(hierarchy);
-            branch = branchRepository.save(branch);
-            hierarchy.putBranch(branch);
-        }
-
-        return branch;
-    }
-
-    public Branch getBranch(String hierarchyName, Locale locale) {
-        Hierarchy hierarchy = getHierarchy(hierarchyName);
-        if (hierarchy == null) {
-            throw new RuntimeException("No such hierarchy: " + hierarchyName);
-        }
-        return getBranch(hierarchy, locale);
-    }
-
-    public Branch saveBranch(Branch branch) {
-        return branchRepository.save(branch);
-    }
-
-
     public Node getNode(Long id) {
         return nodeRepository.findOne(id);
     }
@@ -92,76 +64,43 @@ public class HierarchyService {
     }
 
     public List<Node> getNodes(Item item, Hierarchy hierarchy) {
-        return item.getHistory().getNodes().stream()
-                .filter(it -> it.getBranch().getHierarchy().getName() == hierarchy.getName())
+        return item.getLeaf().getNodes().stream()
+                .filter(it -> hierarchy.getName().equals(it.getHierarchy().getName()))
                 .collect(Collectors.toList());
     }
 
-    public List<Node> getNodes(Item item, String hierarchyName) {
-        return getNodes(item, getHierarchy(hierarchyName));
+//    public List<Node> getNodes(Item item, String hierarchyName) {
+//        return getNodes(item, getHierarchy(hierarchyName));
+//    }
+
+    public List<Node> getRootNodes(Hierarchy hierarchy) {
+        return hierarchy.getNodes().stream()
+                .filter(it -> it.getParent() == null)
+                .collect(Collectors.toList());
     }
 
-//    public Node getOrCreateNode(Hierarchy hierarchy, Item item) {
-//        Locale locale = item.getLocale();
-//        Assert.notNull(locale);
-//        Branch branch = getBranch(hierarchy, locale);
-//        List<Node> nodes = item.getNodes();
-//        Node node = nodes.stream()
-//                .filter(it -> locale.equals(it.getBranch().getLocale()))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (node == null) {
-//            node = new Node();
-//            node.setBranch(branch);
-//            node.setItem(item);
-//            item.addNode(node);
-//        }
-//
-//        return node;
-//    }
+    public List<Node> getRoots(Hierarchy hierarchy) {
+        return getRootNodes(hierarchy);
+    }
 
     public Node saveNode(Node node) {
         return nodeRepository.save(node);
     }
 
     public String getPath(Node node) {
-        Branch branch = node.getBranch();
+        ItemService itemService = beanFactory.getBean(ItemService.class);
         LinkedList<String> path = new LinkedList<>();
         while (node != null) {
-            ItemHistory history = node.getHistory();
+            Leaf history = node.getLeaf();
             Item item = history.getCurrent();
-            String labelText = ItemUtils.labelToString(item);
+//            String labelText = ItemUtils.labelToString(item);
+            String labelText = itemService.getLabel(item).toString();
             path.addLast(labelText);
             node = node.getParent();
         }
 
-        path.addLast(branch.getHierarchy().getName());
+        path.addLast(node.getHierarchy().getName());
 
         return path.stream().collect(Collectors.joining(" / "));
     }
-
-    public List<Node> getNodes(Branch branch) {
-        return branch.getNodes();
-    }
-
-//    public synchronized Node copyNode(Node original, NodeCopyHandler handler) {
-//        Node copy = new Node();
-//        copy.setUuid(UUID.randomUUID());
-//        copy.setBranch(original.getBranch());
-//        copy.setLabel(original.getLabel());
-//
-//        if (handler != null) {
-//            handler.copied(original, copy);
-//        }
-//
-//        List<Node> children = original.getChildren();
-//        for (int i = 0; i < children.size(); i++) {
-//            Node child = children.get(i);
-//            child = copyNode(child, handler);
-//            copy.addChild(child);
-//        }
-//
-//        return copy;
-//    }
 }

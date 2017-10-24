@@ -1,11 +1,9 @@
 package biz.jovido.seed.content;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -13,47 +11,40 @@ import java.util.Map;
 @Service
 public class StructureService {
 
-    @Autowired
-    private StructureRepository structureRepository;
+//    @Autowired
+//    private StructureRepository structureRepository;
 
-    private Map<String, Integer> revisionByStructureName = new HashMap<>();
+//    private Map<String, Integer> revisionByStructureName = new HashMap<>();
 
-    public int getActiveStructureRevision(String structureName) {
-        return revisionByStructureName.get(structureName);
-    }
-
-    public void setActiveStructureRevision(String structureName, int revision) {
-        revisionByStructureName.put(structureName, revision);
-    }
+    private Map<String, Structure> structureByName = new HashMap<>();
 
     public Structure saveStructure(Structure structure) {
-        return structureRepository.saveAndFlush(structure);
-    }
-
-    public Structure getStructure(String name, int revision) {
-        return structureRepository.findByNameAndRevision(name, revision);
+        structureByName.put(structure.getName(), structure);
+        return structure;
     }
 
     public Structure getStructure(String name) {
-        int revision = revisionByStructureName.get(name);
-        return getStructure(name, revision);
+        return structureByName.get(name);
     }
 
-    public Structure getOrCreateStructure(String name, int revision) {
-        Structure structure = getStructure(name, revision);
+    public Structure getOrCreateStructure(String name) {
+        Structure structure = getStructure(name);
         if (structure == null) {
             structure = new Structure();
             structure.setName(name);
-            structure.setRevision(revision);
             structure = saveStructure(structure);
         }
 
         return structure;
     }
 
-    public List<Structure> findPublishableStructures() {
-        List<Structure> structures = structureRepository.findAllByPublishableIsTrue();
+    public Collection<Structure> getAllStructures() {
+        return Collections.unmodifiableCollection(structureByName.values());
+    }
 
-        return structures;
+    public List<Structure> findPublishableStructures() {
+        return getAllStructures().stream()
+                .filter(Structure::isPublishable)
+                .collect(Collectors.toList());
     }
 }

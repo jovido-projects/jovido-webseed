@@ -12,7 +12,7 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Entity
-public class ItemHistory {
+public class Leaf {
 
     @Id
     @GeneratedValue
@@ -31,10 +31,10 @@ public class ItemHistory {
     @OneToOne(optional = false)
     private Item current;
 
-    @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
     private final List<Node> nodes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
     private final List<Item> items = new ArrayList<>();
 
     public Long getId() {
@@ -75,7 +75,7 @@ public class ItemHistory {
 
     public boolean addNode(Node node) {
         if (nodes.add(node)) {
-            node.setHistory(this);
+            node.setLeaf(this);
             return true;
         }
 

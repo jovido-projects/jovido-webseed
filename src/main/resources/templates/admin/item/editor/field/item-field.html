@@ -5,11 +5,11 @@
 <ul class="list-group" >
 
     <li th:class="'list-group-item nesting-level-__${nestingLevel}__'"
-        th:each="payload,payloadItr : ${sequence.payloads}">
+        th:each="payload,payloadItr : ${sequence?.payloads}">
 
         <h5>
             <th:block th:if="${attribute.capacity > 1}">
-                <strong th:text="${payload.value.structure.name}">Name</strong>
+                <strong th:text="${@itemService.getStructure(payload.value).name}">Name</strong>
                 <strong>#[[${payloadItr.index + 1}]]</strong>
             </th:block>
             <div class="btn-group btn-group-xs pull-right">

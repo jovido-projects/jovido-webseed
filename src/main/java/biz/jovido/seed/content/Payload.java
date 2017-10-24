@@ -47,13 +47,13 @@ public abstract class Payload<T> {
     public abstract T getValue();
     public abstract void setValue(T value);
 
-    @SuppressWarnings("unchecked")
-    public Payload<T> copy() {
-        Sequence<T> sequence = getSequence();
-        Attribute attribute = sequence.getAttribute();
-        Payload<T> copy = (Payload<T>) attribute.createPayload();
-        copy.setValue(getValue());
-
-        return copy;
-    }
+//    @SuppressWarnings("unchecked")
+//    public Payload<T> copy() {
+//        Sequence<T> sequence = getSequence();
+//        Attribute attribute = sequence.getAttribute();
+//        Payload<T> copy = (Payload<T>) attribute.createPayload();
+//        copy.setValue(getValue());
+//
+//        return copy;
+//    }
 }

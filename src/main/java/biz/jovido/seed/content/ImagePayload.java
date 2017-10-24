@@ -23,7 +23,7 @@ public class ImagePayload extends Payload<Image> {
 
     @Override
     public Image getValue() {
-        return image;
+        return getImage();
     }
 
     @Override

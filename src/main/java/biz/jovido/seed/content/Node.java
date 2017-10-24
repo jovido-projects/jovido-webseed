@@ -11,7 +11,6 @@ import java.util.UUID;
  * @author Stephan Grundner
  */
 @Entity
-//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"branch_id", "item_id"}))
 public class Node {
 
     @Id
@@ -23,8 +22,7 @@ public class Node {
     private UUID uuid;
 
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "branch_id")
-    private Branch branch;
+    private Hierarchy hierarchy;
 
     @ManyToOne
     private Node parent;
@@ -33,8 +31,8 @@ public class Node {
     private final List<Node> children = new ArrayList<>();
 
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "history_id")
-    private ItemHistory history;
+    @JoinColumn(name = "leaf_id")
+    private Leaf leaf;
 
     public Long getId() {
         return id;
@@ -52,12 +50,12 @@ public class Node {
         this.uuid = uuid;
     }
 
-    public Branch getBranch() {
-        return branch;
+    public Hierarchy getHierarchy() {
+        return hierarchy;
     }
 
-    public void setBranch(Branch branch) {
-        this.branch = branch;
+    public void setHierarchy(Hierarchy hierarchy) {
+        this.hierarchy = hierarchy;
     }
 
     public Node getParent() {
@@ -100,24 +98,24 @@ public class Node {
         return node;
     }
 
-    public ItemHistory getHistory() {
-        return history;
+    public Leaf getLeaf() {
+        return leaf;
     }
 
-    public void setHistory(ItemHistory history) {
-        this.history = history;
+    public void setLeaf(Leaf leaf) {
+        this.leaf = leaf;
     }
 
     public boolean belongsTo(Item item) {
-        ItemHistory history = getHistory();
-        return ItemUtils.areTheSame(history.getPublished(), item) ||
-                ItemUtils.areTheSame(history.getCurrent(), item);
+        Leaf leaf = getLeaf();
+        return ItemUtils.areTheSame(leaf.getPublished(), item) ||
+                ItemUtils.areTheSame(leaf.getCurrent(), item);
     }
 
     public Node copy() {
         Node copy = new Node();
         copy.setUuid(UUID.randomUUID());
-        copy.setBranch(getBranch());
+        copy.setHierarchy(getHierarchy());
         copy.setParent(getParent());
 
         return copy;

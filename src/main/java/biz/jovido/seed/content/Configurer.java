@@ -20,8 +20,8 @@ public class Configurer implements Configuration {
     }
 
     @Override
-    public StructureConfigurer createStructure(String structureName, int structureRevision) {
-        Structure structure = structureService.getOrCreateStructure(structureName, structureRevision);
+    public StructureConfigurer createStructure(String structureName) {
+        Structure structure = structureService.getOrCreateStructure(structureName);
         structures.add(structure);
         return new StructureConfigurer(this, structure);
     }
@@ -30,9 +30,6 @@ public class Configurer implements Configuration {
     public void apply() {
         for (Structure structure : structures) {
             structureService.saveStructure(structure);
-            structureService.setActiveStructureRevision(
-                    structure.getName(),
-                    structure.getRevision());
         }
     }
 

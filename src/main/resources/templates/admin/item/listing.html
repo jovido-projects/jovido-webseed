@@ -58,17 +58,17 @@
                             </td>
                             <td>
                                 <span>
-                                    <a th:text="${item.label}"
-                                       th_href="@{/item(history=${item.history.id})}"
+                                    <a th:text="${@itemService.getLabel(item)}"
+                                       th_href="@{/item(leaf=${item.leaf.id})}"
                                        th:href="${@itemService.getRelativeUrl(item)}"
                                        target="_blank">Label</a>
                                 </span>
                             </td>
                             <td>
-                                <span th:text="${item.structure.name}">Structure</span>
+                                <span th:text="${@itemService.getStructure(item).name}">Structure</span>
                             </td>
                             <td>
-                                <span th:text="${item.history.locale.displayName}">Locale</span>
+                                <span th:text="${item.leaf.locale.displayName}">Locale</span>
                             </td>
                             <td nowrap="nowrap" th_text="${item.createdBy?.name}"></td>
                             <td nowrap="nowrap" th_text="${item.lastModifiedAt}"></td>

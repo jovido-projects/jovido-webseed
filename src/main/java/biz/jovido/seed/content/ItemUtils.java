@@ -7,7 +7,7 @@ public class ItemUtils {
 
     public static Item getCurrent(Item item) {
         if (item != null) {
-            ItemHistory history = item.getHistory();
+            Leaf history = item.getLeaf();
             if (history != null) {
                 return history.getCurrent();
             }
@@ -26,16 +26,5 @@ public class ItemUtils {
         }
 
         return one.getId().equals(other.getId());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static String labelToString(Item item) {
-        Sequence<String> sequence = (Sequence<String>) item.getLabel();
-        StringBuilder builder = new StringBuilder(sequence.length() * 16);
-        for (Payload<String> payload : sequence.getPayloads()) {
-            builder.append(payload.getValue());
-        }
-
-        return builder.toString();
     }
 }

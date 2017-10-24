@@ -1,9 +1,9 @@
 package biz.jovido.seed.content;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -20,7 +20,7 @@ public class Hierarchy {
 
     @OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "locale")
-    private final Map<Locale, Branch> branches = new HashMap<>();
+    private final List<Node> nodes = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -38,39 +38,7 @@ public class Hierarchy {
         this.name = name;
     }
 
-    public Map<Locale, Branch> getBranches() {
-        return Collections.unmodifiableMap(branches);
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(nodes);
     }
-
-    public Branch getBranch(Locale locale) {
-        return branches.get(locale);
-    }
-
-    public Branch putBranch(Branch branch) {
-        Assert.notNull(branch);
-        Locale locale = branch.getLocale();
-        Assert.notNull(locale);
-        Branch replaced = branches.put(locale, branch);
-        if (replaced != null) {
-            branch.setHierarchy(null);
-        }
-
-        branch.setHierarchy(this);
-
-        return replaced;
-    }
-//    public Branch setBranch(Locale locale, Branch branch) {
-//        Branch replaced = branches.put(locale, branch);
-//        if (replaced != null) {
-//            replaced.setHierarchy(null);
-//            replaced.setLocale(null);
-//        }
-//
-//        if (branch != null) {
-//            branch.setHierarchy(this);
-//            branch.setLocale(locale);
-//        }
-//
-//        return replaced;
-//    }
 }

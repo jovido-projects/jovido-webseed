@@ -3,7 +3,11 @@
       th:remove="tag">
 <th:block th:fragment="main">
     <div class="container">
-        <form th:object="${itemEditor}" method="post" th:with="item=*{item},locale=${item.history.locale}">
+        <form th:object="${itemEditor}" method="post"
+              th:with="
+              item=*{item},
+              locale=${item.leaf.locale},
+              structure=${@itemService.getStructure(item)}">
 
             <th:block th:replace="admin/item/head" />
 
@@ -43,15 +47,10 @@
                     <th:block th:with="nestedPath='item',nestingLevel=0">
                         <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
 
-
-
-                            <!--<th:block th:each="e,sequenceItr : *{__${nestedPath}__.sequences}"-->
-                                      <!--th:with="sequence=${e.value}">-->
-                                <!--<th:block th:with="attribute=${@itemService.getAttribute(sequence)}">-->
-
-                            <th:block th:with="i=*{__${nestedPath}__}">
-                                <th:block th:each="attribute : ${i.structure.attributes}">
-                                    <th:block th:with="sequence=${i.getSequence(attribute.name)}">
+                            <th:block th:with="item=*{__${nestedPath}__},structure=${@itemService.getStructure(item)}">
+                                <th:block th:each="attribute : ${structure.attributes}">
+                                    <!--<th:block th:with="sequence=${i.getSequence(attribute.name)}">-->
+                                    <th:block th:with="sequence=${@itemService.getSequence(item, attribute.name)}">
 
                                         <th:block th:switch="${attribute?.class?.simpleName}">
                                             <th:block th:case="'TextAttribute'">
@@ -84,7 +83,7 @@
 
                     <div class="form-group">
                         <label>Code</label>
-                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.history.id}">
+                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.leaf.id}">
                     </div>
 
                     <div class="form-group">

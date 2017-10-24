@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 /**
  * @author Stephan Grundner
  */
-@Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "revision"}))
+//@Entity
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "revision"}))
 public class Structure {
 
     @Id
@@ -19,9 +19,6 @@ public class Structure {
     private Long id;
 
     private String name;
-
-    @Column(updatable = false)
-    private int revision;
 
     private boolean publishable;
 
@@ -46,14 +43,6 @@ public class Structure {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getRevision() {
-        return revision;
-    }
-
-    public void setRevision(int revision) {
-        this.revision = revision;
     }
 
     public boolean isPublishable() {

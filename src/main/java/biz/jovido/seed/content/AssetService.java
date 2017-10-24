@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.UUID;
 
@@ -22,12 +23,24 @@ public class AssetService {
         return asset;
     }
 
+    public Asset getAsset(UUID uuid) {
+        return assetRepository.findByUuid(uuid);
+    }
+
     public Resource getResource(UUID uuid) {
 
         return new FileSystemResource("assets/" + uuid + ".asset");
     }
 
+    public Resource getResource(Asset asset) {
+        return getResource(asset.getUuid());
+    }
+
     public Asset saveAsset(Asset asset) {
-        return assetRepository.save(asset);
+        return assetRepository.saveAndFlush(asset);
+    }
+
+    public String getRelativeUrl(Asset asset) {
+        return String.format("/asset/files/%s/%s", asset.getUuid(), asset.getFileName());
     }
 }

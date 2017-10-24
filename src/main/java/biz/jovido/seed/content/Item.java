@@ -19,10 +19,12 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private ItemHistory history;
+    private Leaf leaf;
 
-    @ManyToOne(optional = false)
-    private Structure structure;
+    private String structureName;
+
+//    @ManyToOne(optional = false)
+//    private Structure structure;
 
     @Column(length = 255 * 4)
     private String path;
@@ -42,27 +44,28 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.id = id;
     }
 
-    public ItemHistory getHistory() {
-        return history;
+    public Leaf getLeaf() {
+        return leaf;
     }
 
-    public void setHistory(ItemHistory history) {
-        this.history = history;
+    public void setLeaf(Leaf leaf) {
+        this.leaf = leaf;
     }
 
-    public Structure getStructure() {
-        return structure;
+    public String getStructureName() {
+        return structureName;
     }
 
-    public void setStructure(Structure structure) {
-        this.structure = structure;
+    public void setStructureName(String structureName) {
+        this.structureName = structureName;
     }
-
-    public Sequence getLabel() {
-        Structure structure = getStructure();
-        String labelAttributeName = structure.getLabelAttributeName();
-        return getSequence(labelAttributeName);
-    }
+//    public Structure getStructure() {
+//        return structure;
+//    }
+//
+//    public void setStructure(Structure structure) {
+//        this.structure = structure;
+//    }
 
     public String getPath() {
         return path;
@@ -72,27 +75,14 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.path = path;
     }
 
-//    public List<Node> getNodes() {
-//        return Collections.unmodifiableList(nodes);
-//    }
-
-//    TODO Check if node for same branch already exists, and if so, throw exception!
-//    public boolean addNode(Node node) {
-//        return nodes.add(node);
-//    }
-//
-//    public Node setNode(int index, Node node) {
-//        Node replaced = nodes.set(index, node);
-//
-//        return replaced;
-//    }
-
     public Map<String, Sequence> getSequences() {
         return Collections.unmodifiableMap(sequences);
     }
 
     public Sequence getSequence(String attributeName) {
-        return sequences.get(attributeName);
+        Sequence sequence = sequences.get(attributeName);
+
+        return sequence;
     }
 
     public void setSequence(String attributeName, Sequence sequence) {
@@ -117,7 +107,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     }
 
     public Locale getLocale() {
-        ItemHistory chronicle = getHistory();
+        Leaf chronicle = getLeaf();
         if (chronicle != null) {
 
             return chronicle.getLocale();
@@ -127,7 +117,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     }
 
     public boolean isCurrent() {
-        ItemHistory history = getHistory();
+        Leaf history = getLeaf();
         if (history != null) {
             Item current = history.getCurrent();
             if (current != null && current.getId() != null) {
@@ -138,22 +128,26 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return false;
     }
 
-    public Item copy() {
-        Item copy = new Item();
-        copy.setStructure(getStructure());
-        copy.setHistory(getHistory());
-        copy.setPath(getPath());
-
-        Structure structure = getStructure();
-        for (String attributeName : structure.getAttributeNames()) {
-            Sequence sequence = getSequence(attributeName);
-            if (sequence != null) {
-                copy.setSequence(attributeName, sequence.copy());
-            }
-        }
-
-        return copy;
-    }
+//    public Item copy() {
+//        Item copy = new Item();
+////        copy.setStructure(getStructure());
+//        copy.setLeaf(getLeaf());
+//        copy.setPath(getPath());
+//
+//        Structure structure = getStructure();
+//        for (String attributeName : structure.getAttributeNames()) {
+//            Sequence sequence = getSequence(attributeName);
+//            if (sequence != null) {
+//                copy.setSequence(attributeName, sequence.copy());
+//            }
+//        }
+//
+//        for (Sequence sequence : getSequences().values()) {
+//            copy.setSequence(sequence.getAttributeName(), sequence.copy());
+//        }
+//
+//        return copy;
+//    }
 
     @Override
     protected Map<String, Sequence> getMap() {

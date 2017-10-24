@@ -18,7 +18,7 @@ public abstract class Asset {
 
     @Column(unique = true)
     @Convert(converter = UUIDConverter.class)
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
 
     private String fileName;
 

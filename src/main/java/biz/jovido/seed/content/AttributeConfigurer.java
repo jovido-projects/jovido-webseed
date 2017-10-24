@@ -14,8 +14,8 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
-    public StructureConfigurer createStructure(String typeName, int revision) {
-        return parentConfigurer.createStructure(typeName, revision);
+    public StructureConfigurer createStructure(String typeName) {
+        return parentConfigurer.createStructure(typeName);
     }
 
     @Override

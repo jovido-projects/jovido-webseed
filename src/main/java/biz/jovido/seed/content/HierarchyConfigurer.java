@@ -14,8 +14,8 @@ public class HierarchyConfigurer implements Configuration {
     }
 
     @Override
-    public StructureConfigurer createStructure(String typeName, int revision) {
-        return parentConfigurer.createStructure(typeName, revision);
+    public StructureConfigurer createStructure(String typeName) {
+        return parentConfigurer.createStructure(typeName);
     }
 
     @Override

@@ -28,7 +28,10 @@ public class Sequence<T> extends AbstractList<T> {
     @Column(name = "attribute_name")
     private String attributeName;
 
-    @OneToMany(mappedBy = "sequence", targetEntity = Payload.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sequence", targetEntity = Payload.class,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     @OrderBy("ordinal")
     @Fetch(FetchMode.SELECT)
     private final List<Payload<T>> payloads = new ArrayList<>();
@@ -55,22 +58,6 @@ public class Sequence<T> extends AbstractList<T> {
 
     /*public*/ void setAttributeName(String attributeName) {
         this.attributeName = attributeName;
-    }
-
-    @Transient
-    public Attribute getAttribute() {
-        Item item = getItem();
-        if (item != null) {
-            Structure structure = item.getStructure();
-            if (structure != null) {
-                String attributeName = getAttributeName();
-                if (StringUtils.hasLength(attributeName)) {
-                    return structure.getAttribute(attributeName);
-                }
-            }
-        }
-
-        return null;
     }
 
     public List<Payload<T>> getPayloads() {
@@ -142,14 +129,14 @@ public class Sequence<T> extends AbstractList<T> {
         return length();
     }
 
-    public Sequence<T> copy() {
-        Sequence<T> copy = new Sequence<>();
-        for (int i = 0; i < length(); i++) {
-            Payload<T> payload = getPayload(i);
-            if (payload != null) {
-                copy.addPayload(payload.copy());
-            }
-        }
-        return copy;
-    }
+//    public Sequence<T> copy() {
+//        Sequence<T> copy = new Sequence<>();
+//        for (int i = 0; i < length(); i++) {
+//            Payload<T> payload = getPayload(i);
+//            if (payload != null) {
+//                copy.addPayload(payload.copy());
+//            }
+//        }
+//        return copy;
+//    }
 }

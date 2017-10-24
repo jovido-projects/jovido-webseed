@@ -14,17 +14,17 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-//    Page<Item> findAllByHistoryIsNotNull(Pageable pageable);
-    Page<Item> findAllByHistoryIsNotNull(Pageable pageable);
+//    Page<Item> findAllByLeafIsNotNull(Pageable pageable);
+    Page<Item> findAllByLeafIsNotNull(Pageable pageable);
 
-    @Query(value = "select i from Item i " +
-            "join i.history h " +
-            "where i = h.current")
+    @Query("select i from Item i " +
+            "join i.leaf l " +
+            "where i = l.current")
     List<Item> findAllCurrent();
 
     @Query("from Item i " +
-            "join i.history h " +
-            "where h.id = ?1 " +
-            "and i = h.published")
-    Item findPublished(Long historyId);
+            "join i.leaf l " +
+            "where l.id = ?1 " +
+            "and i = l.published")
+    Item findPublished(Long leafId);
 }

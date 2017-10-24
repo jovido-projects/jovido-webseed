@@ -1,6 +1,6 @@
 package biz.jovido.seed.content.url;
 
-import biz.jovido.seed.content.ItemHistory;
+import biz.jovido.seed.content.Leaf;
 
 import javax.persistence.*;
 
@@ -22,7 +22,7 @@ public class Alias {
     private String path;
 
     @ManyToOne
-    private ItemHistory history;
+    private Leaf history;
 
     public Long getId() {
         return id;
@@ -48,11 +48,11 @@ public class Alias {
         this.path = path;
     }
 
-    public ItemHistory getHistory() {
+    public Leaf getHistory() {
         return history;
     }
 
-    public void setHistory(ItemHistory history) {
+    public void setHistory(Leaf history) {
         this.history = history;
     }
 }

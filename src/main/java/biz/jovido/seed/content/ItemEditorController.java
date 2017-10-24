@@ -9,8 +9,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import java.io.*;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -48,7 +53,7 @@ public class ItemEditorController {
             if (id != null) {
                 return String.format("redirect:?id=%d", id);
             } else {
-                Structure structure = item.getStructure();
+                Structure structure = itemService.getStructure(item);
                 if (structure != null) {
                     return String.format("redirect:?new=%s", structure.getName());
                 }
@@ -150,8 +155,8 @@ public class ItemEditorController {
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
 
-        Item item = itemService.createEmbeddedItem(structureName, 1);
-        Attribute attribute = sequence.getAttribute();
+        Item item = itemService.createEmbeddedItem(structureName);
+        Attribute attribute = itemService.getAttribute(sequence);
         ItemPayload payload = (ItemPayload) attribute.createPayload();
         payload.setItem(item);
         sequence.addPayload(payload);
@@ -167,7 +172,7 @@ public class ItemEditorController {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        Attribute attribute = sequence.getAttribute();
+        Attribute attribute = itemService.getAttribute(sequence);
         Payload payload = attribute.createPayload();
         sequence.addPayload(payload);
 
@@ -219,11 +224,11 @@ public class ItemEditorController {
     @Transactional
     @PostMapping(path = "upload", params = {"type=image"})
     protected String uploadImage(@ModelAttribute ItemEditor editor,
+                                 @RequestParam(name = "token") String token,
                                  @RequestParam(name = "nested-path") String nestedPath,
                                  @RequestParam(name = "attribute") String attributeName,
                                  @RequestParam(name = "index") int index,
-                                 @RequestParam("file") MultipartFile file) throws IOException {
-
+                                 HttpServletRequest request) throws IOException, ServletException {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -235,6 +240,9 @@ public class ItemEditorController {
             payload.setImage(image);
         }
 
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipartRequest.getMultiFileMap().getFirst("file-" + token);
+
         File fileOnDisk = new File("assets/" + image.getUuid() + ".asset");
 
         try (InputStream inputStream = file.getInputStream()) {
@@ -244,7 +252,7 @@ public class ItemEditorController {
         }
 
         image.setFileName(file.getOriginalFilename());
-//        image = (Image) assetService.saveAsset(image);
+        image = (Image) assetService.saveAsset(image);
 //        payload.setImage(image);
 
 

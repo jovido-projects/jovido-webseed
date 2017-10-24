@@ -3,19 +3,19 @@
     <li><a href="#">Home</a></li>
     <li><a th:href="@{/admin/items}">Items</a></li>
     <li class="active">
-        <span th:text="*{item.label}">Item</span>
+        <span th:text="${@itemService.getLabel(item)}">Item</span>
     </li>
 </ol>
 
 <th:block th:if="${item.id != null}">
-    <h1>
-        <span th:text="#{seed.structure.__${item.structure.name}__}">Title</span>
+    <h1 th:with="structure=${@itemService.getStructure(item)}">
+        <span th:text="#{seed.structure.__${structure.name}__}">Title</span>
         <span th:text="${item.id}">ID</span>
     </h1>
 </th:block>
 <th:block th:if="${item.id == null}">
-    <h1>
-        New <span th:text="#{seed.structure.__${item.structure.name}__}">Title</span>
+    <h1 th:with="structure=${@itemService.getStructure(item)}">
+        New <span th:text="#{seed.structure.__${structure.name}__}">Title</span>
     </h1>
 </th:block>
 </html>

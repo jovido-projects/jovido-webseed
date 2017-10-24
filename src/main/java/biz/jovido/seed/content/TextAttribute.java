@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 /**
  * @author Stephan Grundner
  */
-@Entity
+//@Entity
 public class TextAttribute extends Attribute {
 
     private boolean multiline;
