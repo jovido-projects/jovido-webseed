@@ -18,8 +18,8 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping(path = "/admin/hierarchy/")
-@SessionAttributes(types = ItemHierarchyForm.class)
-public class ItemHierarchyController {
+@SessionAttributes(types = HierarchyForm.class)
+public class HierarchyController {
 
     @Autowired
     private HierarchyService hierarchyService;
@@ -28,11 +28,11 @@ public class ItemHierarchyController {
     private ItemService itemService;
 
     @ModelAttribute
-    protected ItemHierarchyForm form() {
-        return new ItemHierarchyForm();
+    protected HierarchyForm form() {
+        return new HierarchyForm();
     }
 
-    protected String redirect(ItemHierarchyForm form) {
+    protected String redirect(HierarchyForm form) {
 
         Item item = form.getItem();
         return "redirect:?item=" + item.getId();
@@ -40,7 +40,7 @@ public class ItemHierarchyController {
 
     @RequestMapping
     protected String index(
-            @ModelAttribute ItemHierarchyForm form,
+            @ModelAttribute HierarchyForm form,
             @RequestParam(name = "item") Long itemId) {
 
         Item item = itemService.getItem(itemId);
@@ -50,13 +50,13 @@ public class ItemHierarchyController {
     }
 
     @RequestMapping(path = "add-node", params = {})
-    protected String addNode(@ModelAttribute ItemHierarchyForm form,
+    protected String addNode(@ModelAttribute HierarchyForm form,
                              BindingResult bindingResult,
                              @RequestParam(name = "branch") Long branchId,
                              @RequestParam(name = "parent-uuid", required = false) UUID parentUuid) {
 
         Item item = form.getItem();
-        History history = item.getHistory();
+        ItemHistory history = item.getHistory();
         Locale locale = item.getLocale();
         Assert.notNull(locale);
 

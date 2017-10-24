@@ -12,7 +12,7 @@ import java.util.Locale;
  * @author Stephan Grundner
  */
 @Entity
-public class History {
+public class ItemHistory {
 
     @Id
     @GeneratedValue

@@ -1,0 +1,36 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${hostEditor}" method="post" th:with="host=*{host}">
+
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li><a th:href="@{/admin/hosts}">Hosts</a></li>
+                <li class="active">
+                    <span th:text="${host?.name}">Name</span>
+                </li>
+            </ol>
+
+            <div class="row">
+                <div class="col-md-12" >
+
+                    <div class="form-group">
+                        <label>Path</label>
+                        <input type="text" class="form-control" th:field="*{host.path}">
+                    </div>
+
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" th:formaction="@{save}">
+                            <i class="fa fa-floppy-o"></i>
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

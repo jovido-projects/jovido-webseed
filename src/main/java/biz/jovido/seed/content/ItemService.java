@@ -81,7 +81,7 @@ public class ItemService {
     }
 
     private Item createItem(Structure structure) {
-        History history = new History();
+        ItemHistory history = new ItemHistory();
         history.setLocale(LocaleContextHolder.getLocale());
         return createItemWithinHistory(structure, history);
     }
@@ -96,7 +96,7 @@ public class ItemService {
         return createItem(structure);
     }
 
-    private Item createItemWithinHistory(Structure structure, History history) {
+    private Item createItemWithinHistory(Structure structure, ItemHistory history) {
         Item item = new Item();
         item.setHistory(history);
         if (history != null) {
@@ -118,7 +118,7 @@ public class ItemService {
     public String getRelativeUrl(Item item) {
         String path = item.getPath();
         if (StringUtils.isEmpty(path)) {
-            History history = item.getHistory();
+            ItemHistory history = item.getHistory();
             return String.format("/item?history=%s", history.getId());
         }
 
@@ -145,7 +145,7 @@ public class ItemService {
 //        auditingHandler.markCreated(item);
         current = entityManager.merge(current);
 
-        History history = current.getHistory();
+        ItemHistory history = current.getHistory();
 //        entityManager.refresh(history);
 
         history.setPublished(item);

@@ -1,9 +1,6 @@
 package biz.jovido.seed.content.url;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author Stephan Grundner
@@ -17,6 +14,8 @@ public class Host {
 
     @Column(unique = true)
     private String name;
+
+    private String path;
 
     public Long getId() {
         return id;
@@ -32,5 +31,13 @@ public class Host {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

@@ -6,6 +6,7 @@ package biz.jovido.seed.content;
 public interface StructureConfiguration extends Configuration {
 
     StructureConfigurer setPublishable(boolean publishable);
+    StructureConfigurer setLabelAttribute(String name);
 
     TextAttributeConfigurer addTextAttribute(String name);
     ImageAttributeConfigurer addImageAttribute(String name);

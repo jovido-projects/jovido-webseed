@@ -32,12 +32,9 @@ public class Node {
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
     private final List<Node> children = new ArrayList<>();
 
-    @Column(length = 255 * 8)
-    private String label;
-
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "history_id")
-    private History history;
+    private ItemHistory history;
 
     public Long getId() {
         return id;
@@ -103,24 +100,16 @@ public class Node {
         return node;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public History getHistory() {
+    public ItemHistory getHistory() {
         return history;
     }
 
-    public void setHistory(History history) {
+    public void setHistory(ItemHistory history) {
         this.history = history;
     }
 
     public boolean belongsTo(Item item) {
-        History history = getHistory();
+        ItemHistory history = getHistory();
         return ItemUtils.areTheSame(history.getPublished(), item) ||
                 ItemUtils.areTheSame(history.getCurrent(), item);
     }
@@ -129,7 +118,6 @@ public class Node {
         Node copy = new Node();
         copy.setUuid(UUID.randomUUID());
         copy.setBranch(getBranch());
-        copy.setLabel(getLabel());
         copy.setParent(getParent());
 
         return copy;

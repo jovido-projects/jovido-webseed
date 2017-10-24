@@ -43,6 +43,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public StructureConfigurer setLabelAttribute(String name) {
+        return parentConfigurer.setLabelAttribute(name);
+    }
+
+    @Override
     public TextAttributeConfigurer addTextAttribute(String name) {
         return parentConfigurer.addTextAttribute(name);
     }

@@ -26,9 +26,12 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
         Host host = hostService.getHost(request.getServerName());
         if (host != null) {
             String path = request.getServletPath();
-            if (StringUtils.hasLength(path) && path.startsWith("/")) {
+            if ("/".equals(path)) {
+                path = host.getPath();
+            } else if (StringUtils.hasLength(path) && path.startsWith("/")) {
                 path = path.substring(1);
             }
+
             Alias alias = aliasService.getAlias(host, path);
             if (alias != null) {
                 request.setAttribute(Alias.class.getName(), alias);

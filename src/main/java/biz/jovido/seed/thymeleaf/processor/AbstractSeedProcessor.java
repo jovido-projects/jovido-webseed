@@ -1,9 +1,6 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -14,8 +11,6 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
-
-import java.beans.PropertyDescriptor;
 
 /**
  * @author Stephan Grundner

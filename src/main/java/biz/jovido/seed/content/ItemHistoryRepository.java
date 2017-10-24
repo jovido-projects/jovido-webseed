@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
  * @author Stephan Grundner
  */
 @Repository
-public interface HistoryRepository extends JpaRepository<History, Long> {
+public interface ItemHistoryRepository extends JpaRepository<ItemHistory, Long> {
 
 }

@@ -42,29 +42,38 @@
 
                     <th:block th:with="nestedPath='item',nestingLevel=0">
                         <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
-                            <th:block th:each="e,sequenceItr : *{__${nestedPath}__.sequences}"
-                                      th:with="sequence=${e.value}">
 
-                                <th:block th:with="attribute=${@itemService.getAttribute(sequence)}">
-                                    <th:block th:switch="${attribute?.class?.simpleName}">
-                                        <th:block th:case="'TextAttribute'">
-                                            <th:block th:if="${attribute.multiline}">
-                                                <th:block th:replace="admin/item/editor/field/multiline-text-field" />
+
+
+                            <!--<th:block th:each="e,sequenceItr : *{__${nestedPath}__.sequences}"-->
+                                      <!--th:with="sequence=${e.value}">-->
+                                <!--<th:block th:with="attribute=${@itemService.getAttribute(sequence)}">-->
+
+                            <th:block th:with="i=*{__${nestedPath}__}">
+                                <th:block th:each="attribute : ${i.structure.attributes}">
+                                    <th:block th:with="sequence=${i.getSequence(attribute.name)}">
+
+                                        <th:block th:switch="${attribute?.class?.simpleName}">
+                                            <th:block th:case="'TextAttribute'">
+                                                <th:block th:if="${attribute.multiline}">
+                                                    <th:block th:replace="admin/item/editor/field/multiline-text-field" />
+                                                </th:block>
+                                                <th:block th:unless="${attribute.multiline}">
+                                                    <th:block th:replace="admin/item/editor/field/text-field" />
+                                                </th:block>
                                             </th:block>
-                                            <th:block th:unless="${attribute.multiline}">
-                                                <th:block th:replace="admin/item/editor/field/text-field" />
+                                            <th:block th:case="'ItemAttribute'">
+                                                <th:block th:replace="admin/item/editor/field/item-field" />
                                             </th:block>
-                                        </th:block>
-                                        <th:block th:case="'ItemAttribute'">
-                                            <th:block th:replace="admin/item/editor/field/item-field" />
-                                        </th:block>
-                                        <th:block th:case="'ImageAttribute'">
-                                            <th:block th:replace="admin/item/editor/field/image-field" />
+                                            <th:block th:case="'ImageAttribute'">
+                                                <th:block th:replace="admin/item/editor/field/image-field" />
+                                            </th:block>
                                         </th:block>
                                     </th:block>
-                                </th:block>
 
+                                </th:block>
                             </th:block>
+
                         </th:block>
                     </th:block>
 
@@ -74,23 +83,18 @@
                 <div class="col-md-5">
 
                     <div class="form-group">
-                        <label>ID</label>
-                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.id}">
+                        <label>Code</label>
+                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.history.id}">
                     </div>
 
                     <div class="form-group">
-                        <label>History</label>
-                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.history.id}">
+                        <label>ID (Changes for each revision)</label>
+                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.id}">
                     </div>
 
                     <div class="form-group">
                         <label>Created at</label>
                         <input type="date" disabled="disabled" class="form-control" th:field="*{item.createdAt}">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Label <span style="color:red !important;">*</span></label>
-                        <input type="text" class="form-control" th:field="*{item.label}">
                     </div>
 
                     <div class="form-group">

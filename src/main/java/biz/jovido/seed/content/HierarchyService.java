@@ -129,7 +129,10 @@ public class HierarchyService {
         Branch branch = node.getBranch();
         LinkedList<String> path = new LinkedList<>();
         while (node != null) {
-            path.addLast(node.getHistory().getCurrent().getLabel());
+            ItemHistory history = node.getHistory();
+            Item item = history.getCurrent();
+            String labelText = ItemUtils.labelToString(item);
+            path.addLast(labelText);
             node = node.getParent();
         }
 

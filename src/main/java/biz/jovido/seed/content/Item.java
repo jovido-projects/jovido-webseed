@@ -1,8 +1,6 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.util.UnmodifiableMapProxy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -21,13 +19,10 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private History history;
+    private ItemHistory history;
 
     @ManyToOne(optional = false)
     private Structure structure;
-
-    @Column(length = 255 * 8)
-    private String label;
 
     @Column(length = 255 * 4)
     private String path;
@@ -47,11 +42,11 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.id = id;
     }
 
-    public History getHistory() {
+    public ItemHistory getHistory() {
         return history;
     }
 
-    public void setHistory(History history) {
+    public void setHistory(ItemHistory history) {
         this.history = history;
     }
 
@@ -63,12 +58,10 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.structure = structure;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+    public Sequence getLabel() {
+        Structure structure = getStructure();
+        String labelAttributeName = structure.getLabelAttributeName();
+        return getSequence(labelAttributeName);
     }
 
     public String getPath() {
@@ -124,7 +117,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     }
 
     public Locale getLocale() {
-        History chronicle = getHistory();
+        ItemHistory chronicle = getHistory();
         if (chronicle != null) {
 
             return chronicle.getLocale();
@@ -134,7 +127,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     }
 
     public boolean isCurrent() {
-        History history = getHistory();
+        ItemHistory history = getHistory();
         if (history != null) {
             Item current = history.getCurrent();
             if (current != null && current.getId() != null) {
@@ -149,7 +142,6 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         Item copy = new Item();
         copy.setStructure(getStructure());
         copy.setHistory(getHistory());
-        copy.setLabel(getLabel());
         copy.setPath(getPath());
 
         Structure structure = getStructure();

@@ -12,6 +12,8 @@ public class StructureConfigurer implements StructureConfiguration {
     private final Configurer parentConfigurer;
     private final Structure structure;
 
+    private int numberOfAttributes = 0;
+
     @Override
     public HierarchyConfigurer createHierarchy(String hierarchyName) {
         return parentConfigurer.createHierarchy(hierarchyName);
@@ -38,6 +40,7 @@ public class StructureConfigurer implements StructureConfiguration {
             attribute = BeanUtils.instantiate(attributeType);
             structure.setAttribute(name, attribute);
         }
+        attribute.setOrdinal(numberOfAttributes++);
         try {
             Constructor<C> constructor = configurerType.getDeclaredConstructor(StructureConfigurer.class, attributeType);
             C configurer = BeanUtils.instantiateClass(constructor, this, attribute);
@@ -70,6 +73,13 @@ public class StructureConfigurer implements StructureConfiguration {
 
     public StructureConfigurer setPublishable(boolean publishable) {
         structure.setPublishable(publishable);
+
+        return this;
+    }
+
+    @Override
+    public StructureConfigurer setLabelAttribute(String name) {
+        structure.setLabelAttributeName(name);
 
         return this;
     }

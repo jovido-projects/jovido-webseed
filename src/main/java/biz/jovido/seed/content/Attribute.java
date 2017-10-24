@@ -21,8 +21,8 @@ public abstract class Attribute {
     private String name;
     private int ordinal;
 
-    private int capacity = Integer.MAX_VALUE;;
-    private int required = 0;
+    private int capacity = 1; //Integer.MAX_VALUE;;
+    private int required = 1;
 
     public Long getId() {
         return id;
@@ -73,4 +73,9 @@ public abstract class Attribute {
     }
 
     public abstract Payload createPayload();
+
+    public boolean isLabel() {
+        Structure structure = getStructure();
+        return getName().equals(structure.getLabelAttributeName());
+    }
 }

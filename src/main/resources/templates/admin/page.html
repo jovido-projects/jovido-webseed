@@ -130,18 +130,10 @@
             text-decoration: line-through;
         }
 
-        .nesting-level-2 {
-            background-color:#ddd;
+        .nesting-level-1 {
+            background-color:#eee;
         }
-        .nesting-level-x {
-            background-color:#bbb;
-        }
-
-        .active {
-            color:green !important;
-        }
-
-        .gray {
+        .nesting-level-3 {
             background-color:#eee;
         }
     </style>
@@ -194,20 +186,26 @@
                            role="button"
                            aria-haspopup="true"
                            aria-expanded="false">
-                            <i class="fa fa-database"></i>
+                            <i class="fa fa-th"></i>
                             <span>Content</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
                                 <a th:href="@{/admin/items}">
-                                    <i class="fa fa-files-o"></i>
+                                    <i class="fa fa-th-large"></i>
                                     <span>Items</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
 
+                    <li>
+                        <a th:href="@{/admin/hosts}">
+                            <i class="fa fa-server"></i>
+                            Hosts
+                        </a>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" >
                     <li class="dropdown">

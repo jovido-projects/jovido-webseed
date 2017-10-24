@@ -3,7 +3,7 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public class ItemHierarchyForm {
+public class HierarchyForm {
 
     private Item item;
 

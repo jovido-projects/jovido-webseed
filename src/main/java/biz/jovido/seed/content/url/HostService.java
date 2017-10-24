@@ -14,6 +14,10 @@ public class HostService {
     @Autowired
     private HostRepository hostRepository;
 
+    public Host getHost(Long id) {
+        return hostRepository.findOne(id);
+    }
+
     public Host getHost(String name) {
         return hostRepository.findByName(name);
     }

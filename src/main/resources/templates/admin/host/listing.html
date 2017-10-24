@@ -1,0 +1,46 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${itemListing}" method="post">
+
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li class="active"><a th:href="@{/admin/hosts}">Hosts</a></li>
+            </ol>
+
+            <h1>Hosts</h1>
+
+            <div class="row">
+                <div class="col-md-12" >
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th width="1%">ID</th>
+                            <th>Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="host : ${hosts}">
+                            <td th:text="${host.id}">ID</td>
+                            <td th:text="${host.name}">Name</td>
+                            <td>
+                                <div class="btn-group btn-group-xs pull-right">
+                                    <a th:href="@{/admin/host/edit(id=${host.id})}" class="btn btn-default">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

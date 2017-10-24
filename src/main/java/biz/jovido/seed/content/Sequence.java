@@ -73,7 +73,7 @@ public class Sequence<T> extends AbstractList<T> {
         return null;
     }
 
-    public List<Payload> getPayloads() {
+    public List<Payload<T>> getPayloads() {
         return Collections.unmodifiableList(payloads);
     }
 

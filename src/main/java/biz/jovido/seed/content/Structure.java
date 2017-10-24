@@ -25,6 +25,8 @@ public class Structure {
 
     private boolean publishable;
 
+    private String labelAttributeName;
+
     @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "name")
     @OrderBy("ordinal")
@@ -62,6 +64,14 @@ public class Structure {
         this.publishable = publishable;
     }
 
+    public String getLabelAttributeName() {
+        return labelAttributeName;
+    }
+
+    public void setLabelAttributeName(String labelAttributeName) {
+        this.labelAttributeName = labelAttributeName;
+    }
+
     public List<String> getAttributeNames() {
         return attributes.values().stream()
                 .sorted(Comparator.comparingInt(Attribute::getOrdinal))
@@ -84,6 +94,11 @@ public class Structure {
         attribute.setStructure(this);
 
         return replaced;
+    }
+
+    public Attribute getLabelAttribute() {
+        String attributeName = getLabelAttributeName();
+        return getAttribute(attributeName);
     }
 
     public List<Attribute> getAttributes() {
