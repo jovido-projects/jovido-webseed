@@ -1,6 +1,7 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
+import biz.jovido.seed.content.TemplateNameResolver;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -12,10 +13,23 @@ import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * @author Stephan Grundner
  */
 public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcessor {
+
+    private List<TemplateNameResolver> templateNameResolvers;
+
+    public List<TemplateNameResolver> getTemplateNameResolvers() {
+        return templateNameResolvers;
+    }
+
+    public void setTemplateNameResolvers(List<TemplateNameResolver> templateNameResolvers) {
+        this.templateNameResolvers = templateNameResolvers;
+    }
 
     @Override
     protected void doProcess(ITemplateContext context,
@@ -37,6 +51,13 @@ public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcesso
         }
 
         if (result instanceof Item) {
+            Item item = (Item) result;
+            String templateName = getTemplateNameResolvers().stream()
+                    .map(it -> it.resolveTemplateName(item))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+
 //            String template = annotation.template();
 //            structureHandler.setLocalVariable("component", result);
 
@@ -48,8 +69,8 @@ public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcesso
 //                structureHandler.setLocalVariable(name, value);
 //            }
 
-//            String newAttributeName = "th:" + currentAttributeName.getAttributeName();
-//            structureHandler.replaceAttribute(currentAttributeName, newAttributeName, template);
+            String newAttributeName = "th:" + currentAttributeName.getAttributeName();
+            structureHandler.replaceAttribute(currentAttributeName, newAttributeName, templateName);
         }
     }
 

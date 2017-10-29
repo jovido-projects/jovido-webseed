@@ -1,6 +1,6 @@
 package biz.jovido.seed.configuration;
 
-import biz.jovido.seed.content.url.AliasRequestMapping;
+import biz.jovido.seed.content.AliasRequestMapping;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

@@ -23,9 +23,6 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     private String structureName;
 
-//    @ManyToOne(optional = false)
-//    private Structure structure;
-
     @Column(length = 255 * 4)
     private String path;
 
@@ -59,13 +56,6 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     public void setStructureName(String structureName) {
         this.structureName = structureName;
     }
-//    public Structure getStructure() {
-//        return structure;
-//    }
-//
-//    public void setStructure(Structure structure) {
-//        this.structure = structure;
-//    }
 
     public String getPath() {
         return path;
@@ -80,9 +70,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     }
 
     public Sequence getSequence(String attributeName) {
-        Sequence sequence = sequences.get(attributeName);
-
-        return sequence;
+        return sequences.get(attributeName);
     }
 
     public void setSequence(String attributeName, Sequence sequence) {
@@ -127,27 +115,6 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
         return false;
     }
-
-//    public Item copy() {
-//        Item copy = new Item();
-////        copy.setStructure(getStructure());
-//        copy.setLeaf(getLeaf());
-//        copy.setPath(getPath());
-//
-//        Structure structure = getStructure();
-//        for (String attributeName : structure.getAttributeNames()) {
-//            Sequence sequence = getSequence(attributeName);
-//            if (sequence != null) {
-//                copy.setSequence(attributeName, sequence.copy());
-//            }
-//        }
-//
-//        for (Sequence sequence : getSequences().values()) {
-//            copy.setSequence(sequence.getAttributeName(), sequence.copy());
-//        }
-//
-//        return copy;
-//    }
 
     @Override
     protected Map<String, Sequence> getMap() {

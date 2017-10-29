@@ -1,9 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.url.Alias;
-import biz.jovido.seed.content.url.AliasService;
-import biz.jovido.seed.content.url.Host;
-import biz.jovido.seed.content.url.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
@@ -87,10 +83,12 @@ public class ItemService {
                 item.setSequence(attributeName, sequence);
             }
 
-            int remaining = attribute.getRequired() - sequence.length();
-            while (remaining-- > 0) {
-                Payload payload = attribute.createPayload();
-                sequence.addPayload(payload);
+            if (!(attribute instanceof ItemAttribute)) {
+                int remaining = attribute.getRequired() - sequence.length();
+                while (remaining-- > 0) {
+                    Payload payload = attribute.createPayload();
+                    sequence.addPayload(payload);
+                }
             }
         }
     }

@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.url.Alias;
-import biz.jovido.seed.content.url.AliasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

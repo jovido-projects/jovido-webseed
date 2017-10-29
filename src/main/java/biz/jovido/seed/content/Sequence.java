@@ -1,14 +1,11 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.UUIDConverter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -20,6 +17,10 @@ public class Sequence<T> extends AbstractList<T> {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(unique = true)
+    @Convert(converter = UUIDConverter.class)
+    private UUID uuid;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -36,12 +37,27 @@ public class Sequence<T> extends AbstractList<T> {
     @Fetch(FetchMode.SELECT)
     private final List<Payload<T>> payloads = new ArrayList<>();
 
+    @Transient
+    private boolean collapsed;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public Item getItem() {
@@ -71,19 +87,6 @@ public class Sequence<T> extends AbstractList<T> {
 
         return payloads.get(index);
     }
-//
-//    @Deprecated
-//    public Payload addPayload() {
-//        Structure structure = item.getStructure();
-//        Attribute attribute = structure.getAttribute(attributeName);
-//        Payload payload = attribute.createPayload();
-//        if (payloads.add(payload)) {
-//            payload.setSequence(this);
-//            payload.setOrdinal(payloads.size() - 1);
-//        }
-//
-//        return payload;
-//    }
 
     public Payload<T> addPayload(Payload<T> payload) {
         if (payloads.add(payload)) {
@@ -115,6 +118,10 @@ public class Sequence<T> extends AbstractList<T> {
         }
     }
 
+    /**
+     * Use {@link #size()} instead.
+     */
+    @Deprecated
     public int length() {
         return payloads.size();
     }
@@ -128,15 +135,4 @@ public class Sequence<T> extends AbstractList<T> {
     public int size() {
         return length();
     }
-
-//    public Sequence<T> copy() {
-//        Sequence<T> copy = new Sequence<>();
-//        for (int i = 0; i < length(); i++) {
-//            Payload<T> payload = getPayload(i);
-//            if (payload != null) {
-//                copy.addPayload(payload.copy());
-//            }
-//        }
-//        return copy;
-//    }
 }

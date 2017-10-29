@@ -7,33 +7,35 @@
     <li th:class="'list-group-item nesting-level-__${nestingLevel}__'"
         th:each="payload,payloadItr : ${sequence?.payloads}">
 
-        <h5>
-            <th:block th:if="${attribute.capacity > 1}">
-                <strong th:text="${@itemService.getStructure(payload.value).name}">Name</strong>
-                <strong>#[[${payloadItr.index + 1}]]</strong>
-            </th:block>
-            <div class="btn-group btn-group-xs pull-right">
-                <button class="btn btn-default"
-                        disabled="disabled">
-                    <i class="fa fa-arrow-up"></i>
-                </button>
-                <button class="btn btn-default"
-                        disabled="disabled">
-                    <i class="fa fa-arrow-down"></i>
-                </button>
-                <button class="btn btn-default"
-                        th:formaction="@{remove-payload(
+        <th:block th:if="${payload.value != null}">
+            <h5>
+                <th:block th:if="${attribute.capacity > 1}">
+                    <strong th:text="${@itemService.getStructure(payload.value).name}">Name</strong>
+                    <strong>#[[${payloadItr.index + 1}]]</strong>
+                </th:block>
+                <div class="btn-group btn-group-xs pull-right">
+                    <button class="btn btn-default"
+                            disabled="disabled">
+                        <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-default"
+                            disabled="disabled">
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn btn-default"
+                            th:formaction="@{remove-payload(
                         nested-path=${nestedPath},
                         attribute=${attribute.name},
                         index=${payloadItr.index})}">
-                    <i class="fa fa-remove"></i>
-                </button>
-            </div>
-        </h5>
+                        <i class="fa fa-remove"></i>
+                    </button>
+                </div>
+            </h5>
 
-        <hr />
-        <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
-            <th:block th:replace="admin/item/editor::fields" />
+            <hr />
+            <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
+                <th:block th:replace="admin/item/editor::fields" />
+            </th:block>
         </th:block>
 
     </li>
@@ -48,7 +50,7 @@
                 Append <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li th:each="structureName : ${attribute.acceptedTypeNames}">
+                <li th:each="structureName : ${attribute.acceptedStructureNames}">
                     <a th:href="@{append(
                     nested-path=${nestedPath},
                     attribute=${attribute.name},

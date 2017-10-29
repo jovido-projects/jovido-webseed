@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.url;
+package biz.jovido.seed.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

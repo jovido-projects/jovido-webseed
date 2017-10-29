@@ -1,12 +1,20 @@
 package biz.jovido.seed.content;
 
+import java.util.Arrays;
+
 /**
  * @author Stephan Grundner
  */
 public class ItemAttributeConfigurer extends AttributeConfigurer<ItemAttribute, ItemAttributeConfigurer> {
 
-    public ItemAttributeConfigurer addAcceptedType(String name) {
-        attribute.getAcceptedTypeNames().add(name);
+    public ItemAttributeConfigurer addAcceptedStructure(String name) {
+        attribute.getAcceptedStructureNames().add(name);
+
+        return this;
+    }
+
+    public ItemAttributeConfigurer addAcceptedStructure(String... names) {
+        attribute.getAcceptedStructureNames().addAll(Arrays.asList(names));
 
         return this;
     }

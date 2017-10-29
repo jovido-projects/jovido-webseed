@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.url;
+package biz.jovido.seed.content;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;

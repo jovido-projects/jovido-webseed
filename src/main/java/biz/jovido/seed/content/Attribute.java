@@ -1,21 +1,10 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.*;
-
 /**
  * @author Stephan Grundner
  */
-//@Entity
-//@Inheritance(strategy = InheritanceType.JOINED)
-//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"structure_id", "name"}))
 public abstract class Attribute {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "structure_id", updatable = false)
     private Structure structure;
 
     private String name;
@@ -23,14 +12,6 @@ public abstract class Attribute {
 
     private int capacity = 1; //Integer.MAX_VALUE;;
     private int required = 1;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Structure getStructure() {
         return structure;
