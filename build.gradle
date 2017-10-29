@@ -16,7 +16,10 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
+group "biz.jovido"
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
@@ -28,9 +31,6 @@ repositories {
 }
 
 dependencies {
-//    compile('biz.grundner.web:spring-webmvc-components:0.1-SNAPSHOT') {
-//        changing = true
-//    }
 
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-security')
@@ -49,14 +49,72 @@ dependencies {
 
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.39'
 
-    // https://oss.sonatype.org/service/local/repositories/snapshots/content/biz/grundner/web/spring-webmvc-components/0.1-SNAPSHOT/spring-webmvc-components-0.1-20170622.165128-1.jar
-//    compile group: 'biz.grundner.web', name: 'spring-webmvc-components', version: '0.1-SNAPSHOT', changing: true
-
-
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile group: 'mysql', name: 'mysql-connector-java', version: '5.1.39'
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.192'
 }
 
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.artifactId = 'jovido-webseed'
+
+            pom.project {
+                name 'JOVIDO WebSeed Framework'
+                packaging 'jar'
+                description 'A web content management library for the Spring Framework'
+                url 'https://github.com/jovido/jovido-lafenice/'
+
+                scm {
+                    url 'https://github.com/jovido/jovido-lafenice.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'stephangrundner'
+                        name 'Stephan Grundner'
+                        email 'stephan.grundner@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
 
