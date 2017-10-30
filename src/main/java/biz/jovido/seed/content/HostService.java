@@ -3,6 +3,7 @@ package biz.jovido.seed.content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -13,6 +14,10 @@ public class HostService {
 
     @Autowired
     private HostRepository hostRepository;
+
+    public String getHostName(URL url) {
+        return url.getHost();
+    }
 
     public Host getHost(Long id) {
         return hostRepository.findOne(id);
