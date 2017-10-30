@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Stephan Grundner
  */
@@ -18,6 +22,19 @@ public class HostEditorController {
 
     @Autowired
     private HostService hostService;
+
+    @ModelAttribute("breadcrumbs")
+    protected List<Breadcrumb> breadcrumbs(@ModelAttribute HostEditor editor) {
+        if (editor == null || editor.getHost() == null) {
+            return Collections.EMPTY_LIST;
+        }
+        List<Breadcrumb> breadcrumbs = new ArrayList<>();
+        breadcrumbs.add(new Breadcrumb("Home", "/"));
+        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
+        breadcrumbs.add(new Breadcrumb("Configuration", "/admin/hosts/"));
+        breadcrumbs.add(new Breadcrumb(editor.getHost().getName()));
+        return breadcrumbs;
+    }
 
     @ModelAttribute
     protected HostEditor editor() {

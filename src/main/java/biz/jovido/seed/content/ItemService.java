@@ -73,16 +73,36 @@ public class ItemService {
         return item.getSequence(attributeName);
     }
 
+    private Sequence applySequence(Item item, Structure structure, String attributeName) {
+        Sequence sequence = item.getSequence(attributeName);
+        if (sequence == null) {
+            sequence = new Sequence();
+            item.setSequence(attributeName, sequence);
+        }
+
+        Attribute attribute = structure.getAttribute(attributeName);
+        if (!(attribute instanceof ItemAttribute)) {
+            int remaining = attribute.getRequired() - sequence.length();
+            while (remaining-- > 0) {
+                Payload payload = attribute.createPayload();
+                sequence.addPayload(payload);
+            }
+        }
+
+        return sequence;
+    }
+
+    private Sequence applySequence(Item item, String attributeName) {
+        Structure structure = getStructure(item);
+        return applySequence(item, structure, attributeName);
+    }
+
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
-            Attribute attribute = structure.getAttribute(attributeName);
-            Sequence sequence = item.getSequence(attributeName);
-            if (sequence == null) {
-                sequence = new Sequence();
-                item.setSequence(attributeName, sequence);
-            }
+            Sequence sequence = applySequence(item, structure, attributeName);
 
+            Attribute attribute = structure.getAttribute(attributeName);
             if (!(attribute instanceof ItemAttribute)) {
                 int remaining = attribute.getRequired() - sequence.length();
                 while (remaining-- > 0) {
@@ -93,10 +113,17 @@ public class ItemService {
         }
     }
 
+    /**
+     * Get or create a sequence for the specified item and attribute name.
+     *
+     * @param item
+     * @param attributeName
+     * @return
+     */
     public Sequence getSequence(Item item, String attributeName) {
         Sequence sequence = item.getSequence(attributeName);
         if (sequence == null) {
-            throw new RuntimeException("No sequence found for: " + attributeName);
+            sequence = applySequence(item, attributeName);
         }
 
         return sequence;

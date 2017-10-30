@@ -27,6 +27,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
 //        registry.addViewController("/").setViewName("home");
 //        registry.addViewController("/hello").setViewName("hello");
         registry.addViewController("/login").setViewName("admin/login");
+        registry.addRedirectViewController("/admin", "/admin/");
+        registry.addRedirectViewController("/admin/items", "/admin/items/");
+        registry.addRedirectViewController("/admin/item", "/admin/item/");
+        registry.addRedirectViewController("/admin/hosts", "/admin/hosts/");
+        registry.addRedirectViewController("/admin/host", "/admin/host/");
     }
 
 //    @Autowired

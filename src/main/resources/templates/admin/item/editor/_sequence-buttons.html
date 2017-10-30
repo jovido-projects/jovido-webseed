@@ -1,0 +1,14 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:if="${sequence.length() < attribute.capacity}">
+    <div class="btn-group">
+        <button class="btn btn-default"
+                th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
+                th:formaction="@{append(
+                    nested-path=${nestedPath},
+                    attribute=${attribute.name})}">
+            <span>Append</span>
+            <span th:text="${attribute.name}">Attribute name</span>
+        </button>
+    </div>
+</th:block>
+</html>

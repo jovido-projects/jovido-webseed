@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.Item;
+
 /**
  * @author Stephan Grundner
  */

@@ -2,37 +2,23 @@
 <label>
     <span th:text="${attribute.name}">Field name</span>
 </label>
-<ul class="list-group" >
+<ul class="list-group" style="margin-bottom:10px;">
 
     <li th:class="'list-group-item nesting-level-__${nestingLevel}__'"
         th:each="payload,payloadItr : ${sequence?.payloads}">
 
         <th:block th:if="${payload.value != null}">
-            <h5>
+            <h4>
+                <span th:text="${@itemService.getStructure(payload.value).name}">Name</span>
                 <th:block th:if="${attribute.capacity > 1}">
-                    <strong th:text="${@itemService.getStructure(payload.value).name}">Name</strong>
-                    <strong>#[[${payloadItr.index + 1}]]</strong>
+                    <span>#[[${payloadItr.index + 1}]]</span>
                 </th:block>
-                <div class="btn-group btn-group-xs pull-right">
-                    <button class="btn btn-default"
-                            disabled="disabled">
-                        <i class="fa fa-arrow-up"></i>
-                    </button>
-                    <button class="btn btn-default"
-                            disabled="disabled">
-                        <i class="fa fa-arrow-down"></i>
-                    </button>
-                    <button class="btn btn-default"
-                            th:formaction="@{remove-payload(
-                        nested-path=${nestedPath},
-                        attribute=${attribute.name},
-                        index=${payloadItr.index})}">
-                        <i class="fa fa-remove"></i>
-                    </button>
+                <div class="btn-group btn-group-sm pull-right">
+                    <th:block th:replace="admin/item/editor/_payload-buttons" />
                 </div>
-            </h5>
+            </h4>
 
-            <hr />
+            <!--<hr />-->
             <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
                 <th:block th:replace="admin/item/editor::fields" />
             </th:block>
@@ -41,7 +27,7 @@
     </li>
 
     <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__" >
-        <div class="btn-group">
+        <div class="btn-group dropup">
             <button type="button" th:disabled="${sequence.length() >= attribute.capacity} ? disabled : _"
                     class="btn btn-default dropdown-toggle"
                     data-toggle="dropdown"
@@ -61,7 +47,5 @@
             </ul>
         </div>
     </li>
-
-
 </ul>
 </html>

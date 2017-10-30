@@ -1,7 +1,11 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
+import biz.jovido.seed.content.Sequence;
+import biz.jovido.seed.content.Structure;
 import biz.jovido.seed.content.TemplateNameResolver;
+import org.springframework.core.Conventions;
+import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -13,6 +17,7 @@ import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +29,10 @@ public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcesso
     private List<TemplateNameResolver> templateNameResolvers;
 
     public List<TemplateNameResolver> getTemplateNameResolvers() {
+        if (templateNameResolvers == null) {
+            return Collections.EMPTY_LIST;
+        }
+
         return templateNameResolvers;
     }
 
@@ -57,6 +66,15 @@ public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcesso
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
+
+            if (StringUtils.isEmpty(templateName)) {
+                templateName = item.getStructureName();
+            }
+
+            for (Sequence<?> sequence : item.getSequences().values()) {
+                String attributeName = sequence.getAttributeName();
+                structureHandler.setLocalVariable(attributeName, sequence);
+            }
 
 //            String template = annotation.template();
 //            structureHandler.setLocalVariable("component", result);

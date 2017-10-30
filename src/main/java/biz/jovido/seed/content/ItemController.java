@@ -30,7 +30,7 @@ public class ItemController {
         for (Attribute attribute : structure.getAttributes()) {
             String attributeName = attribute.getName();
             Sequence<?> sequence = item.getSequence(attributeName);
-            model.addAttribute(attributeName, sequence);
+            model.addAttribute(attributeName, (Sequence)sequence);
         }
 
         return structure.getName();

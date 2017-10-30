@@ -1,6 +1,7 @@
 package biz.jovido.seed.configuration;
 
 import biz.jovido.seed.content.AliasRequestMapping;
+import biz.jovido.seed.thymeleaf.SeedDialect;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Stephan Grundner
@@ -42,6 +46,12 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
 //    public ViewNameResolver viewNameResolver() {
 //        return new DefaultViewNameResolver();
 //    }
+
+    @PostConstruct
+    void registerAdditionalDialects() {
+        SpringTemplateEngine templateEngine = applicationContext.getBean(SpringTemplateEngine.class);
+        templateEngine.addDialect(new SeedDialect());
+    }
 
     @Bean
     public SessionRepository<?> sessionRepository() {

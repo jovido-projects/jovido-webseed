@@ -53,6 +53,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public BooleanAttributeConfigurer addBooleanAttribute(String name) {
+        return parentConfigurer.addBooleanAttribute(name);
+    }
+
+    @Override
     public ImageAttributeConfigurer addImageAttribute(String name) {
         return parentConfigurer.addImageAttribute(name);
     }

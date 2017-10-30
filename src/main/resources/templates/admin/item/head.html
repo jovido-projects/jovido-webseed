@@ -1,11 +1,5 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<ol class="breadcrumb">
-    <li><a href="#">Home</a></li>
-    <li><a th:href="@{/admin/items}">Items</a></li>
-    <li class="active">
-        <span th:text="${@itemService.getLabel(item)}">Item</span>
-    </li>
-</ol>
+<th:block th:replace="admin/breadcrumbs" />
 
 <th:block th:if="${item.id != null}">
     <h1 th:with="structure=${@itemService.getStructure(item)}">

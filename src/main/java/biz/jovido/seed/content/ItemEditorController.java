@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
 import java.io.*;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -30,6 +30,19 @@ public class ItemEditorController {
 
     @Autowired
     private AssetService assetService;
+
+    @ModelAttribute("breadcrumbs")
+    protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
+        List<Breadcrumb> breadcrumbs = new ArrayList<>();
+        breadcrumbs.add(new Breadcrumb("Home", "/"));
+        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
+        breadcrumbs.add(new Breadcrumb("Items", "/admin/items/"));
+
+//        String breadcrumbText = itemService.getLabel(editor.getItem()).toString();
+//        breadcrumbs.add(new Breadcrumb(breadcrumbText));
+        breadcrumbs.add(new Breadcrumb(editor.getItem().toString()));
+        return breadcrumbs;
+    }
 
     @ModelAttribute
     protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
@@ -222,7 +235,8 @@ public class ItemEditorController {
     }
 
     @Transactional
-    @PostMapping(path = "upload", params = {"type=image"})
+//    @PostMapping(path = "upload-image", params = {"type=image"})
+    @PostMapping(path = "upload-image")
     protected String uploadImage(@ModelAttribute ItemEditor editor,
                                  @RequestParam(name = "token") String token,
                                  @RequestParam(name = "nested-path") String nestedPath,
@@ -255,6 +269,23 @@ public class ItemEditorController {
         image = (Image) assetService.saveAsset(image);
 //        payload.setImage(image);
 
+
+        return redirect(editor);
+    }
+
+    @Transactional
+    @PostMapping(path = "remove-image")
+    protected String removeImage(@ModelAttribute ItemEditor editor,
+                                 @RequestParam(name = "nested-path") String nestedPath,
+                                 @RequestParam(name = "attribute") String attributeName,
+                                 @RequestParam(name = "index") int index,
+                                 HttpServletRequest request) throws IOException, ServletException {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        ImagePayload payload = (ImagePayload) sequence.getPayload(index);
+
+        payload.setImage(null);
 
         return redirect(editor);
     }

@@ -57,6 +57,11 @@ public class StructureConfigurer implements StructureConfiguration {
     }
 
     @Override
+    public BooleanAttributeConfigurer addBooleanAttribute(String name) {
+        return addAttribute(BooleanAttribute.class, BooleanAttributeConfigurer.class, name);
+    }
+
+    @Override
     public ImageAttributeConfigurer addImageAttribute(String name) {
         return addAttribute(ImageAttribute.class, ImageAttributeConfigurer.class, name);
     }

@@ -6,10 +6,7 @@
     <div class="container">
         <form th:object="${itemListing}" method="post">
 
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li class="active"><a th:href="@{/admin/items}">Items</a></li>
-            </ol>
+            <th:block th:replace="admin/breadcrumbs" />
 
             <h1>Items</h1>
 

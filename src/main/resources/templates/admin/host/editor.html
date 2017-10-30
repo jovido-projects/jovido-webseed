@@ -5,13 +5,7 @@
     <div class="container">
         <form th:object="${hostEditor}" method="post" th:with="host=*{host}">
 
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li><a th:href="@{/admin/hosts}">Hosts</a></li>
-                <li class="active">
-                    <span th:text="${host?.name}">Name</span>
-                </li>
-            </ol>
+            <th:block th:replace="admin/breadcrumbs" />
 
             <div class="row">
                 <div class="col-md-12" >

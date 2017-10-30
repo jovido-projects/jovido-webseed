@@ -67,6 +67,9 @@
                                             <th:block th:case="'ImageAttribute'">
                                                 <th:block th:replace="admin/item/editor/field/image-field" />
                                             </th:block>
+                                            <th:block th:case="'BooleanAttribute'">
+                                                <th:block th:replace="admin/item/editor/field/boolean-field" />
+                                            </th:block>
                                         </th:block>
                                     </th:block>
 
@@ -83,22 +86,22 @@
 
                     <div class="form-group">
                         <label>Code</label>
-                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.leaf.id}">
+                        <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.leaf.id}">
                     </div>
 
                     <div class="form-group">
                         <label>ID (Changes for each revision)</label>
-                        <input type="number" disabled="disabled" class="form-control" th:field="*{item.id}">
+                        <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.id}">
                     </div>
 
                     <div class="form-group">
                         <label>Created at</label>
-                        <input type="date" disabled="disabled" class="form-control" th:field="*{item.createdAt}">
+                        <input type="date" disabled="disabled" class="form-control input-sm" th:field="*{item.createdAt}">
                     </div>
 
                     <div class="form-group">
                         <label>Path</label>
-                        <input type="text" class="form-control" th:field="*{item.path}">
+                        <input type="text" class="form-control input-sm" th:field="*{item.path}">
                     </div>
 
                     <!--Actions-->

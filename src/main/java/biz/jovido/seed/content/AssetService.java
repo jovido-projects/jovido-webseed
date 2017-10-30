@@ -41,6 +41,9 @@ public class AssetService {
     }
 
     public String getRelativeUrl(Asset asset) {
+        if (asset == null) {
+            return null;
+        }
         return String.format("/asset/files/%s/%s", asset.getUuid(), asset.getFileName());
     }
 }
