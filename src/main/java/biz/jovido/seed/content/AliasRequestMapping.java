@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URL;
 
 /**
  * @author Stephan Grundner
@@ -28,18 +27,13 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
 
     @Override
     protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-        String serverName = request.getServerName();
-        String forwardedHost = request.getHeader("X-Forwarded-Host");
-
-        LOG.debug("serverName: {}", serverName);
-        LOG.debug("forwardedHost: {}", forwardedHost);
-
         String hostName;
 
+        String forwardedHost = request.getHeader("X-Forwarded-Host");
         if (StringUtils.isEmpty(forwardedHost)) {
-            hostName = serverName;
+            hostName = request.getServerName();
         } else {
-            hostName = new URL(forwardedHost).getHost();
+            hostName = hostService.getHostName(forwardedHost);
         }
         Host host = hostService.getHost(hostName);
         if (host != null) {

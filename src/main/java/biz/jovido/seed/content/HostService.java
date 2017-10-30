@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import com.google.common.net.InternetDomainName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,10 @@ public class HostService {
     @Autowired
     private HostRepository hostRepository;
 
-    public String getHostName(URL url) {
-        return url.getHost();
+    public String getHostName(String url) {
+        InternetDomainName publicDomain = InternetDomainName.from(url);
+        InternetDomainName topPrivateDomain = publicDomain.topPrivateDomain();
+        return topPrivateDomain.toString();
     }
 
     public Host getHost(Long id) {
