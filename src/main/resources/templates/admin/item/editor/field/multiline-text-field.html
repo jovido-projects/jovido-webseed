@@ -3,7 +3,7 @@
 <div class="form-group" >
     <th:block th:each="payload,payloadItr : ${sequence.payloads}" th:with="id=${#ids.seq('foobar')}">
         <div>
-            <label th:text="${attribute.name}">Attribute name</label>
+            <label th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Attribute name</label>
             <th:block th:if="${attribute.capacity > 1}">
                 #<span th:text="${payloadItr.index + 1}">#</span>
                 <div class="btn-group btn-group-xs pull-right">
@@ -25,7 +25,10 @@
                     ['para', ['ul', 'ol', 'paragraph']],
                     ['insert', ['link', 'hr']],
                     ['view', ['fullscreen', 'codeview']]
-                ]
+                ],
+                onCreateLink : function(originalLink) {
+                    return originalLink; // return original link
+                }
             });
         });
         </script>

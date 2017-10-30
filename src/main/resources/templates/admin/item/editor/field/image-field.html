@@ -1,8 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="form-group">
-    <label>
-        <span th:text="${attribute.name}">Field name</span>
-    </label>
+    <label th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Attribute name</label>
     <div class="row" style="margin-bottom:-35px;"
          th:each="payload,payloadItr : ${sequence.payloads}"
          th:with="image = ${payload.image}">

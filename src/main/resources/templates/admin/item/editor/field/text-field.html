@@ -1,7 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <label>
-    <span th:text="${attribute.name}">Field name</span>
-    <!--<i th:if="${attribute.label}" class="fa fa-tag"></i>-->
+    <span th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Field name</span>
 </label>
 <div class="row">
     <div class="col-md-12">

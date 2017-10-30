@@ -128,6 +128,11 @@ public class Sequence<T> extends AbstractList<T> {
 
     @Override
     public T get(int index) {
+        int size = payloads.size();
+        if (index >= size) {
+            return null;
+        }
+
         return payloads.get(index).getValue();
     }
 

@@ -70,6 +70,9 @@
                                             <th:block th:case="'BooleanAttribute'">
                                                 <th:block th:replace="admin/item/editor/field/boolean-field" />
                                             </th:block>
+                                            <th:block th:case="'LinkAttribute'">
+                                                <th:block th:replace="admin/item/editor/field/link-field" />
+                                            </th:block>
                                         </th:block>
                                     </th:block>
 
