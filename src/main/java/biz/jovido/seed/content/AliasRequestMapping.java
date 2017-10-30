@@ -28,23 +28,18 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
     @Override
     protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
         String serverName = request.getServerName();
-        String localName = request.getLocalName();
-        String localAddr = request.getLocalAddr();
-        String remoteAddr = request.getRemoteAddr();
-        String requestURI = request.getRequestURI();
-        String requestURL = request.getRequestURL().toString();
+        String forwardedHost = request.getHeader("X-Forwarded-Host");
 
         LOG.debug("serverName: {}", serverName);
-        LOG.debug("localName: {}", localName);
-        LOG.debug("localAddr: {}", localAddr);
-        LOG.debug("remoteAddr: {}", remoteAddr);
-        LOG.debug("requestURI: {}", requestURI);
-        LOG.debug("requestURL: {}", requestURL);
+        LOG.debug("forwardedHost: {}", forwardedHost);
 
-        Host host = hostService.getHost(request.getServerName());
+        String name = forwardedHost;
+        if (StringUtils.isEmpty(name)) {
+            name = serverName;
+        }
+        Host host = hostService.getHost(name);
         if (host != null) {
             String path = request.getServletPath();
-            LOG.debug("Request path: {}", path);
             if ("/".equals(path)) {
                 path = host.getPath();
             } else if (StringUtils.hasLength(path) && path.startsWith("/")) {
