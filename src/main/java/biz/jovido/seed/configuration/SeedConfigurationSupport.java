@@ -1,6 +1,6 @@
 package biz.jovido.seed.configuration;
 
-import biz.jovido.seed.content.AliasRequestMapping;
+import biz.jovido.seed.content.ItemRequestMapping;
 import biz.jovido.seed.thymeleaf.SeedDialect;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
@@ -36,8 +36,8 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
     }
 
     @Bean
-    public AliasRequestMapping aliasRequestMapping() {
-        AliasRequestMapping requestMapping = new AliasRequestMapping();
+    public ItemRequestMapping itemRequestMapping() {
+        ItemRequestMapping requestMapping = new ItemRequestMapping();
         requestMapping.setOrder(0);
         return requestMapping;
     }

@@ -9,27 +9,19 @@
               locale=${item.leaf.locale},
               structure=${@itemService.getStructure(item)}">
 
-            <th:block th:replace="admin/item/head" />
+            <th:block th:replace="admin/breadcrumbs" />
 
-            <ul class="nav nav-tabs">
-                <li role="presentation" class="active">
-                    <a href="#">Content</a>
-                </li>
-                <th:block th:if="${item.id == null}">
-                    <li role="presentation" class="disabled">
-                        <a href="#">Hierarchy</a>
-                    </li>
-                </th:block>
-                <th:block th:if="${item.id != null}">
-                    <li role="presentation">
-                        <a th:href="@{/admin/hierarchy/(item=${item.id})}">Hierarchy</a>
-                    </li>
-                </th:block>
-                <li role="presentation" class="disabled">
-                    <a href="#">Revisions</a>
-                </li>
-
-            </ul>
+            <th:block th:if="${item.id != null}">
+                <h1 th:with="structure=${@itemService.getStructure(item)}">
+                    <span th:text="#{seed.structure.__${structure.name}__}">Title</span>
+                    <span th:text="${item.id}">ID</span>
+                </h1>
+            </th:block>
+            <th:block th:if="${item.id == null}">
+                <h1 th:with="structure=${@itemService.getStructure(item)}">
+                    New <span th:text="#{seed.structure.__${structure.name}__}">Title</span>
+                </h1>
+            </th:block>
 
             <p>&nbsp;</p>
 
@@ -88,12 +80,12 @@
                 <div class="col-md-5">
 
                     <div class="form-group">
-                        <label>Code</label>
+                        <label>Leaf</label>
                         <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.leaf.id}">
                     </div>
 
                     <div class="form-group">
-                        <label>ID (Changes for each revision)</label>
+                        <label>Revision ID</label>
                         <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.id}">
                     </div>
 
@@ -103,9 +95,17 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Last modified at</label>
+                        <input type="date" disabled="disabled" class="form-control input-sm" th:field="*{item.lastModifiedAt}">
+                    </div>
+
+                    <div class="form-group">
                         <label>Path</label>
                         <input type="text" class="form-control input-sm" th:field="*{item.path}">
                     </div>
+
+                    <!--Hierarchies-->
+                    <th:block th:replace="admin/item/editor/_nodes" />
 
                     <!--Actions-->
                     <div class="btn-group">

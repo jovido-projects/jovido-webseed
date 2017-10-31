@@ -52,6 +52,8 @@ dependencies {
     //
     compile group: 'com.google.guava', name: 'guava', version: '23.0'
 
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.10.3'
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile group: 'mysql', name: 'mysql-connector-java', version: '5.1.39'
 

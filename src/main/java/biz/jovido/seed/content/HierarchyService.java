@@ -83,24 +83,79 @@ public class HierarchyService {
         return getRootNodes(hierarchy);
     }
 
-    public Node saveNode(Node node) {
-        return nodeRepository.save(node);
-    }
-
-    public String getPath(Node node) {
-        ItemService itemService = beanFactory.getBean(ItemService.class);
-        LinkedList<String> path = new LinkedList<>();
-        while (node != null) {
-            Leaf history = node.getLeaf();
-            Item item = history.getCurrent();
-//            String labelText = ItemUtils.labelToString(item);
-            String labelText = itemService.getLabel(item).toString();
-            path.addLast(labelText);
-            node = node.getParent();
+    private void removeNode(Node node, Hierarchy hierarchy) {
+        if (hierarchy != null) {
+            hierarchy.removeNode(node);
         }
 
-        path.addLast(node.getHierarchy().getName());
+        Leaf leaf = node.getLeaf();
+        if (leaf != null) {
+            leaf.removeNode(node);
+        }
 
-        return path.stream().collect(Collectors.joining(" / "));
+        Node parent = node.getParent();
+        if (parent != null) {
+            parent.removeChild(node);
+        }
+
+        List<Node> children = node.getChildren();
+        for (Node child : children) {
+            removeNode(child, hierarchy);
+        }
+
+        nodeRepository.delete(node);
+    }
+
+    public void deleteNode(Node node) {
+        Hierarchy hierarchy = node.getHierarchy();
+        removeNode(node, hierarchy);
+        saveHierarchy(hierarchy);
+    }
+
+    public Node saveNode(Node node) {
+        return nodeRepository.saveAndFlush(node);
+    }
+
+//    TODO Umbenennen, weil man das mit URL/URI Pfaden verwechseln könnte
+    public String getPath(Node node) {
+        if (node != null) {
+            Hierarchy hierarchy = node.getHierarchy();
+            ItemService itemService = beanFactory.getBean(ItemService.class);
+            LinkedList<String> path = new LinkedList<>();
+            while (node != null) {
+                Leaf history = node.getLeaf();
+                Item item = history.getCurrent();
+//            String labelText = ItemUtils.labelToString(item);
+                String labelText = itemService.getLabelText(item);
+                path.addFirst(labelText);
+                node = node.getParent();
+            }
+
+//            path.addFirst(hierarchy.getName());
+
+            return path.stream().collect(Collectors.joining(" / "));
+        }
+
+        return null;
+    }
+
+    public Item getItem(Leaf leaf, Mode mode) {
+        if (leaf != null) {
+            if (mode == Mode.PREVIEW) {
+                return leaf.getCurrent();
+            } else {
+                return leaf.getPublished();
+            }
+        }
+
+        return null;
+    }
+
+    public Item getItem(Node node, Mode mode) {
+        if (node != null) {
+            Leaf leaf = node.getLeaf();
+            return getItem(leaf, mode);
+        }
+        return null;
     }
 }

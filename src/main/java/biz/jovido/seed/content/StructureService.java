@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,6 +17,9 @@ public class StructureService {
 //    private StructureRepository structureRepository;
 
 //    private Map<String, Integer> revisionByStructureName = new HashMap<>();
+
+    @Autowired
+    private MessageSource messageSource;
 
     private Map<String, Structure> structureByName = new HashMap<>();
 
@@ -46,5 +51,14 @@ public class StructureService {
         return getAllStructures().stream()
                 .filter(Structure::isPublishable)
                 .collect(Collectors.toList());
+    }
+
+    public String getDisplayName(Structure structure, Locale locale) {
+        if (structure != null) {
+            String code = String.format("seed.structure.%s", structure.getName());
+            return messageSource.getMessage(code, new Object[] {}, structure.getName(), locale);
+        }
+
+        return null;
     }
 }

@@ -1,5 +1,8 @@
 package biz.jovido.seed.content;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +23,8 @@ public class Hierarchy {
 
     @OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "locale")
+    @OrderBy("ordinal")
+    @Fetch(FetchMode.SELECT)
     private final List<Node> nodes = new ArrayList<>();
 
     public Long getId() {
@@ -40,5 +45,11 @@ public class Hierarchy {
 
     public List<Node> getNodes() {
         return Collections.unmodifiableList(nodes);
+    }
+
+    public void removeNode(Node node) {
+        if (nodes.remove(node)) {
+            node.setHierarchy(null);
+        }
     }
 }

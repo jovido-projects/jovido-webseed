@@ -1,6 +1,9 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.LocaleConverter;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class Leaf {
     private Item current;
 
     @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private final List<Node> nodes = new ArrayList<>();
 
     @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
@@ -82,7 +86,33 @@ public class Leaf {
         return false;
     }
 
+    public boolean removeNode(Node node) {
+//        if (nodes.remove(node)) {
+//        TODO durch idEquals o.ä. ersetzen:
+        if (nodes.removeIf(it -> it.getId().equals(node.getId()))) {
+            node.setLeaf(null);
+            return true;
+        }
+
+        return false;
+    }
+
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Leaf)) {
+            return false;
+        }
+
+        Leaf leaf = (Leaf) o;
+        return new EqualsBuilder()
+                .append(id, leaf.id)
+                .isEquals();
     }
 }

@@ -1,0 +1,67 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<th:block th:each="hierarchy : ${@hierarchyService.allHierarchies}">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            [[#{seed.hierarchy.__${hierarchy.name}__}]]
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="node : *{item.leaf.nodes}">
+                [[${@hierarchyService.getPath(node)}]]
+
+                <div class="btn-group btn-group-xs pull-right">
+                    <a class="btn btn-default"
+                       th:href="@{move-node-up(node=${node.id})}">
+                        <i class="fa fa-arrow-up"></i>
+                    </a>
+                    <a class="btn btn-default"
+                       th:href="@{move-node-down(node=${node.id})}">
+                        <i class="fa fa-arrow-down"></i>
+                    </a>
+                    <a class="btn btn-default"
+                       th:href="@{remove-node(node=${node.id})}">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                </div>
+            </li>
+            <li class="list-group-item">
+
+                <div class="btn-group dropup">
+                    <a type="button" class="btn btn-default" th:href="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
+                        <span>Add node</span>
+                    </a>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">
+                            Choose a parent...
+                        </li>
+                        <th:block th:with="nodes = ${@hierarchyService.getRoots(hierarchy)}">
+                            <th:block th:fragment="tree(nodes)">
+                                <th:block th:each="node : ${nodes}">
+                                    <li>
+                                        <a th:href="@{add-node(
+                                        hierarchy=${hierarchy.id},
+                                        parent=${node?.id})}">
+                                            [[${@hierarchyService.getPath(node)}]]
+                                        </a>
+                                    </li>
+                                    <th:block th:if="${node.children.size() > 0}">
+                                        <th:block th:replace="::tree(${node.children})" />
+                                    </th:block>
+                                </th:block>
+                            </th:block>
+                        </th:block>
+                    </ul>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+
+</th:block>
+
+</html>

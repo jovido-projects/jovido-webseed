@@ -16,32 +16,11 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @Autowired
-    private AliasService aliasService;
-
-    @RequestMapping(params = {"id"})
-    protected String itemById(@RequestParam(name = "id") Long id, Model model) {
-        Item item = itemService.getItem(id);
-        model.addAttribute("_item", item);
+    private String respond(Item item, Model model) {
+        model.addAttribute("this", item);
         Sequence label = itemService.getLabel(item);
         model.addAttribute("label", label);
-
-        Structure structure = itemService.getStructure(item);
-        for (Attribute attribute : structure.getAttributes()) {
-            String attributeName = attribute.getName();
-            Sequence<?> sequence = item.getSequence(attributeName);
-            model.addAttribute(attributeName, (Sequence)sequence);
-        }
-
-        return structure.getName();
-    }
-
-    @RequestMapping(params = {"leaf"})
-    protected String itemByLeaf(@RequestParam(name = "leaf") Long leafId, Model model) {
-        Item item = itemService.findPublished(leafId);
-        model.addAttribute("_item", item);
-        Sequence label = itemService.getLabel(item);
-        model.addAttribute("label", label);
+        model.addAttribute("mode", itemService.getMode(item));
 
         Structure structure = itemService.getStructure(item);
         for (Attribute attribute : structure.getAttributes()) {
@@ -53,10 +32,19 @@ public class ItemController {
         return structure.getName();
     }
 
-    @RequestMapping(params = {"alias"})
-    protected String itemByAlias(@RequestParam(name = "alias") Long aliasId, Model model) {
-        Alias alias = aliasService.getAlias(aliasId);
+    @RequestMapping(params = {"id"})
+    protected String itemById(@RequestParam(name = "id") Long id, Model model) {
+        Item item = itemService.getItem(id);
+        return respond(item, model);
+    }
 
-        return itemByLeaf(alias.getHistory().getId(), model);
+    @RequestMapping(params = {"leaf"})
+    protected String itemByLeaf(@RequestParam(name = "leaf") Long leafId, Model model) {
+        Item item = itemService.findPublished(leafId);
+        if (item == null) {
+            throw new ItemNotPublishedException();
+        }
+
+        return respond(item, model);
     }
 }

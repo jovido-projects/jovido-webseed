@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.util.UnmodifiableMapProxy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -32,6 +33,9 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     @CreatedDate
     private Date createdAt;
+
+    @LastModifiedDate
+    private Date lastModifiedAt;
 
     public Long getId() {
         return id;
@@ -94,6 +98,14 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.createdAt = createdAt;
     }
 
+    public Date getLastModifiedAt() {
+        return lastModifiedAt;
+    }
+
+    public void setLastModifiedAt(Date lastModifiedAt) {
+        this.lastModifiedAt = lastModifiedAt;
+    }
+
     public Locale getLocale() {
         Leaf chronicle = getLeaf();
         if (chronicle != null) {
@@ -110,6 +122,17 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
             Item current = history.getCurrent();
             if (current != null && current.getId() != null) {
                 return current.getId().equals(getId());
+            }
+        }
+
+        return false;
+    }
+
+    public boolean belongsTo(Leaf leaf) {
+        if (leaf != null) {
+
+            if (leaf.equals(this.leaf)) {
+                return true;
             }
         }
 

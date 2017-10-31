@@ -19,7 +19,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item i " +
             "join i.leaf l " +
-            "where i = l.current")
+            "where i = l.current " +
+            "order by i.lastModifiedAt desc")
     List<Item> findAllCurrent();
 
     @Query("from Item i " +
@@ -27,4 +28,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where l.id = ?1 " +
             "and i = l.published")
     Item findPublished(Long leafId);
+
+    @Query("select i from Item i " +
+            "join i.leaf l " +
+            "where i.path = ?1 " +
+            "and i = l.published " +
+            "order by i.lastModifiedAt desc")
+    List<Item> findAllPublishedByPath(String path);
 }

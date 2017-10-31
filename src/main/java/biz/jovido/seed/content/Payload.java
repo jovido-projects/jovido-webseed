@@ -18,7 +18,7 @@ public abstract class Payload<T> {
     @ManyToOne(targetEntity = Sequence.class)
     private Sequence<T> sequence;
 
-    private int ordinal;
+    private int ordinal = -1;
 
     public Long getId() {
         return id;

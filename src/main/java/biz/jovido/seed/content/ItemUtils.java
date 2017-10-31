@@ -16,6 +16,7 @@ public class ItemUtils {
         return null;
     }
 
+    @Deprecated
     public static boolean areTheSame(Item one, Item other) {
         if (one == null || other == null) {
             return false;

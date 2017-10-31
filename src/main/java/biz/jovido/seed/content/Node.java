@@ -1,9 +1,12 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UUIDConverter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,8 +29,11 @@ public class Node {
 
     @ManyToOne
     private Node parent;
+    private int ordinal = -1;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("ordinal")
+    @Fetch(FetchMode.SUBSELECT)
     private final List<Node> children = new ArrayList<>();
 
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
@@ -70,17 +76,54 @@ public class Node {
         }
     }
 
+    public int getOrdinal() {
+        return ordinal;
+    }
+
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
+    }
+
     public List<Node> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
     public boolean addChild(Node child) {
         if (children.add(child)) {
             child.parent = this;
+            child.ordinal = children.size() - 1;
             return true;
         }
 
         return false;
+    }
+
+    public void removeChild(int index) {
+        Node removed = children.remove(index);
+        if (removed != null) {
+            removed.parent = null;
+            removed.ordinal = -1;
+
+            for (int i = index; i < children.size(); i++) {
+                Node child = children.get(i);
+                child.ordinal = i;
+            }
+        }
+    }
+
+    public void moveChild(int fromIndex, int toIndex) {
+        Collections.swap(children, fromIndex, toIndex);
+        for (int i = 0; i < children.size(); i++) {
+            Node child = children.get(i);
+            child.ordinal = i;
+        }
+    }
+
+    public void removeChild(Node node) {
+        int index = children.indexOf(node);
+        if (index >= 0) {
+            removeChild(index);
+        }
     }
 
     public Node getRoot() {
@@ -102,7 +145,7 @@ public class Node {
         return leaf;
     }
 
-    public void setLeaf(Leaf leaf) {
+    /**/ void setLeaf(Leaf leaf) {
         this.leaf = leaf;
     }
 

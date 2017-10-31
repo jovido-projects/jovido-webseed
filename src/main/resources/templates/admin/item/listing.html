@@ -27,7 +27,7 @@
                             <th width="1%">ID</th>
                             <th nowrap="nowrap">Label</th>
                             <th nowrap="nowrap">Structure</th>
-                            <th nowrap="nowrap">Locale</th>
+                            <!--<th nowrap="nowrap">Locale</th>-->
                             <th nowrap="nowrap">Created by</th>
                             <th nowrap="nowrap">Last modified at</th>
                             <th width="1%"></th>
@@ -40,7 +40,7 @@
                                     <ul class="dropdown-menu">
                                         <li th:each="structure : ${@structureService.findPublishableStructures()}">
                                             <a th:href="@{/admin/item/create(structure=${structure.name})}">
-                                                <span th:text="${structure.name}">Type Name</span>
+                                                <span th:text="${@structureService.getDisplayName(structure, #locale)}">Type Name</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -55,27 +55,26 @@
                             </td>
                             <td>
                                 <span>
-                                    <a th:text="${@itemService.getLabel(item)}"
-                                       th_href="@{/item(leaf=${item.leaf.id})}"
-                                       th:href="${@itemService.getRelativeUrl(item)}"
+                                    <a th:text="${@itemService.getLabelText(item)}"
+                                       th:href="${@itemService.getPath(item)}"
                                        target="_blank">Label</a>
                                 </span>
                             </td>
                             <td>
                                 <span th:text="${@itemService.getStructure(item).name}">Structure</span>
                             </td>
-                            <td>
-                                <span th:text="${item.leaf.locale.displayName}">Locale</span>
-                            </td>
-                            <td nowrap="nowrap" th_text="${item.createdBy?.name}"></td>
-                            <td nowrap="nowrap" th_text="${item.lastModifiedAt}"></td>
+                            <!--<td>-->
+                                <!--<span th:text="${item.leaf.locale.displayName}">Locale</span>-->
+                            <!--</td>-->
+                            <td nowrap="nowrap" th_text="${item.createdBy?.name}">Admin</td>
+                            <td nowrap="nowrap" th:text="${item.lastModifiedAt}"></td>
                             <td></td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">
                                     <button class="btn btn-default"
-                                            th:formaction="@{/admin/item/edit(
-                                            item=${item.id})}">
+                                            th:formaction="@{/admin/item/edit(item=${item.id})}">
                                         <i class="fa fa-pencil"></i>
+                                        Edit
                                     </button>
                                     <!--<button class="btn btn-default">-->
                                         <!--<i class="fa fa-remove"></i>-->

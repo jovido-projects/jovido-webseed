@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
@@ -31,10 +32,10 @@ public class ItemService {
     private HierarchyService hierarchyService;
 
     @Autowired
-    private AliasService aliasService;
+    private HostService hostService;
 
     @Autowired
-    private HostService hostService;
+    private HtmlService htmlService;
 
     @Autowired
     private EntityManager entityManager;
@@ -58,6 +59,10 @@ public class ItemService {
         return itemRepository.findAllCurrent();
     }
 
+    public List<Item> findAllPublishedItemByPath(String path) {
+        return itemRepository.findAllPublishedByPath(path);
+    }
+
     public Structure getStructure(Item item) {
         if (item != null) {
             String structureName = item.getStructureName();
@@ -67,10 +72,34 @@ public class ItemService {
         return null;
     }
 
-    public Sequence<?> getLabel(Item item) {
-        Structure structure = getStructure(item);
-        String attributeName = structure.getLabelAttributeName();
-        return item.getSequence(attributeName);
+    public Sequence<String> getLabel(Item item) {
+        if (item != null) {
+            Structure structure = getStructure(item);
+            String attributeName = structure.getLabelAttributeName();
+            return (Sequence<String>) item.getSequence(attributeName);
+        }
+
+        return null;
+    }
+
+    public String getLabelText(Item item) {
+        if (item != null) {
+            Sequence<String> label = getLabel(item);
+            if (label == null) {
+                Structure structure = getStructure(item);
+                Sequence<?> title = item.getSequence("title");
+                if (title != null && title.size() > 0) {
+                    Object titleObject = title.get(0);
+                    return titleObject != null
+                            ? titleObject.toString() : null;
+                }
+                return null;
+            }
+//        return label != null ? label.get(0) : null;
+            return label.get(0);
+        }
+
+        return null;
     }
 
     private Sequence applySequence(Item item, Structure structure, String attributeName) {
@@ -158,18 +187,68 @@ public class ItemService {
         return createItemWithinHistory(structure, null);
     }
 
-    public String getRelativeUrl(Item item) {
-        String path = item.getPath();
-        if (StringUtils.isEmpty(path)) {
-            Leaf history = item.getLeaf();
-            return String.format("/item?leaf=%s", history.getId());
+    public boolean isPublished(Item item) {
+        if (item != null) {
+            Leaf leaf = item.getLeaf();
+            if (leaf != null) {
+                return new EqualsBuilder()
+                        .append(leaf.getPublished(), item)
+                        .isEquals();
+            }
         }
 
-        if (!path.startsWith("/")) {
-            return String.format("/%s", path);
+        return false;
+    }
+
+    public Mode getMode(Item item) {
+        return isPublished(item) ? Mode.LIVE : Mode.PREVIEW;
+    }
+
+    public String getPath(Item item) {
+        if (item != null) {
+            String path = item.getPath();
+            if (StringUtils.isEmpty(path)) {
+                Leaf leaf = item.getLeaf();
+                return String.format("/item?leaf=%s", leaf.getId());
+            }
+
+            if (!path.startsWith("/")) {
+                return String.format("/%s", path);
+            }
+
+            return path;
         }
 
-        return path;
+        return null;
+    }
+
+    public String getHtml(Sequence<String> sequence, int index) {
+        int size = sequence.size();
+        if (index < size) {
+            String html = sequence.get(index);
+            return htmlService.filterHtml(html);
+        }
+
+        return null;
+    }
+
+    public String getHtml(Sequence<String> sequence) {
+        return getHtml(sequence, 0);
+    }
+
+    public String getHtml(Item item, String attributeName, int index) {
+        if (item != null) {
+            Sequence<String> sequence = item.getSequence(attributeName);
+            if (sequence != null) {
+                return getHtml(sequence, index);
+            }
+        }
+
+        return null;
+    }
+
+    public String getHtml(Item item, String attributeName) {
+        return getHtml(item, attributeName, 0);
     }
 
     @Transactional
@@ -233,17 +312,25 @@ public class ItemService {
 
         entityManager.merge(history);
 
-        String path = item.getPath();
-        if (StringUtils.hasLength(path)) {
-            for (Host host : hostService.getAllHosts()) {
-                Alias alias = aliasService.getOrCreateAlias(host, path);
-                alias.setHistory(history);
-                aliasService.saveAlias(alias);
-            }
-        }
-
         return current;
     }
+
+//    private boolean isSimplePayload(Payload payload) {
+//        return  (payload instanceof TextPayload
+//                || payload instanceof BooleanPayload);
+//    }
+//
+//    public <T> boolean equals(Payload<T> a, Payload<T> b) {
+//        if (a == null || b == null) {
+//            return false;
+//        }
+//
+//        if (isSimplePayload(a)) {
+//            return Objects.equals(a.getValue(), b.getValue());
+//        } else {
+//
+//        }
+//    }
 
     public Attribute getAttribute(Sequence sequence) {
         Item item = sequence.getItem();

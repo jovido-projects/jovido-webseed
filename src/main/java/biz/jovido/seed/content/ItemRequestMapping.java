@@ -8,22 +8,20 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
-public class AliasRequestMapping extends AbstractHandlerMapping {
+public class ItemRequestMapping extends AbstractHandlerMapping {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AliasRequestMapping.class);
-
-    @Autowired
-    private AliasForwardController aliasForwardController;
+    private static final Logger LOG = LoggerFactory.getLogger(ItemRequestMapping.class);
 
     @Autowired
     private HostService hostService;
 
     @Autowired
-    private AliasService aliasService;
+    private ItemService itemService;
 
     @Override
     protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
@@ -44,10 +42,16 @@ public class AliasRequestMapping extends AbstractHandlerMapping {
                 path = path.substring(1);
             }
 
-            Alias alias = aliasService.getAlias(host, path);
-            if (alias != null) {
-                request.setAttribute(Alias.class.getName(), alias);
-                return new HandlerExecutionChain(aliasForwardController);
+            List<Item> items = itemService.findAllPublishedItemByPath(path);
+            if (!items.isEmpty()) {
+                if (items.size() > 1) {
+                    LOG.warn("More than one published item found for path [{}]", path);
+                }
+//                TODO Find best matching item:
+                Item item = items.get(0);
+                ItemForwardController controller =
+                        new ItemForwardController(item);
+                return new HandlerExecutionChain(controller);
             }
         }
 

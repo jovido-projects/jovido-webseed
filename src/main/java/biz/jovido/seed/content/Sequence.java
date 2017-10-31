@@ -1,11 +1,13 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.UUIDConverter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -17,10 +19,6 @@ public class Sequence<T> extends AbstractList<T> {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column(unique = true)
-    @Convert(converter = UUIDConverter.class)
-    private UUID uuid;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -46,18 +44,6 @@ public class Sequence<T> extends AbstractList<T> {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 
     public Item getItem() {

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -31,6 +34,9 @@ public class ItemEditorController {
     @Autowired
     private AssetService assetService;
 
+    @Autowired
+    private HierarchyService hierarchyService;
+
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
@@ -40,7 +46,12 @@ public class ItemEditorController {
 
 //        String breadcrumbText = itemService.getLabel(editor.getItem()).toString();
 //        breadcrumbs.add(new Breadcrumb(breadcrumbText));
-        breadcrumbs.add(new Breadcrumb(editor.getItem().toString()));
+        Item item = editor.getItem();
+        if (item != null) {
+            String label = itemService.getLabelText(item);
+            breadcrumbs.add(new Breadcrumb(label));
+        }
+
         return breadcrumbs;
     }
 
@@ -298,6 +309,81 @@ public class ItemEditorController {
         Item current = itemService.publishItem(item);
 
         editor.setItem(current);
+
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "add-node", params = {})
+    protected String addNode(@ModelAttribute ItemEditor editor,
+                             BindingResult bindingResult,
+                             @RequestParam(name = "hierarchy") Long hierarchyId,
+                             @RequestParam(name = "parent", required = false) Long parentId) {
+
+        Item item = editor.getItem();
+        Leaf leaf = item.getLeaf();
+        Locale locale = item.getLocale();
+        Assert.notNull(locale);
+
+        Hierarchy hierarchy = hierarchyService.getHierarchy(hierarchyId);
+
+        Node node = new Node();
+        node.setUuid(UUID.randomUUID());
+        node.setHierarchy(hierarchy);
+        node.setLeaf(item.getLeaf());
+
+        if (parentId != null) {
+            Node parent = hierarchyService.getNode(parentId);
+            node.setParent(parent);
+        }
+
+        node = hierarchyService.saveNode(node);
+
+        leaf.addNode(node);
+
+        return redirect(editor);
+    }
+
+
+    @RequestMapping(path = "move-node-up")
+    protected String moveNodeUp(@ModelAttribute ItemEditor editor,
+                                BindingResult bindingResult,
+                                @RequestParam(name = "node") Long nodeId) {
+
+        Node node = hierarchyService.getNode(nodeId);
+        int ordinal = node.getOrdinal();
+        Node parent = node.getParent();
+        parent.moveChild(ordinal, ordinal - 1);
+
+        hierarchyService.saveNode(parent);
+
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "move-node-down")
+    protected String moveNodeDown(@ModelAttribute ItemEditor editor,
+                                  BindingResult bindingResult,
+                                  @RequestParam(name = "node") Long nodeId) {
+
+        Node node = hierarchyService.getNode(nodeId);
+        int ordinal = node.getOrdinal();
+        Node parent = node.getParent();
+        parent.moveChild(ordinal, ordinal + 1);
+
+        hierarchyService.saveNode(parent);
+
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "remove-node")
+    protected String removeNode(@ModelAttribute ItemEditor editor,
+                                BindingResult bindingResult,
+                                @RequestParam(name = "node") Long nodeId) {
+
+        Node node = hierarchyService.getNode(nodeId);
+        hierarchyService.deleteNode(node);
+        Item item = editor.getItem();
+        Leaf leaf = item.getLeaf();
+        leaf.removeNode(node);
 
         return redirect(editor);
     }
