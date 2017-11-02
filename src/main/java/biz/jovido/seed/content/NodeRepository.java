@@ -11,5 +11,5 @@ import java.util.UUID;
 @Repository
 public interface NodeRepository extends JpaRepository<Node, Long> {
 
-    Node findByUuid(UUID uuid);
+//    Node findByUuid(UUID uuid);
 }

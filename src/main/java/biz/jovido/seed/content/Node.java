@@ -1,14 +1,14 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.UUIDConverter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -20,19 +20,16 @@ public class Node {
     @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
-    @Convert(converter = UUIDConverter.class)
-    private UUID uuid;
-
-    @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private Hierarchy hierarchy;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private Node parent;
+
     private int ordinal = -1;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OrderBy("ordinal")
+    @OneToMany(mappedBy = "parent", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+//    @OrderBy("ordinal")
     @Fetch(FetchMode.SUBSELECT)
     private final List<Node> children = new ArrayList<>();
 
@@ -48,19 +45,11 @@ public class Node {
         this.id = id;
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
     public Hierarchy getHierarchy() {
         return hierarchy;
     }
 
-    public void setHierarchy(Hierarchy hierarchy) {
+    /*public*/ void setHierarchy(Hierarchy hierarchy) {
         this.hierarchy = hierarchy;
     }
 
@@ -85,7 +74,9 @@ public class Node {
     }
 
     public List<Node> getChildren() {
-        return Collections.unmodifiableList(children);
+        return Collections.unmodifiableList(children).stream()
+                .sorted(Comparator.comparingInt(Node::getOrdinal))
+                .collect(Collectors.toList());
     }
 
     public boolean addChild(Node child) {
@@ -98,24 +89,19 @@ public class Node {
         return false;
     }
 
+    private void updateOrdinals(int start) {
+        for (int i = start; i < children.size(); i++) {
+            Node child = children.get(i);
+            child.ordinal = i;
+        }
+    }
+
     public void removeChild(int index) {
         Node removed = children.remove(index);
         if (removed != null) {
             removed.parent = null;
             removed.ordinal = -1;
-
-            for (int i = index; i < children.size(); i++) {
-                Node child = children.get(i);
-                child.ordinal = i;
-            }
-        }
-    }
-
-    public void moveChild(int fromIndex, int toIndex) {
-        Collections.swap(children, fromIndex, toIndex);
-        for (int i = 0; i < children.size(); i++) {
-            Node child = children.get(i);
-            child.ordinal = i;
+            updateOrdinals(index);
         }
     }
 
@@ -124,6 +110,10 @@ public class Node {
         if (index >= 0) {
             removeChild(index);
         }
+    }
+
+    public boolean isRoot() {
+        return getParent() == null;
     }
 
     public Node getRoot() {
@@ -141,11 +131,45 @@ public class Node {
         return node;
     }
 
+    public List<Node> getNodesAtSameLevel() {
+        return isRoot() ?
+                getHierarchy().getRootNodes() :
+                getParent().getChildren();
+    }
+
+    public boolean isFirst() {
+        return getOrdinal() == 0;
+    }
+
+    public boolean isLast() {
+        return getOrdinal() == (getNodesAtSameLevel().size() - 1);
+    }
+
+    public Node getPreviousSibling() {
+        List<Node> nodes = getNodesAtSameLevel();
+        int index = nodes.indexOf(this);
+        if (index > 0) {
+            return nodes.get(index - 1);
+        }
+
+        return null;
+    }
+
+    public Node getNextSibling() {
+        List<Node> nodes = getNodesAtSameLevel();
+        int index = nodes.indexOf(this);
+        if (++index < nodes.size()) {
+            return nodes.get(index);
+        }
+
+        return null;
+    }
+
     public Leaf getLeaf() {
         return leaf;
     }
 
-    /**/ void setLeaf(Leaf leaf) {
+    /*public*/ void setLeaf(Leaf leaf) {
         this.leaf = leaf;
     }
 
@@ -157,7 +181,6 @@ public class Node {
 
     public Node copy() {
         Node copy = new Node();
-        copy.setUuid(UUID.randomUUID());
         copy.setHierarchy(getHierarchy());
         copy.setParent(getParent());
 

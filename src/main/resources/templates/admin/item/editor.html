@@ -23,8 +23,6 @@
                 </h1>
             </th:block>
 
-            <p>&nbsp;</p>
-
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
                     <span th:text="${err}">Error</span>
@@ -79,29 +77,55 @@
                 <!-- Sidebar -->
                 <div class="col-md-5">
 
-                    <div class="form-group">
-                        <label>Leaf</label>
-                        <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.leaf.id}">
-                    </div>
 
-                    <div class="form-group">
-                        <label>Revision ID</label>
-                        <input type="number" disabled="disabled" class="form-control input-sm" th:field="*{item.id}">
-                    </div>
 
-                    <div class="form-group">
-                        <label>Created at</label>
-                        <input type="date" disabled="disabled" class="form-control input-sm" th:field="*{item.createdAt}">
-                    </div>
+                    <table class="table table-condensed table-striped">
+                        <tr>
+                            <th nowrap="nowrap" width="35%">Leaf ID</th>
+                            <td>
+                                <span th:text="*{item.leaf.id}">Leaf ID</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th nowrap="nowrap">Revision ID</th>
+                            <td>
+                                <span th:text="*{item.id}">Revision ID</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th nowrap="nowrap">Created at</th>
+                            <td>
+                                <span th:text="*{item.createdAt}">#</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th nowrap="nowrap">Last modified at</th>
+                            <td>
+                                <span th:text="*{item.lastModifiedAt}">#</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th nowrap="nowrap">Locale</th>
+                            <td>
+                                <select class="form-control input-sm">
+                                    <option th:each="locale : ${@itemService.allSupportedLocales}"
+                                            th:text="${locale.displayName}">Locale</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
 
-                    <div class="form-group">
-                        <label>Last modified at</label>
-                        <input type="date" disabled="disabled" class="form-control input-sm" th:field="*{item.lastModifiedAt}">
-                    </div>
 
                     <div class="form-group">
                         <label>Path</label>
-                        <input type="text" class="form-control input-sm" th:field="*{item.path}">
+                        <div class="input-group">
+                            <input type="text" class="form-control input-sm" th:field="*{item.path}">
+                            <span class="input-group-btn btn-group-sm">
+                                <button class="btn btn-default" th:formaction="@{generate-path}">
+                                    <i class="fa fa-anchor"></i>
+                                </button>
+                            </span>
+                        </div>
                     </div>
 
                     <!--Hierarchies-->
@@ -121,17 +145,19 @@
                             Close
                         </button>
 
-                        <a class="btn btn-success" target="_blank" th:href="@{/item(id=${item.id})}"
+                        <button class="btn btn-success" target="_blank"
+                                th:formaction="@{/item(id=${item.id})}"
                            th:disabled="${item.id == null} ? disabled : _">
                             <i class="fa fa-eye"></i>
                             Preview
-                        </a>
+                        </button>
 
-                        <a class="btn btn-primary" target="_self" th:href="@{publish}"
+                        <button class="btn btn-primary" target="_self"
+                                th:formaction="@{publish}"
                            th:disabled="${item.id == null} ? disabled : _">
                             <i class="fa fa-retweet"></i>
                             Publish
-                        </a>
+                        </button>
                     </div>
 
                 </div>

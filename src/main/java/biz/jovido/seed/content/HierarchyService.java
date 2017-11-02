@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,31 +57,28 @@ public class HierarchyService {
         return nodeRepository.findOne(id);
     }
 
-    public Node getNode(UUID uuid) {
-        return nodeRepository.findByUuid(uuid);
-    }
-
-    public List<Node> getNodes(Item item, Hierarchy hierarchy) {
-        return item.getLeaf().getNodes().stream()
-                .filter(it -> hierarchy.getName().equals(it.getHierarchy().getName()))
-                .collect(Collectors.toList());
-    }
-
-//    public List<Node> getNodes(Item item, String hierarchyName) {
-//        return getNodes(item, getHierarchy(hierarchyName));
+//    public List<Node> getNodes(Item item, Hierarchy hierarchy) {
+//        return item.getLeaf().getNodes().stream()
+//                .filter(it -> hierarchy.getName().equals(it.getHierarchy().getName()))
+//                .collect(Collectors.toList());
 //    }
 
-    public List<Node> getRootNodes(Hierarchy hierarchy) {
-        return hierarchy.getNodes().stream()
-                .filter(it -> it.getParent() == null)
-                .collect(Collectors.toList());
-    }
+    private void deleteNode(Hierarchy hierarchy, Node node) {
+        Node parent = node.getParent();
+        if (parent != null) {
+            parent.removeChild(node);
+        }
 
-    public List<Node> getRoots(Hierarchy hierarchy) {
-        return getRootNodes(hierarchy);
-    }
+        List<Node> children = new ArrayList<>(node.getChildren());
+        for (Node child : children) {
+            deleteNode(hierarchy, child);
+        }
 
-    private void removeNode(Node node, Hierarchy hierarchy) {
+        nodeRepository.delete(node);
+
+        /*
+         * Wichtig: Muss nach NodeRepository#delete() passieren!
+         */
         if (hierarchy != null) {
             hierarchy.removeNode(node);
         }
@@ -92,28 +87,31 @@ public class HierarchyService {
         if (leaf != null) {
             leaf.removeNode(node);
         }
-
-        Node parent = node.getParent();
-        if (parent != null) {
-            parent.removeChild(node);
-        }
-
-        List<Node> children = node.getChildren();
-        for (Node child : children) {
-            removeNode(child, hierarchy);
-        }
-
-        nodeRepository.delete(node);
     }
 
     public void deleteNode(Node node) {
         Hierarchy hierarchy = node.getHierarchy();
-        removeNode(node, hierarchy);
+        deleteNode(hierarchy, node);
         saveHierarchy(hierarchy);
     }
 
     public Node saveNode(Node node) {
         return nodeRepository.saveAndFlush(node);
+    }
+
+    public void swapNodes(Node a, Node b) {
+        List<Node> nodes = a.getNodesAtSameLevel();
+//        TODO Check if both nodes are at the same level
+        if (!nodes.contains(b)) {
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < nodes.size(); i++) {
+            Node n = nodes.get(i);
+            n.setOrdinal(i);
+        }
+        int tmp = a.getOrdinal();
+        a.setOrdinal(b.getOrdinal());
+        b.setOrdinal(tmp);
     }
 
 //    TODO Umbenennen, weil man das mit URL/URI Pfaden verwechseln könnte
@@ -134,6 +132,16 @@ public class HierarchyService {
 //            path.addFirst(hierarchy.getName());
 
             return path.stream().collect(Collectors.joining(" / "));
+        }
+
+        return null;
+    }
+
+    public String getLabelText(Node node) {
+        if (node != null) {
+            ItemService itemService = beanFactory.getBean(ItemService.class);
+            Item item = getItem(node, Mode.PREVIEW);
+            return itemService.getLabelText(item);
         }
 
         return null;

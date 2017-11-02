@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.Slugifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +17,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -301,7 +302,7 @@ public class ItemEditorController {
         return redirect(editor);
     }
 
-    @RequestMapping(path = "publish")
+    @PostMapping(path = "publish")
     protected String publish(@ModelAttribute ItemEditor editor,
                              BindingResult bindingResult) {
 
@@ -313,7 +314,7 @@ public class ItemEditorController {
         return redirect(editor);
     }
 
-    @RequestMapping(path = "add-node", params = {})
+    @PostMapping(path = "add-node", params = {})
     protected String addNode(@ModelAttribute ItemEditor editor,
                              BindingResult bindingResult,
                              @RequestParam(name = "hierarchy") Long hierarchyId,
@@ -327,8 +328,6 @@ public class ItemEditorController {
         Hierarchy hierarchy = hierarchyService.getHierarchy(hierarchyId);
 
         Node node = new Node();
-        node.setUuid(UUID.randomUUID());
-        node.setHierarchy(hierarchy);
         node.setLeaf(item.getLeaf());
 
         if (parentId != null) {
@@ -336,6 +335,7 @@ public class ItemEditorController {
             node.setParent(parent);
         }
 
+        hierarchy.addNode(node);
         node = hierarchyService.saveNode(node);
 
         leaf.addNode(node);
@@ -344,46 +344,57 @@ public class ItemEditorController {
     }
 
 
-    @RequestMapping(path = "move-node-up")
+    @PostMapping(path = "move-node-up")
     protected String moveNodeUp(@ModelAttribute ItemEditor editor,
                                 BindingResult bindingResult,
                                 @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
-        int ordinal = node.getOrdinal();
-        Node parent = node.getParent();
-        parent.moveChild(ordinal, ordinal - 1);
-
-        hierarchyService.saveNode(parent);
+        Hierarchy hierarchy = node.getHierarchy();
+        Node previousSibling = node.getPreviousSibling();
+        hierarchyService.swapNodes(node, previousSibling);
+        hierarchyService.saveNode(node);
+        hierarchyService.saveHierarchy(hierarchy);
 
         return redirect(editor);
     }
 
-    @RequestMapping(path = "move-node-down")
+    @PostMapping(path = "move-node-down")
     protected String moveNodeDown(@ModelAttribute ItemEditor editor,
                                   BindingResult bindingResult,
                                   @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
-        int ordinal = node.getOrdinal();
-        Node parent = node.getParent();
-        parent.moveChild(ordinal, ordinal + 1);
-
-        hierarchyService.saveNode(parent);
+        Node nextSibling = node.getNextSibling();
+        hierarchyService.swapNodes(node, nextSibling);
+        hierarchyService.saveNode(node);
 
         return redirect(editor);
     }
 
-    @RequestMapping(path = "remove-node")
+    @PostMapping(path = "remove-node")
     protected String removeNode(@ModelAttribute ItemEditor editor,
                                 BindingResult bindingResult,
                                 @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
         hierarchyService.deleteNode(node);
+
+        return redirect(editor);
+    }
+
+    @PostMapping(path = "generate-path", params = {})
+    protected String generatePath(@ModelAttribute ItemEditor editor,
+                                  BindingResult bindingResult) {
+
         Item item = editor.getItem();
-        Leaf leaf = item.getLeaf();
-        leaf.removeNode(node);
+
+
+        String labelText = itemService.getLabelText(item);
+        Slugifier slugifier = new Slugifier();
+        String slug = slugifier.slugify(labelText, '-');
+        item.setPath(slug);
+
 
         return redirect(editor);
     }
