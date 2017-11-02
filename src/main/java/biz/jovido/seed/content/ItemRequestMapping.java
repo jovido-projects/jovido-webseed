@@ -25,14 +25,12 @@ public class ItemRequestMapping extends AbstractHandlerMapping {
 
     @Override
     protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-        String hostName;
 
-        String forwardedHost = request.getHeader("X-Forwarded-Host");
-        if (StringUtils.isEmpty(forwardedHost)) {
+        String hostName = request.getHeader("X-Forwarded-Host");
+        if (StringUtils.isEmpty(hostName)) {
             hostName = request.getServerName();
-        } else {
-            hostName = hostService.getHostName(forwardedHost);
         }
+        hostName = hostService.getHostName(hostName);
         Host host = hostService.getHost(hostName);
         if (host != null) {
             String path = request.getServletPath();
