@@ -1,14 +1,12 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
+@DiscriminatorColumn(name = "type")
 public abstract class Payload<T> {
 
     @Id

@@ -62,6 +62,11 @@ public class StructureConfigurer implements StructureConfiguration {
     }
 
     @Override
+    public IconAttributeConfigurer addIconAttribute(String name) {
+        return addAttribute(IconAttribute.class, IconAttributeConfigurer.class, name);
+    }
+
+    @Override
     public ImageAttributeConfigurer addImageAttribute(String name) {
         return addAttribute(ImageAttribute.class, ImageAttributeConfigurer.class, name);
     }

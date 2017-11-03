@@ -7,8 +7,8 @@ import javax.persistence.Entity;
  * @author Stephan Grundner
  */
 @Entity
-@DiscriminatorValue("Text")
-public class TextPayload extends Payload<String> {
+@DiscriminatorValue("Icon")
+public class IconPayload extends Payload<String> {
 
     private String value;
 

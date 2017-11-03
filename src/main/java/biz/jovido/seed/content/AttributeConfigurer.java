@@ -58,6 +58,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public IconAttributeConfigurer addIconAttribute(String name) {
+        return parentConfigurer.addIconAttribute(name);
+    }
+
+    @Override
     public ImageAttributeConfigurer addImageAttribute(String name) {
         return parentConfigurer.addImageAttribute(name);
     }

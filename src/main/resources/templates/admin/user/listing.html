@@ -1,0 +1,52 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${userListing}" method="post">
+
+            <th:block th:replace="admin/breadcrumbs" />
+
+            <h1>Users</h1>
+
+            <ul th:if="${#fields.hasErrors('*')}">
+                <li th:each="err : ${#fields.detailedErrors('*')}" >
+                    <span th:text="${err}">Error</span>
+                </li>
+            </ul>
+
+            <div class="row">
+
+                <!-- Items -->
+                <div class="col-md-12" >
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th width="1%">ID</th>
+                            <th nowrap="nowrap">Username</th>
+                            <th>
+                                <a class="btn btn-primary btn-xs pull-right"
+                                        th:href="@{/admin/user/create}">
+                                    <i class="fa fa-plus"></i>
+                                    New user
+                                </a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : *{users}">
+                            <td th:text="${user.id}">ID</td>
+                            <td th:text="${user.username}">Username</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

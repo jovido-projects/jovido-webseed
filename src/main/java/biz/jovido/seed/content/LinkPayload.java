@@ -1,6 +1,7 @@
 package biz.jovido.seed.content;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -8,6 +9,7 @@ import javax.persistence.OneToOne;
  * @author Stephan Grundner
  */
 @Entity
+@DiscriminatorValue("Link")
 public class LinkPayload extends Payload<Link> {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

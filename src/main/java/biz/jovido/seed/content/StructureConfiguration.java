@@ -10,6 +10,7 @@ public interface StructureConfiguration extends Configuration {
 
     TextAttributeConfigurer addTextAttribute(String name);
     BooleanAttributeConfigurer addBooleanAttribute(String name);
+    IconAttributeConfigurer addIconAttribute(String name);
     ImageAttributeConfigurer addImageAttribute(String name);
     ItemAttributeConfigurer addItemAttribute(String name);
     LinkAttributeConfigurer addLinkAttribute(String name);

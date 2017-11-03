@@ -1,13 +1,12 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
+@DiscriminatorValue("Image")
 public class ImagePayload extends Payload<Image> {
 
     @OneToOne(cascade = CascadeType.ALL)

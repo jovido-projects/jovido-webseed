@@ -175,7 +175,7 @@
                     <!--<li><a href="#">Link</a></li>-->
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle disabled"
+                        <a href="#" class="dropdown-toggle"
                            data-toggle="dropdown"
                            role="button"
                            aria-haspopup="true"
@@ -230,7 +230,7 @@
                            aria-expanded="false">
 
                             <i class="fa fa-user"></i>
-                            <!--<span th:text="${@securityService.currentUser?.name}">User name</span>-->
+                            <span th:text="${@securityService.authenticatedUser?.username}">User name</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
