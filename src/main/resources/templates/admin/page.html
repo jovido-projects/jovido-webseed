@@ -95,6 +95,45 @@
             expanderExpandedClass: 'fa fa-minus',
             expanderCollapsedClass: 'fa fa-plus',
         });
+
+
+        $("a[data-formaction]").each(function(i) {
+            var a = $(this);
+            a.click(function(e) {
+                e.preventDefault();
+
+                var form = a.closest("form");
+                var action = form.val("action");
+                var target = form.val("target");
+                var enctype = form.val("enctype");
+
+                var formaction = a.data("formaction");
+                if (formaction && formaction.length > 0) {
+                    try {
+                        form.attr("action", formaction);
+
+                        var formtarget = a.data("formtarget");
+                        if (formtarget && formtarget.length > 0) {
+                            form.attr("target", formtarget);
+                        }
+
+                        var formenctype = a.data("formenctype");
+                        if (formenctype && formenctype.length > 0) {
+                            form.attr("enctype", formenctype);
+                        }
+
+                        form.submit();
+                    } finally {
+                        form.attr("action", action);
+                        form.attr("target", target);
+                        form.attr("enctype", enctype);
+                    }
+                }
+
+                return true;
+            });
+        });
+
     });
     </script>
     <style type="text/css">

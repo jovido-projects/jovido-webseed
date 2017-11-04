@@ -322,8 +322,6 @@ public class ItemEditorController {
 
         Item item = editor.getItem();
         Leaf leaf = item.getLeaf();
-        Locale locale = item.getLocale();
-        Assert.notNull(locale);
 
         Hierarchy hierarchy = hierarchyService.getHierarchy(hierarchyId);
 
@@ -395,6 +393,16 @@ public class ItemEditorController {
         String slug = slugifier.slugify(labelText, '-');
         item.setPath(slug);
 
+
+        return redirect(editor);
+    }
+
+    @PostMapping(path = "change-locale", params = {})
+    protected String changeLocale(@ModelAttribute ItemEditor editor,
+                                  BindingResult bindingResult,
+                                  @RequestParam(name = "locale") Locale locale) {
+        Item item = editor.getItem();
+        item.setLocale(locale);
 
         return redirect(editor);
     }

@@ -160,8 +160,7 @@ public class ItemService {
 
     private Item createItem(Structure structure) {
         Leaf leaf = new Leaf();
-        leaf.setLocale(LocaleContextHolder.getLocale());
-        return createItemWithinHistory(structure, leaf);
+        return createItem(structure, leaf);
     }
 
     public Item createItem(String structureName) {
@@ -169,10 +168,11 @@ public class ItemService {
         return createItem(structure);
     }
 
-    private Item createItemWithinHistory(Structure structure, Leaf leaf) {
+    private Item createItem(Structure structure, Leaf leaf) {
         Item item = new Item();
         item.setLeaf(leaf);
         item.setStructureName(structure.getName());
+        item.setLocale(LocaleContextHolder.getLocale());
         if (leaf != null) {
             leaf.setCurrent(item);
         }
@@ -184,7 +184,7 @@ public class ItemService {
 
     public Item createEmbeddedItem(String structureName) {
         Structure structure = structureService.getStructure(structureName);
-        return createItemWithinHistory(structure, null);
+        return createItem(structure, null);
     }
 
     public boolean isPublished(Item item) {
@@ -287,6 +287,7 @@ public class ItemService {
         Item to = new Item();
         to.setLeaf(from.getLeaf());
         to.setStructureName(from.getStructureName());
+        to.setLocale(from.getLocale());
         to.setPath(from.getPath());
 
         Structure structure = getStructure(from);
@@ -314,23 +315,6 @@ public class ItemService {
 
         return current;
     }
-
-//    private boolean isSimplePayload(Payload payload) {
-//        return  (payload instanceof TextPayload
-//                || payload instanceof BooleanPayload);
-//    }
-//
-//    public <T> boolean equals(Payload<T> a, Payload<T> b) {
-//        if (a == null || b == null) {
-//            return false;
-//        }
-//
-//        if (isSimplePayload(a)) {
-//            return Objects.equals(a.getValue(), b.getValue());
-//        } else {
-//
-//        }
-//    }
 
     public Attribute getAttribute(Sequence sequence) {
         Item item = sequence.getItem();

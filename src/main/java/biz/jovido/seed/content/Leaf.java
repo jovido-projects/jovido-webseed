@@ -24,9 +24,9 @@ public class Leaf {
 //    @Column(unique = true, nullable = false)
 //    private String code;
 
-    @Column(name = "language_tag")
-    @Convert(converter = LocaleConverter.class)
-    private Locale locale;
+//    @Column(name = "language_tag")
+//    @Convert(converter = LocaleConverter.class)
+//    private Locale locale;
 
     @OneToOne
     private Item published;
@@ -49,13 +49,13 @@ public class Leaf {
         this.id = id;
     }
 
-    public Locale getLocale() {
-        return locale;
-    }
+//    public Locale getLocale() {
+//        return locale;
+//    }
 
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
+//    public void setLocale(Locale locale) {
+//        this.locale = locale;
+//    }
 
     public Item getPublished() {
         return published;

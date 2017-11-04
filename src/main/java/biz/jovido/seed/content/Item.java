@@ -1,7 +1,11 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.LocaleConverter;
+import biz.jovido.seed.security.User;
 import biz.jovido.seed.util.UnmodifiableMapProxy;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -24,6 +28,10 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     private String structureName;
 
+    @Column(name = "language_tag")
+    @Convert(converter = LocaleConverter.class)
+    private Locale locale;
+
     @Column(length = 255 * 4)
     private String path;
 
@@ -36,6 +44,12 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     @LastModifiedDate
     private Date lastModifiedAt;
+
+    @CreatedBy
+    private User createdBy;
+
+    @LastModifiedBy
+    private User lastModifiedBy;
 
     public Long getId() {
         return id;
@@ -59,6 +73,14 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     public void setStructureName(String structureName) {
         this.structureName = structureName;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public String getPath() {
@@ -106,15 +128,31 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         this.lastModifiedAt = lastModifiedAt;
     }
 
-    public Locale getLocale() {
-        Leaf chronicle = getLeaf();
-        if (chronicle != null) {
-
-            return chronicle.getLocale();
-        }
-
-        return null;
+    public User getCreatedBy() {
+        return createdBy;
     }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public User getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(User lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+//    public Locale getLocale() {
+//        Leaf chronicle = getLeaf();
+//        if (chronicle != null) {
+//
+//            return chronicle.getLocale();
+//        }
+//
+//        return null;
+//    }
 
     public boolean isCurrent() {
         Leaf history = getLeaf();

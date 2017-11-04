@@ -16,6 +16,7 @@
 
                         <td>
                             [[${@hierarchyService.getLabelText(node)}]]
+                            <span class="label label-default" th:text="${node.ordinal}">#</span>
                         </td>
 
                         <td>
@@ -30,14 +31,14 @@
                                    th:formaction="@{move-node-down(node=${node.id})}">
                                     <i class="fa fa-arrow-down"></i>
                                 </button>
-                                <a class="btn btn-default"
-                                   th:href="@{add-node(hierarchy=${hierarchy.id}, parent=${node.id})}">
+                                <button class="btn btn-default"
+                                   th:formaction="@{add-node(hierarchy=${hierarchy.id}, parent=${node.id})}">
                                     <i class="fa fa-plus"></i>
-                                </a>
-                                <a class="btn btn-default"
-                                   th:href="@{remove-node(node=${node.id})}">
+                                </button>
+                                <button class="btn btn-default"
+                                   th:formaction="@{remove-node(node=${node.id})}">
                                     <i class="fa fa-remove"></i>
-                                </a>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -52,65 +53,12 @@
 
 
         <ul class="list-group">
-            <!--<li class="list-group-item" th:each="node : *{item.leaf.nodes}">-->
-                <!--[[${@hierarchyService.getPath(node)}]]-->
-
-                <!--<div class="btn-group btn-group-xs pull-right">-->
-                    <!--<a class="btn btn-default"-->
-                       <!--th:href="@{move-node-up(node=${node.id})}">-->
-                        <!--<i class="fa fa-arrow-up"></i>-->
-                    <!--</a>-->
-                    <!--<a class="btn btn-default"-->
-                       <!--th:href="@{move-node-down(node=${node.id})}">-->
-                        <!--<i class="fa fa-arrow-down"></i>-->
-                    <!--</a>-->
-                    <!--<a class="btn btn-default"-->
-                       <!--th:href="@{remove-node(node=${node.id})}">-->
-                        <!--<i class="fa fa-remove"></i>-->
-                    <!--</a>-->
-                <!--</div>-->
-            <!--</li>-->
-
-
-            <!--<th:block th:with="nodes = ${@hierarchyService.getRoots(hierarchy)}, indent = 0">-->
-                <!--<th:block th:fragment="tree-list(nodes,indent)">-->
-                    <!--<th:block th:each="node : ${nodes}">-->
-                        <!--<li class="list-group-item">-->
-                            <!--<th:block th:if="${indent > 0}">-->
-                                <!--<th:block th:each="i : ${#numbers.sequence(1, indent)}">-->
-                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                                <!--</th:block>-->
-                            <!--</th:block>-->
-                            <!--[[${@hierarchyService.getLabelText(node)}]]-->
-
-                            <!--<div class="btn-group btn-group-xs pull-right">-->
-                                <!--<a class="btn btn-default"-->
-                                   <!--th:href="@{move-node-up(node=${node.id})}">-->
-                                    <!--<i class="fa fa-arrow-up"></i>-->
-                                <!--</a>-->
-                                <!--<a class="btn btn-default"-->
-                                   <!--th:href="@{move-node-down(node=${node.id})}">-->
-                                    <!--<i class="fa fa-arrow-down"></i>-->
-                                <!--</a>-->
-                                <!--<a class="btn btn-default"-->
-                                   <!--th:href="@{remove-node(node=${node.id})}">-->
-                                    <!--<i class="fa fa-remove"></i>-->
-                                <!--</a>-->
-                            <!--</div>-->
-                        <!--</li>-->
-                        <!--<th:block th:if="${node.children.size() > 0}">-->
-                            <!--<th:block th:replace="::tree-list(${node.children}, ${indent+1})" />-->
-                        <!--</th:block>-->
-                    <!--</th:block>-->
-                <!--</th:block>-->
-            <!--</th:block>-->
-
 
 
             <li class="list-group-item">
 
                 <div class="btn-group dropup">
-                    <a type="button" class="btn btn-default" th:href="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
+                    <a href="#" class="btn btn-default" th:data-formaction="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
                         <span>Add node</span>
                     </a>
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

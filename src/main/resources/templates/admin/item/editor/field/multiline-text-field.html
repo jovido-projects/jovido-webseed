@@ -12,7 +12,7 @@
             </th:block>
         </div>
         <textarea th:id="${id}" class="form-control"
-                  th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].text}"></textarea>
+                  th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].value}"></textarea>
 
         <script type="text/javascript">
         $(document).ready(function() {

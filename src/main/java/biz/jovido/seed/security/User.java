@@ -19,8 +19,10 @@ public class User implements UserDetails {
     @GeneratedValue
     private Long id;
 
-    @ManyToMany(cascade = {}, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authority",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id"))
     private final Set<Role> roles = new HashSet<>();
 
     private String password;

@@ -69,9 +69,9 @@ public class Hierarchy {
             node.setHierarchy(this);
 
             if (node.isRoot()) {
-                updateOrdinalsOnRootNodes();
                 List<Node> rootNodes = getRootNodes();
-                node.setOrdinal(rootNodes.size());
+                node.setOrdinal(rootNodes.size() - 1);
+//                updateOrdinalsOnRootNodes();
             }
 
             return true;
