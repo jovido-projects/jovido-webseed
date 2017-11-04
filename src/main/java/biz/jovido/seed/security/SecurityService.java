@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -37,6 +38,9 @@ public class SecurityService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SecurityProperties securityProperties;
 
     private SecurityContext getSecurityContext() {
         return SecurityContextHolder.getContext();
@@ -119,10 +123,13 @@ public class SecurityService implements UserDetailsService {
             admin = saveUser(admin);
         }
 
-        String password = RandomStringUtils.randomAlphanumeric(8);
+        String password = securityProperties.getAdminPassword();
+        if (StringUtils.isEmpty(password)) {
+            password = RandomStringUtils.randomAlphanumeric(8);
+            LOG.info("Password for admin is [{}]", password);
+        }
         admin.setPassword(passwordEncoder.encode(password));
-        admin = saveUser(admin);
-        LOG.info("Password for admin is [{}]", password);
+        saveUser(admin);
     }
 
     @PostConstruct
