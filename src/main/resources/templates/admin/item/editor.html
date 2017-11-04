@@ -4,7 +4,7 @@
 <th:block th:fragment="main">
     <div class="container">
         <form th:object="${itemEditor}" method="post"
-              th:with="
+              th:with="editor=${itemEditor},
               item=*{item},
               structure=${@itemService.getStructure(item)}">
 
@@ -62,6 +62,9 @@
                                             <th:block th:case="'LinkAttribute'">
                                                 <th:block th:replace="admin/item/editor/field/link-field" />
                                             </th:block>
+                                            <th:block th:case="'IconAttribute'">
+                                                <th:block th:replace="admin/item/editor/field/icon-field" />
+                                            </th:block>
                                         </th:block>
                                     </th:block>
 
@@ -76,7 +79,7 @@
                 <!-- Sidebar -->
                 <div class="col-md-5">
 
-
+                    <label>Properties</label>
 
                     <table class="table  table-striped">
                         <tr>
@@ -92,9 +95,21 @@
                             </td>
                         </tr>
                         <tr>
+                            <th nowrap="nowrap">Created by</th>
+                            <td>
+                                <span th:text="*{item.createdBy?.username}">#</span>
+                            </td>
+                        </tr>
+                        <tr>
                             <th nowrap="nowrap">Created at</th>
                             <td>
                                 <span th:text="*{item.createdAt}">#</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th nowrap="nowrap">Last modified by</th>
+                            <td>
+                                <span th:text="*{item.lastModifiedBy?.username}">#</span>
                             </td>
                         </tr>
                         <tr>
@@ -170,6 +185,7 @@
                             <i class="fa fa-retweet"></i>
                             Publish
                         </button>
+
                     </div>
 
                 </div>

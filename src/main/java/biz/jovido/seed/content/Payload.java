@@ -1,6 +1,9 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.UUIDConverter;
+
 import javax.persistence.*;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -13,6 +16,10 @@ public abstract class Payload<T> {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
+    @Convert(converter = UUIDConverter.class)
+    private UUID uuid;
+
     @ManyToOne(targetEntity = Sequence.class)
     private Sequence<T> sequence;
 
@@ -24,6 +31,18 @@ public abstract class Payload<T> {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public Sequence<T> getSequence() {

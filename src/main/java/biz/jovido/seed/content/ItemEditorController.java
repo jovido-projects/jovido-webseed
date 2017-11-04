@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -185,6 +183,7 @@ public class ItemEditorController {
         ItemPayload payload = (ItemPayload) attribute.createPayload();
         payload.setItem(item);
         sequence.addPayload(payload);
+        editor.setCollapsed(payload, false);
 
         return redirect(item);
     }
@@ -242,6 +241,37 @@ public class ItemEditorController {
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
         sequence.removePayload(index);
+
+        return redirect(editor);
+    }
+
+    @RequestMapping(path = "open-payload")
+    protected String openPayload(@ModelAttribute ItemEditor editor,
+                                  @RequestParam(name = "nested-path") String nestedPath,
+                                  @RequestParam(name = "attribute") String attributeName,
+                                  @RequestParam(name = "index") int index,
+                                  BindingResult bindingResult) {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        ItemPayload payload = (ItemPayload) sequence.getPayload(index);
+        editor.setCollapsed(payload, false);
+
+        return redirect(editor);
+    }
+
+
+    @RequestMapping(path = "close-payload")
+    protected String closePayload(@ModelAttribute ItemEditor editor,
+                                   @RequestParam(name = "nested-path") String nestedPath,
+                                   @RequestParam(name = "attribute") String attributeName,
+                                   @RequestParam(name = "index") int index,
+                                   BindingResult bindingResult) {
+
+        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
+        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        ItemPayload payload = (ItemPayload) sequence.getPayload(index);
+        editor.setCollapsed(payload, true);
 
         return redirect(editor);
     }

@@ -1,9 +1,8 @@
 package biz.jovido.seed.configuration;
 
+import biz.jovido.seed.security.AdminProperties;
 import biz.jovido.seed.security.SecurityService;
-import biz.jovido.seed.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author Stephan Grundner
  */
 @Configuration
-@EnableConfigurationProperties
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
@@ -27,9 +25,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "seed.security")
-    public SecurityProperties securityProperties() {
-        return new SecurityProperties();
+    @ConfigurationProperties(prefix = "seed.security.admin")
+    public AdminProperties adminProperties() {
+        return new AdminProperties();
     }
 
     @Override

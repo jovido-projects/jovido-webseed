@@ -2,27 +2,40 @@
 <label th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Attribute name</label>
 <ul class="list-group" style="margin-bottom:10px;">
 
-    <li th:class="'list-group-item nesting-level-__${nestingLevel}__'"
-        th:each="payload,payloadItr : ${sequence?.payloads}">
-
-        <th:block th:if="${payload.value != null}">
+    <th:block th:each="payload,payloadItr : ${sequence?.payloads}">
+        <li th:class="'list-group-item nesting-level-__${nestingLevel}__'">
             <h4>
                 <span th:text="${@itemService.getStructure(payload.value).name}">Name</span>
                 <th:block th:if="${attribute.capacity > 1}">
                     <span>#[[${payloadItr.index + 1}]]</span>
                 </th:block>
                 <div class="btn-group btn-group-sm pull-right">
+                    <button class="btn btn-default" th:if="${editor.isCollapsed(payload)}"
+                            th:formaction="@{open-payload(
+                            nested-path=${nestedPath},
+                            attribute=${attribute.name},
+                            index=${payloadItr.index})}">
+                        <i class="fa fa-expand"></i>
+                    </button>
+                    <button class="btn btn-default" th:if="${!editor.isCollapsed(payload)}"
+                            th:formaction="@{close-payload(
+                            nested-path=${nestedPath},
+                            attribute=${attribute.name},
+                            index=${payloadItr.index})}">
+                        <i class="fa fa-compress"></i>
+                    </button>
                     <th:block th:replace="admin/item/editor/_payload-buttons" />
                 </div>
             </h4>
 
-            <!--<hr />-->
-            <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
-                <th:block th:replace="admin/item/editor::fields" />
+            <th:block th:if="${!editor.isCollapsed(payload)}">
+                <th:block th:with="nestedPath='__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].item'">
+                    <th:block th:replace="admin/item/editor::fields" />
+                </th:block>
             </th:block>
-        </th:block>
+        </li>
+    </th:block>
 
-    </li>
 
     <li class="list-group-item" th:classappend="nesting-level-__${nestingLevel}__" >
         <div class="btn-group dropup">

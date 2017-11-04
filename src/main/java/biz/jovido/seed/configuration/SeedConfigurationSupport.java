@@ -3,6 +3,7 @@ package biz.jovido.seed.configuration;
 import biz.jovido.seed.content.ItemRequestMapping;
 import biz.jovido.seed.thymeleaf.SeedDialect;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import javax.annotation.PostConstruct;
 @EnableJpaAuditing
 @EnableSpringHttpSession
 @EnableWebSecurity
+@EnableConfigurationProperties
 public class SeedConfigurationSupport implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -41,11 +43,6 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
         requestMapping.setOrder(0);
         return requestMapping;
     }
-//
-//    @Bean
-//    public ViewNameResolver viewNameResolver() {
-//        return new DefaultViewNameResolver();
-//    }
 
     @PostConstruct
     void registerAdditionalDialects() {

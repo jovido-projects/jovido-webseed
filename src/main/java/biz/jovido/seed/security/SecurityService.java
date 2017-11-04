@@ -4,6 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -23,7 +24,7 @@ import java.util.List;
  * @author Stephan Grundner
  */
 @Service
-public class SecurityService implements UserDetailsService {
+public class SecurityService implements UserDetailsService, AuditorAware<User> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityService.class);
 
@@ -40,7 +41,7 @@ public class SecurityService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private SecurityProperties securityProperties;
+    private AdminProperties adminProperties;
 
     private SecurityContext getSecurityContext() {
         return SecurityContextHolder.getContext();
@@ -123,7 +124,7 @@ public class SecurityService implements UserDetailsService {
             admin = saveUser(admin);
         }
 
-        String password = securityProperties.getAdminPassword();
+        String password = adminProperties.getPassword();
         if (StringUtils.isEmpty(password)) {
             password = RandomStringUtils.randomAlphanumeric(8);
             LOG.info("Password for admin is [{}]", password);
@@ -139,5 +140,10 @@ public class SecurityService implements UserDetailsService {
             ensureAdminUserAndRoleExists();
             return null;
         });
+    }
+
+    @Override
+    public User getCurrentAuditor() {
+        return getAuthenticatedUser();
     }
 }

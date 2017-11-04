@@ -46,9 +46,11 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     private Date lastModifiedAt;
 
     @CreatedBy
+    @ManyToOne
     private User createdBy;
 
     @LastModifiedBy
+    @ManyToOne
     private User lastModifiedBy;
 
     public Long getId() {
