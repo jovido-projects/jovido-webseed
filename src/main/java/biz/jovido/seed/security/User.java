@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,7 +27,11 @@ public class User implements UserDetails {
     private final Set<Role> roles = new HashSet<>();
 
     private String password;
+
+    @Size(min = 2)
+    @Column(unique = true, updatable = false)
     private String username;
+
     private boolean accountExpired;
     private boolean accountLocked;
     private boolean credentialsExpired;

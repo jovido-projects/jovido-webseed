@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.net.Host;
+import biz.jovido.seed.net.HostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +27,7 @@ public class ItemRequestMapping extends AbstractHandlerMapping {
 
     @Override
     protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-        String hostName = request.getHeader("X-Forwarded-Host");
-        if (StringUtils.isEmpty(hostName)) {
-            hostName = request.getServerName();
-        }
-
-        if (!"localhost".equals(hostName)) {
-            hostName = hostService.getHostName(hostName);
-        }
-
+        String hostName = hostService.getHostName(request);
         Host host = hostService.getHost(hostName);
         if (host != null) {
             String path = request.getServletPath();
@@ -43,7 +37,7 @@ public class ItemRequestMapping extends AbstractHandlerMapping {
                 path = path.substring(1);
             }
 
-            List<Item> items = itemService.findAllPublishedItemByPath(path);
+            List<Item> items = itemService.findAllPublishedItemsByPath(path);
             if (!items.isEmpty()) {
                 if (items.size() > 1) {
                     LOG.warn("More than one published item found " +

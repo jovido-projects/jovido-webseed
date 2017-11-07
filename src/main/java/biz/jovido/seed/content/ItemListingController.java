@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.mvc.*;
+import biz.jovido.seed.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,20 +21,70 @@ import java.util.List;
 public class ItemListingController {
 
     @Autowired
+    private StructureService structureService;
+
+    @Autowired
     private ItemService itemService;
 
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs() {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("Home", "/"));
-        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
-        breadcrumbs.add(new Breadcrumb("Items"));
+        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+        breadcrumbs.add(new Breadcrumb("seed.item.listing.title"));
         return breadcrumbs;
     }
 
     @ModelAttribute
     protected ItemListing listing() {
-        return new ItemListing();
+        ItemListing listing = new ItemListing();
+//        listing.addColumn("id", "seed.item.id");
+
+        HasColumns.Column labelColumn = listing.addColumn("label", "seed.item.label");
+        labelColumn.setValueResolver((HasColumns.Column column, Object source) -> {
+            Item item = (Item) source;
+            return itemService.getLabelText(item);
+        });
+        labelColumn.setValueTemplate("admin/item/listing/label-value");
+
+        listing.addColumn("structure", "seed.item.structure").setValueResolver(new HasColumns.ValueResolver() {
+            @Override
+            public Object resolveValue(HasColumns.Column column, Object source) {
+                Item item = (Item) source;
+                Structure structure = structureService.getStructure(item.getStructureName());
+                return structure.getName();
+            }
+        });
+        listing.addColumn("locale", "seed.item.locale");
+        listing.addColumn("createdBy", "seed.item.createdBy").setValueResolver(new HasColumns.ValueResolver() {
+            @Override
+            public Object resolveValue(HasColumns.Column column, Object source) {
+                Item item = (Item) source;
+                User user = item.getCreatedBy();
+                return user != null ? user.getUsername() : null;
+            }
+        });
+        listing.addColumn("lastModifiedAt", "seed.item.lastModifiedAt");
+        ActionGroup actionGroup = listing.getActionGroup();
+        actionGroup.setMessageCode("seed.item.listing.create");
+        structureService.findPublishableStructures().forEach(structure -> {
+            Action action = new Action();
+            action.setDefaultMessage(structure.getName());
+            action.setUrl("/admin/item/create?structure=" + structure.getName());
+            actionGroup.addAction(action);
+        });
+
+        listing.setEntryFactory(new Listing.EntryFactory() {
+            @Override
+            public Listing.Entry createRow(Listing listing, Object source) {
+                Listing.Entry entry = new Listing.Entry(listing);
+                entry.setSource(source);
+                Action editAction = new Action();
+                editAction.setUrl("/admin/item/edit?id=" + ((Item) source).getId());
+                entry.setEditAction(editAction);
+                return entry;
+            }
+        });
+        return listing;
     }
 
     @RequestMapping
@@ -42,9 +94,12 @@ public class ItemListingController {
 //        Page<Item> page = itemService.findAllItems(0, Integer.MAX_VALUE);
 //        listing.setPage(page);
 
-        List<Item> items = itemService.findAllItems();
-        listing.setItems(items);
+        listing.clear();
 
-        return "admin/item/listing";
+        List<Item> items = itemService.findAllItems();
+//        listing.setItems(items);
+        listing.addEntries(items);
+
+        return "admin/item/listing-page";
     }
 }

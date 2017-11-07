@@ -1,4 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.thymeleaf;
+
+import biz.jovido.seed.content.Item;
 
 /**
  * @author Stephan Grundner

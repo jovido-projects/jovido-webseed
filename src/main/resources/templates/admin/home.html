@@ -1,0 +1,13 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+<th:block th:fragment="main">
+    <div class="container">
+        <form th_object="${}" method="post">
+
+            <th:block th:replace="admin/breadcrumbs" />
+
+        </form>
+    </div>
+</th:block>
+</html>

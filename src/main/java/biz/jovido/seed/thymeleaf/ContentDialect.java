@@ -1,7 +1,7 @@
 package biz.jovido.seed.thymeleaf;
 
-import biz.jovido.seed.thymeleaf.processor.SeedIncludeProcessor;
-import biz.jovido.seed.thymeleaf.processor.SeedReplaceProcessor;
+import biz.jovido.seed.thymeleaf.processor.ContentIncludeProcessor;
+import biz.jovido.seed.thymeleaf.processor.ContentReplaceProcessor;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 
@@ -11,16 +11,16 @@ import java.util.Set;
 /**
  * @author Stephan Grundner
  */
-public class SeedDialect extends AbstractProcessorDialect {
+public class ContentDialect extends AbstractProcessorDialect {
 
     private static final String PREFIX = "seed";
 
-    public SeedReplaceProcessor createReplaceProcessor() {
-        return new SeedReplaceProcessor(PREFIX, getDialectProcessorPrecedence() * 10);
+    public ContentReplaceProcessor createReplaceProcessor() {
+        return new ContentReplaceProcessor(PREFIX, getDialectProcessorPrecedence() * 10);
     }
 
-    public SeedIncludeProcessor createIncludeProcessor() {
-        return new SeedIncludeProcessor(PREFIX, getDialectProcessorPrecedence() * 10 + 1);
+    public ContentIncludeProcessor createIncludeProcessor() {
+        return new ContentIncludeProcessor(PREFIX, getDialectProcessorPrecedence() * 10 + 1);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SeedDialect extends AbstractProcessorDialect {
         return processors;
     }
 
-    public SeedDialect() {
+    public ContentDialect() {
         super("Seed Dialect", PREFIX, 1000);
     }
 }

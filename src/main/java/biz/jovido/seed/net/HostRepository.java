@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

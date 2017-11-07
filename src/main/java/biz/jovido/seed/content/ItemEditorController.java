@@ -1,6 +1,6 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.Slugifier;
+import biz.jovido.seed.mvc.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +39,8 @@ public class ItemEditorController {
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("Home", "/"));
-        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
-        breadcrumbs.add(new Breadcrumb("Items", "/admin/items/"));
+        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+        breadcrumbs.add(new Breadcrumb("seed.item.listing.title", "/admin/items"));
 
 //        String breadcrumbText = itemService.getLabel(editor.getItem()).toString();
 //        breadcrumbs.add(new Breadcrumb(breadcrumbText));
@@ -95,7 +94,7 @@ public class ItemEditorController {
                            BindingResult bindingResult,
                            Model model) {
 
-        return "admin/item/editor";
+        return "admin/item/editor-page";
     }
 
     @RequestMapping(path = "/create")
@@ -119,7 +118,7 @@ public class ItemEditorController {
 
     @RequestMapping(path = "edit")
     protected String edit(@ModelAttribute ItemEditor editor,
-                          @RequestParam(name = "item") Long itemId,
+                          @RequestParam(name = "id") Long itemId,
                           BindingResult bindingResult) {
 
         Item item = itemService.getItem(itemId);
@@ -181,7 +180,7 @@ public class ItemEditorController {
         Item item = itemService.createEmbeddedItem(structureName);
         Attribute attribute = itemService.getAttribute(sequence);
         ItemPayload payload = (ItemPayload) attribute.createPayload();
-        payload.setItem(item);
+        payload.setValue(item);
         sequence.addPayload(payload);
         editor.setCollapsed(payload, false);
 
@@ -420,7 +419,7 @@ public class ItemEditorController {
 
         String labelText = itemService.getLabelText(item);
         Slugifier slugifier = new Slugifier();
-        String slug = slugifier.slugify(labelText, '-');
+        String slug = slugifier.slugify(labelText, "-");
         item.setPath(slug);
 
 

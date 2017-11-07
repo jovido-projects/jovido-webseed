@@ -1,22 +1,32 @@
 package biz.jovido.seed.configuration;
 
 import biz.jovido.seed.content.ItemRequestMapping;
-import biz.jovido.seed.thymeleaf.SeedDialect;
+import biz.jovido.seed.thymeleaf.ContentDialect;
+import biz.jovido.seed.thymeleaf.FieldDialect;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
+import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import javax.annotation.PostConstruct;
+import java.util.Locale;
 
 /**
  * @author Stephan Grundner
@@ -28,7 +38,7 @@ import javax.annotation.PostConstruct;
 @EnableSpringHttpSession
 @EnableWebSecurity
 @EnableConfigurationProperties
-public class SeedConfigurationSupport implements ApplicationContextAware {
+public class SeedConfigurationSupport implements ApplicationContextAware, BeanFactoryPostProcessor {
 
     private ApplicationContext applicationContext;
 
@@ -47,7 +57,8 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
     @PostConstruct
     void registerAdditionalDialects() {
         SpringTemplateEngine templateEngine = applicationContext.getBean(SpringTemplateEngine.class);
-        templateEngine.addDialect(new SeedDialect());
+        templateEngine.addDialect(new ContentDialect());
+        templateEngine.addDialect(new FieldDialect());
     }
 
     @Bean
@@ -55,4 +66,17 @@ public class SeedConfigurationSupport implements ApplicationContextAware {
         return new MapSessionRepository();
     }
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new FixedLocaleResolver();
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        LocaleResolver localeResolver = beanFactory.getBean(LocaleResolver.class);
+        if (localeResolver instanceof AbstractLocaleResolver) {
+//            TODO Make this configurable:
+            ((AbstractLocaleResolver) localeResolver).setDefaultLocale(Locale.ENGLISH);
+        }
+    }
 }

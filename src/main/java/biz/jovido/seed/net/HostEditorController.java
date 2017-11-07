@@ -1,5 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
+import biz.jovido.seed.mvc.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -29,9 +30,8 @@ public class HostEditorController {
             return Collections.EMPTY_LIST;
         }
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("Home", "/"));
-        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
-        breadcrumbs.add(new Breadcrumb("Configuration", "/admin/hosts/"));
+        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+        breadcrumbs.add(new Breadcrumb("seed.host.listing.title", "/admin/hosts"));
         breadcrumbs.add(new Breadcrumb(editor.getHost().getName()));
         return breadcrumbs;
     }
@@ -44,7 +44,7 @@ public class HostEditorController {
     @RequestMapping
     protected String index(@ModelAttribute HostEditor editor) {
 
-        return "admin/host/editor";
+        return "admin/host/editor-page";
     }
 
     @RequestMapping(path = "edit")

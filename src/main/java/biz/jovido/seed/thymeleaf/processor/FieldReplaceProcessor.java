@@ -5,11 +5,11 @@ import org.thymeleaf.templatemode.TemplateMode;
 /**
  * @author Stephan Grundner
  */
-public class SeedIncludeProcessor extends AbstractSeedProcessor {
+public class FieldReplaceProcessor extends AbstractFieldProcessor {
 
-    private static final String ELEMENT_NAME = "include";
+    private static final String ELEMENT_NAME = "replace";
 
-    public SeedIncludeProcessor(String dialectPrefix, int precedence) {
+    public FieldReplaceProcessor(String dialectPrefix, int precedence) {
         super(TemplateMode.HTML, dialectPrefix, null, false, ELEMENT_NAME, true, precedence, false);
     }
 }

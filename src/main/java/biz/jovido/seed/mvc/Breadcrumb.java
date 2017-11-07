@@ -1,19 +1,19 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.mvc;
 
 /**
  * @author Stephan Grundner
  */
 public class Breadcrumb {
 
-    private String text;
+    private Text text;
     private String path;
     private boolean active;
 
-    public String getText() {
+    public Text getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(Text text) {
         this.text = text;
     }
 
@@ -33,17 +33,29 @@ public class Breadcrumb {
         this.active = active;
     }
 
-    public Breadcrumb(String text, String path, boolean active) {
+    public Breadcrumb(Text text, String path, boolean active) {
         this.text = text;
         this.path = path;
         this.active = active;
     }
 
-    public Breadcrumb(String text, String path) {
+    public Breadcrumb(Text text, String path) {
         this(text, path, false);
     }
 
-    public Breadcrumb(String text) {
+    public Breadcrumb(Text text) {
         this(text, null, true);
+    }
+
+    public Breadcrumb(String messageCode, String path, boolean active) {
+        this(new Text(messageCode), path, active);
+    }
+
+    public Breadcrumb(String messageCode, String path) {
+        this(messageCode, path, false);
+    }
+
+    public Breadcrumb(String messageCode) {
+        this(messageCode, null, true);
     }
 }

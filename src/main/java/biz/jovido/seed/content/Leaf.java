@@ -1,6 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.LocaleConverter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -9,7 +8,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Stephan Grundner

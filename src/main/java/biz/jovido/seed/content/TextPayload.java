@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.Objects;
 
 /**
  * @author Stephan Grundner
@@ -20,5 +21,14 @@ public class TextPayload extends Payload<String> {
     @Override
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean differsFrom(Payload<String> other) {
+        if (other == null) {
+            return true;
+        }
+
+        return !Objects.equals(getValue(), other.getValue());
     }
 }

@@ -1,10 +1,11 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
 import com.google.common.net.InternetDomainName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.net.URL;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -43,6 +44,24 @@ public class HostService {
         }
 
         return host;
+    }
+
+    public String getHostName(HttpServletRequest request) {
+        String hostName = request.getHeader("X-Forwarded-Host");
+        if (StringUtils.isEmpty(hostName)) {
+            hostName = request.getServerName();
+        }
+
+        if (!"localhost".equals(hostName)) {
+            hostName = getHostName(hostName);
+        }
+
+        return hostName;
+    }
+
+    public Host getHost(HttpServletRequest request) {
+        String hostName = getHostName(request);
+        return getHost(hostName);
     }
 
     public List<Host> getAllHosts() {

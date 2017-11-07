@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.LocaleConverter;
 import biz.jovido.seed.security.User;
+import biz.jovido.seed.LocaleConverter;
 import biz.jovido.seed.util.UnmodifiableMapProxy;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,6 +25,9 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Leaf leaf;
+
+    @OneToOne
+    private ItemPayload payload;
 
     private String structureName;
 
@@ -67,6 +70,14 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     public void setLeaf(Leaf leaf) {
         this.leaf = leaf;
+    }
+
+    public ItemPayload getPayload() {
+        return payload;
+    }
+
+    /*public*/ void setPayload(ItemPayload payload) {
+        this.payload = payload;
     }
 
     public String getStructureName() {

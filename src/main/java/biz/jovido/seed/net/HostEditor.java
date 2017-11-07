@@ -1,6 +1,4 @@
-package biz.jovido.seed.content;
-
-import biz.jovido.seed.content.Host;
+package biz.jovido.seed.net;
 
 /**
  * @author Stephan Grundner

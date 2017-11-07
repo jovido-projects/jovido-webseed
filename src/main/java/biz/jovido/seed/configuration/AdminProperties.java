@@ -1,4 +1,4 @@
-package biz.jovido.seed.security;
+package biz.jovido.seed.configuration;
 
 /**
  * @author Stephan Grundner

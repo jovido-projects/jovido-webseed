@@ -1,0 +1,31 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${itemListing}" method="post">
+
+            <th:block th:replace="admin/breadcrumbs" />
+
+            <h1 th:text="#{seed.item.listing.title}">Headline</h1>
+
+            <ul th:if="${#fields.hasErrors('*')}">
+                <li th:each="err : ${#fields.detailedErrors('*')}" >
+                    <span th:text="${err}">Error</span>
+                </li>
+            </ul>
+
+            <div class="row">
+
+                <!-- Items -->
+                <div class="col-md-12" >
+
+                    <th:block th:replace="admin/listing(listing=${itemListing})" />
+
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

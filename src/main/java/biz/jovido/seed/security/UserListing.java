@@ -1,19 +1,10 @@
 package biz.jovido.seed.security;
 
-import java.util.List;
+import biz.jovido.seed.mvc.Listing;
 
 /**
  * @author Stephan Grundner
  */
-public class UserListing {
+public class UserListing extends Listing {
 
-    private List<User> users;
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 }

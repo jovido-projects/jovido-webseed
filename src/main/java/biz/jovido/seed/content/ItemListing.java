@@ -1,13 +1,11 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.Item;
-
-import java.util.List;
+import biz.jovido.seed.mvc.Listing;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemListing {
+public class ItemListing extends Listing {
 
 //    private Page<Item> page;
 //
@@ -19,13 +17,13 @@ public class ItemListing {
 //        this.page = page;
 //    }
 
-    private List<Item> items;
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
+//    private List<Item> items;
+//
+//    public List<Item> getItems() {
+//        return items;
+//    }
+//
+//    public void setItems(List<Item> items) {
+//        this.items = items;
+//    }
 }

@@ -1,0 +1,5 @@
+
+.btn-edit > span:before {
+    font-family: FontAwesome;
+    content: "\f040  ";
+}

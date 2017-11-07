@@ -10,37 +10,32 @@
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
-    <!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.standalone.css">-->
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/css/jquery.treegrid.css">
-
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-
-
+    <!--JQuery-->
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
 
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.de.min.js"></script>
+
+    <!--Treegrid-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/css/jquery.treegrid.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/js/jquery.treegrid.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.2.0/js/jquery.treegrid.bootstrap3.js"></script>
-    <!--<script src="//cdn.ckeditor.com/4.6.0/standard/ckeditor.js"></script>-->
 
-
-    <!-- include summernote css/js-->
+    <!--Summernote-->
     <link href="//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.js"></script>
 
+    <!--Fontawesome icon picker-->
     <script type="text/javascript" src="/fontawesome-iconpicker-1.3.1/js/fontawesome-iconpicker.min.js"></script>
     <link rel="stylesheet" href="/fontawesome-iconpicker-1.3.1/css/fontawesome-iconpicker.min.css">
+
+    <link rel="stylesheet" href="/css/components.css">
 
     <script>
     function saveScrollTop() {
@@ -55,14 +50,6 @@
 
     $(document).ready(function() {
         loadScrollTop();
-
-        $('.datepicker').datepicker({
-            clearBtn: true,
-            orientation: 'auto',
-            language: '[[${#locale?.toLanguageTag()}]]',
-            format: 'dd.mm.yyyy',
-            autoclose: true
-        });
 
         $('.summernote').summernote({
             lang: 'de-DE',
@@ -204,7 +191,9 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">WebSeed</a>
+            <a class="navbar-brand" href="/">
+                <span th:text="${@hostService.getHostName(#request)}">localhost</span>
+            </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -214,54 +203,25 @@
                     <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>-->
                     <!--<li><a href="#">Link</a></li>-->
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle"
-                           data-toggle="dropdown"
-                           role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false">
-                            <i class="fa fa-shield"></i>
-                            <span>Security</span>
-                            <span class="caret"></span>
+                    <li>
+                        <a th:href="@{/admin/items}">
+                            <span th:text="#{seed.item.listing.title}">Items</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a th:href="@{/admin/users}">
-                                    <i class="fa fa-users"></i>
-                                    <span>Users</span>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle"
-                           data-toggle="dropdown"
-                           role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false">
-                            <i class="fa fa-th"></i>
-                            <span>Content</span>
-                            <span class="caret"></span>
+                    <li>
+                        <a th:href="@{/admin/users}">
+                            <span th:text="#{seed.user.listing.title}">Users</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a th:href="@{/admin/items}">
-                                    <i class="fa fa-th-large"></i>
-                                    <span>Items</span>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
                     <li>
                         <a th:href="@{/admin/hosts}">
-                            <i class="fa fa-cogs"></i>
-                            Configuration
+                            <span>Configuration</span>
                         </a>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right" >
+                <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle"
                            data-toggle="dropdown"
@@ -294,7 +254,7 @@
 <footer class="container">
     <div class="row">
         <div class="col-md-12">
-            <p>www.getwebseed.com</p>
+            <small class="pull-right">www.getwebseed.com</small>
         </div>
     </div>
 </footer>

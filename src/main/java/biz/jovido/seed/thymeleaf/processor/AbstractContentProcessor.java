@@ -2,9 +2,7 @@ package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
 import biz.jovido.seed.content.Sequence;
-import biz.jovido.seed.content.Structure;
-import biz.jovido.seed.content.TemplateNameResolver;
-import org.springframework.core.Conventions;
+import biz.jovido.seed.thymeleaf.TemplateNameResolver;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
@@ -24,7 +22,7 @@ import java.util.Objects;
 /**
  * @author Stephan Grundner
  */
-public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcessor {
+public abstract class AbstractContentProcessor extends AbstractAttributeTagProcessor {
 
     private List<TemplateNameResolver> templateNameResolvers;
 
@@ -92,7 +90,7 @@ public abstract class AbstractSeedProcessor extends AbstractAttributeTagProcesso
         }
     }
 
-    protected AbstractSeedProcessor(TemplateMode templateMode, String dialectPrefix, String elementName, boolean prefixElementName, String attributeName, boolean prefixAttributeName, int precedence, boolean removeAttribute) {
+    protected AbstractContentProcessor(TemplateMode templateMode, String dialectPrefix, String elementName, boolean prefixElementName, String attributeName, boolean prefixAttributeName, int precedence, boolean removeAttribute) {
         super(templateMode, dialectPrefix, elementName, prefixElementName, attributeName, prefixAttributeName, precedence, removeAttribute);
     }
 }

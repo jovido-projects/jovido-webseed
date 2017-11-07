@@ -1,0 +1,60 @@
+<html xmlns:th="//www.thymeleaf.org"
+      xmlns:component="//www.getwebseed.com/thymeleaf/dialect/component"
+      xmlns:field="//www.getwebseed.com/dialect/field"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+<th:block th:fragment="main">
+    <div class="container">
+        <form th:object="${userEditor}" method="post"
+              th:with="
+              editor=${userEditor},
+              user=*{user}">
+
+            <th:block th:replace="admin/breadcrumbs" />
+
+
+            <h1>
+                <th:block th:if="${user?.id == null}">
+                    <span>New user</span>
+                </th:block>
+                <th:block th:if="${user?.id != null}">
+                    <span>User</span>
+                    <span th:text="${user.username}">Username</span>
+                </th:block>
+            </h1>
+
+            <ul th:if="${#fields.hasErrors('*')}">
+                <li th:each="err : ${#fields.detailedErrors('*')}" >
+                    <span th:text="${err}">Error</span>
+                </li>
+            </ul>
+
+            <div class="row">
+
+                <!-- Content -->
+                <div class="col-md-12" >
+
+                    <th:block component:replace="*{username}" />
+                    <th:block component:replace="*{password}" />
+                    <!--<th:block field:replace="*{password}" />-->
+                    <!--<th:block field:replace="*{passwordRepetition}" />-->
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" th:formaction="@{save}">
+                            <i class="fa fa-floppy-o"></i>
+                            Save
+                        </button>
+                        <button class="btn btn-danger" th:formaction="@{delete}"
+                                th:onclick="'javascript:return confirm(\'__#{seed.security.user.delete.confirmation}__\');'">
+                            <i class="fa fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

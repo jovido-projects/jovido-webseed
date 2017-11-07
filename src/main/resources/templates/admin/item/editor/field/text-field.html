@@ -1,12 +1,12 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<label>
-    <span th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Field name</span>
-    <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
-</label>
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <th:block  th:each="payload,payloadItr : ${sequence.payloads}">
+            <label>
+                <span th:text="#{seed.structure.__${structure.name}__.__${attribute.name}__}">Field name</span>
+                <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
+            </label>
+            <th:block th:each="payload,payloadItr : ${sequence.payloads}">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="input-group input-group-sm"

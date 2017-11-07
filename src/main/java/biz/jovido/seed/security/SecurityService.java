@@ -1,5 +1,6 @@
 package biz.jovido.seed.security;
 
+import biz.jovido.seed.configuration.AdminProperties;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,14 @@ public class SecurityService implements UserDetailsService, AuditorAware<User> {
 
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    public User saveUser(User user, String newPassword) {
+        if (StringUtils.hasText(newPassword)) {
+            newPassword = passwordEncoder.encode(newPassword);
+        }
+        user.setPassword(newPassword);
+        return saveUser(user);
     }
 
     private void ensureAdminUserAndRoleExists() {

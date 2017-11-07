@@ -1,6 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UUIDConverter;
+import biz.jovido.seed.content.Sequence;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -69,8 +70,12 @@ public abstract class Payload<T> {
 //        Sequence<T> sequence = getSequence();
 //        Attribute attribute = sequence.getAttribute();
 //        Payload<T> copy = (Payload<T>) attribute.createPayload();
-//        copy.setValue(getValue());
+//        copy.setValue(resolveValue());
 //
 //        return copy;
 //    }
+
+    public boolean differsFrom(Payload<T> other) {
+        return true;
+    }
 }

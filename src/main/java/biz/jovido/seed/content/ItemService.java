@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.net.HostService;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -51,15 +52,11 @@ public class ItemService {
         return itemRepository.findPublished(leafId);
     }
 
-    public Page<Item> findAllItems(int offset, int max) {
-        return itemRepository.findAllByLeafIsNotNull(new PageRequest(offset, max));
-    }
-
     public List<Item> findAllItems() {
         return itemRepository.findAllCurrent();
     }
 
-    public List<Item> findAllPublishedItemByPath(String path) {
+    public List<Item> findAllPublishedItemsByPath(String path) {
         return itemRepository.findAllPublishedByPath(path);
     }
 
@@ -86,7 +83,7 @@ public class ItemService {
         if (item != null) {
             Sequence<String> label = getLabel(item);
             if (label == null) {
-                Structure structure = getStructure(item);
+//                Structure structure = getStructure(item);
                 Sequence<?> title = item.getSequence("title");
                 if (title != null && title.size() > 0) {
                     Object titleObject = title.get(0);
@@ -95,7 +92,6 @@ public class ItemService {
                 }
                 return null;
             }
-//        return label != null ? label.get(0) : null;
             return label.get(0);
         }
 
@@ -126,6 +122,15 @@ public class ItemService {
         return applySequence(item, structure, attributeName);
     }
 
+    public Sequence getOrCreateSequence(Item item, String attributeName) {
+        Sequence sequence = item.getSequence(attributeName);
+        if (sequence == null) {
+            sequence = applySequence(item, attributeName);
+        }
+
+        return sequence;
+    }
+
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
@@ -140,22 +145,6 @@ public class ItemService {
                 }
             }
         }
-    }
-
-    /**
-     * Get or create a sequence for the specified item and attribute name.
-     *
-     * @param item
-     * @param attributeName
-     * @return
-     */
-    public Sequence getSequence(Item item, String attributeName) {
-        Sequence sequence = item.getSequence(attributeName);
-        if (sequence == null) {
-            sequence = applySequence(item, attributeName);
-        }
-
-        return sequence;
     }
 
     private Item createItem(Structure structure) {
@@ -257,8 +246,6 @@ public class ItemService {
             auditingHandler.markCreated(item);
         }
         auditingHandler.markModified(item);
-//        return itemRepository.saveAndFlush(item);
-//        return itemRepository.saveAndFlush(item);
         return entityManager.merge(item);
     }
 
@@ -302,19 +289,60 @@ public class ItemService {
     @Transactional
     public Item publishItem(final Item item) {
         Item current = copyItem(item);
-//        auditingHandler.markCreated(item);
         current = entityManager.merge(current);
-
         Leaf history = current.getLeaf();
-//        entityManager.refresh(history);
-
         history.setPublished(item);
         history.setCurrent(current);
-
         entityManager.merge(history);
 
         return current;
     }
+
+    public Leaf getLeaf(Sequence sequence) {
+        if (sequence != null) {
+            Item item = sequence.getItem();
+            return getLeaf(item);
+        }
+
+        return null;
+    }
+
+    public Leaf getLeaf(Payload payload) {
+        if (payload != null) {
+            Sequence sequence = payload.getSequence();
+            return getLeaf(sequence);
+        }
+
+        return null;
+    }
+
+    public Leaf getLeaf(Item item) {
+        if (item != null) {
+            Leaf leaf = item.getLeaf();
+            if (leaf == null) {
+                ItemPayload payload = item.getPayload();
+                if (payload != null) {
+                    Sequence sequence = payload.getSequence();
+                    return getLeaf(sequence);
+                }
+            }
+        }
+
+        return null;
+    }
+
+//    public Item getPublishedItem(Item item) {
+//        if (item != null) {
+//            Leaf leaf = item.getLeaf();
+//            if (leaf != null) {
+//                return leaf.getPublished();
+//            }
+//        }
+//
+//        return null;
+//    }
+
+
 
     public Attribute getAttribute(Sequence sequence) {
         Item item = sequence.getItem();

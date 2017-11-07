@@ -1,6 +1,5 @@
 package biz.jovido.seed.configuration;
 
-import biz.jovido.seed.security.AdminProperties;
 import biz.jovido.seed.security.SecurityService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -1,13 +1,14 @@
 <html xmlns:th="//www.thymeleaf.org"
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
+
 <th:block th:fragment="main">
     <div class="container">
-        <form th:object="${userEditor}" method="post">
+        <form th:object="${userListing}" method="post">
 
             <th:block th:replace="admin/breadcrumbs" />
 
-            <h1>User XYZ</h1>
+            <h1 th:text="#{seed.user.listing.title}">Title</h1>
 
             <ul th:if="${#fields.hasErrors('*')}">
                 <li th:each="err : ${#fields.detailedErrors('*')}" >
@@ -17,11 +18,12 @@
 
             <div class="row">
 
-                <!-- Content -->
+                <!-- Users -->
                 <div class="col-md-12" >
 
-                </div>
+                    <th:block th:replace="admin/listing(listing=${userListing})" />
 
+                </div>
             </div>
         </form>
     </div>

@@ -1,5 +1,6 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
+import biz.jovido.seed.mvc.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +23,8 @@ public class HostListingController {
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs() {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("Home", "/"));
-        breadcrumbs.add(new Breadcrumb("Administration", "/admin/"));
-        breadcrumbs.add(new Breadcrumb("Configuration"));
+        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+        breadcrumbs.add(new Breadcrumb("seed.host.listing.title"));
         return breadcrumbs;
     }
 
@@ -34,6 +34,6 @@ public class HostListingController {
         List<Host> hosts = hostService.getAllHosts();
         model.addAttribute("hosts", hosts);
 
-        return "admin/host/listing";
+        return "admin/host/listing-page";
     }
 }

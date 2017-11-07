@@ -49,44 +49,12 @@
             </th:block>
         </table>
 
-
-
-
         <ul class="list-group">
-
-
             <li class="list-group-item">
-
-                <div class="btn-group dropup">
-                    <a href="#" class="btn btn-default" th:data-formaction="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
-                        <span>Add node</span>
-                    </a>
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-header">
-                            Choose a parent...
-                        </li>
-                        <th:block th:with="nodes = ${hierarchy.rootNodes}">
-                            <th:block th:fragment="tree(nodes)">
-                                <th:block th:each="node : ${nodes}">
-                                    <li>
-                                        <a th:href="@{add-node(
-                                        hierarchy=${hierarchy.id},
-                                        parent=${node?.id})}">
-                                            [[${@hierarchyService.getPath(node)}]]
-                                        </a>
-                                    </li>
-                                    <th:block th:if="${node.children.size() > 0}">
-                                        <th:block th:replace="::tree(${node.children})" />
-                                    </th:block>
-                                </th:block>
-                            </th:block>
-                        </th:block>
-                    </ul>
-                </div>
+                <a href="#" class="btn btn-default"
+                        th:data-formaction="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
+                    <i class="fa fa-plus"></i>
+                </a>
 
             </li>
         </ul>

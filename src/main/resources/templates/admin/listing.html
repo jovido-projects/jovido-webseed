@@ -1,0 +1,65 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<table class="table listing">
+    <thead>
+    <tr>
+        <th:block th:each="column: ${listing.columns}">
+            <th th:class="'column-' + ${column.name}">
+                <th:block th:replace="admin/text(text=${column})" />
+            </th>
+        </th:block>
+        <th>
+            <div class="btn-group btn-group-xs pull-right" th:with="actionGroup=${listing.actionGroup}">
+                <th:block th:if="${actionGroup.defaultAction != null}"
+                          th:with="action=${listing.actionGroup.defaultAction}">
+                    <a class="btn btn-primary" th:href="${action.url}">
+                        <span th:text="#{listing.create}">Create</span>
+                    </a>
+                </th:block>
+                <th:block th:if="${actionGroup.defaultAction == null}">
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-xs btn-primary dropdown-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false">
+                            <span th:text="#{__${listing.actionGroup.messageCode}__}">Action</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li th:each="action : ${actionGroup.actions}">
+                                <a th:href="${action.url}">
+                                    <span th:text="${action.defaultMessage}">Action</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </th:block>
+
+
+            </div>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${listing.entries}">
+        <td th:each="column : ${listing.columns}" th:with="template=${column.valueTemplate}">
+            <th:block th:if="${template != null}">
+                <th:block th:replace="__${template}__" />
+            </th:block>
+            <th:block th:if="${template == null}">
+                <span th:text="${entry.getValue(column)}">ID</span>
+            </th:block>
+        </td>
+        <td>
+            <div class="btn-group btn-group-xs pull-right">
+                <a class="btn btn-default btn-edit" th:href="${entry.editAction?.url} ?: '#'">
+                    <span th:text="#{listing.entry.edit}">Edit action</span>
+                </a>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</html>

@@ -169,7 +169,7 @@ public class Node {
         return leaf;
     }
 
-    /*public*/ void setLeaf(Leaf leaf) {
+    public void setLeaf(Leaf leaf) {
         this.leaf = leaf;
     }
 

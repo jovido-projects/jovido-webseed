@@ -2,7 +2,7 @@
 <ol class="breadcrumb">
     <li th:each="breadcrumb : ${breadcrumbs}" class="active">
         <a th:href="${breadcrumb.path}" th:remove="${breadcrumb.active} ? tag : _">
-            <span th:text="${breadcrumb.text}">Home</span>
+            <span th:insert="admin/text(text=${breadcrumb.text})">Breadcrumb</span>
         </a>
     </li>
 </ol>

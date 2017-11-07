@@ -12,24 +12,21 @@ import javax.persistence.OneToOne;
 @DiscriminatorValue("Item")
 public class ItemPayload extends Payload<Item> {
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "payload", cascade = CascadeType.ALL, orphanRemoval = true)
     private Item item;
 
     public Item getItem() {
         return item;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
     @Override
     public Item getValue() {
-        return getItem();
+        return item;
     }
 
     @Override
     public void setValue(Item value) {
         item = value;
+        item.setPayload(this);
     }
 }
