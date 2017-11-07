@@ -36,6 +36,9 @@ public class ItemEditorController {
     @Autowired
     private HierarchyService hierarchyService;
 
+    @Autowired
+    private StructureService structureService;
+
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
@@ -58,6 +61,31 @@ public class ItemEditorController {
                                 @RequestParam(name = "new", required = false) String structureName) {
         ItemEditor editor = new ItemEditor();
 
+        editor.setSequenceTemplateProvider(new ItemEditor.SequenceTemplateProvider() {
+            @Override
+            public String getTemplate(Sequence sequence) {
+                Attribute attribute = itemService.getAttribute(sequence);
+                if (attribute instanceof TextAttribute) {
+                    TextAttribute textAttribute = (TextAttribute) attribute;
+                    if (textAttribute.isMultiline()) {
+                        return "admin/item/editor/field/multiline-text-field";
+                    } else {
+                        return "admin/item/editor/field/text-field";
+                    }
+                } else if (attribute instanceof ItemAttribute) {
+                    return "admin/item/editor/field/item-field";
+                } else if (attribute instanceof ImageAttribute) {
+                    return "admin/item/editor/field/image-field";
+                } else if (attribute instanceof BooleanAttribute) {
+                    return "admin/item/editor/field/boolean-field";
+                } else if (attribute instanceof LinkAttribute) {
+                    return "admin/item/editor/field/link-field";
+                } else if (attribute instanceof IconAttribute) {
+                    return "admin/item/editor/field/icon-field";
+                }
+                return null;
+            }
+        });
         if (itemId != null) {
             Item item = itemService.getItem(itemId);
             editor.setItem(item);

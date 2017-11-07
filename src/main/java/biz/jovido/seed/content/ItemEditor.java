@@ -12,6 +12,11 @@ import java.util.UUID;
  */
 public class ItemEditor {
 
+    public interface SequenceTemplateProvider {
+
+        String getTemplate(Sequence sequence);
+    }
+
     public static class PayloadState {
 
         private boolean collapsed = true;
@@ -28,8 +33,8 @@ public class ItemEditor {
     private final BeanWrapper wrapper = new BeanWrapperImpl(this);
 
     private Item item;
-
-    private UUID parentNodeUuid;
+//    private UUID parentNodeUuid;
+    private SequenceTemplateProvider sequenceTemplateProvider;
 
     private final Map<UUID, PayloadState> stateByUuid = new HashMap<>();
 
@@ -41,12 +46,20 @@ public class ItemEditor {
         this.item = item;
     }
 
-    public UUID getParentNodeUuid() {
-        return parentNodeUuid;
+//    public UUID getParentNodeUuid() {
+//        return parentNodeUuid;
+//    }
+//
+//    public void setParentNodeUuid(UUID parentNodeUuid) {
+//        this.parentNodeUuid = parentNodeUuid;
+//    }
+
+    public SequenceTemplateProvider getSequenceTemplateProvider() {
+        return sequenceTemplateProvider;
     }
 
-    public void setParentNodeUuid(UUID parentNodeUuid) {
-        this.parentNodeUuid = parentNodeUuid;
+    public void setSequenceTemplateProvider(SequenceTemplateProvider sequenceTemplateProvider) {
+        this.sequenceTemplateProvider = sequenceTemplateProvider;
     }
 
     public Object getPropertyValue(String propertyPath) {
