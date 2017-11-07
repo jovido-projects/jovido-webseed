@@ -5,7 +5,7 @@
     <th:block th:each="payload,payloadItr : ${sequence?.payloads}">
         <li th:class="'list-group-item nesting-level-__${nestingLevel}__'">
             <h4>
-                <span th:text="${@itemService.getStructure(payload.value).name}">Name</span>
+                <span th:text="${@itemService.getStructure(payload.value)?.name}">Name</span>
                 <th:block th:if="${attribute.capacity > 1}">
                     <span>#[[${payloadItr.index + 1}]]</span>
                 </th:block>

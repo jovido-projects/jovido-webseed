@@ -5,7 +5,7 @@
     <div class="container">
         <form th:object="${itemEditor}" method="post"
               th:with="editor=${itemEditor},
-              item=*{item},
+              item=${editor.item},
               structure=${@itemService.getStructure(item)}">
 
             <th:block th:replace="admin/breadcrumbs" />
