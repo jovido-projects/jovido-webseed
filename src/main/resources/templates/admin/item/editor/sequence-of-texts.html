@@ -1,0 +1,12 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/item/editor/sequence(
+      field=~{::body},
+      actions=null)"
+      th:remove="tag">
+
+<body>
+    <input type="text" class="form-control input-sm"
+           th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
+</body>
+
+</html>

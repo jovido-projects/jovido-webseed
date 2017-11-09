@@ -1,0 +1,30 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/item/editor/sequence(
+      field=~{::field},actions=null)"
+      th:remove="tag">
+
+<th:block th:fragment="field" th:with="id=${#ids.seq('foobar')}">
+    <textarea th:id="${id}" class="form-control"
+              th:field="*{__${nestedPath}__.sequences[__${attribute.name}__].payloads[__${payloadItr.index}__].value}"></textarea>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var id = '#[[${id}]]';
+            $(id).summernote({
+                height:125,
+                toolbar:[
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'hr']],
+                    ['view', ['fullscreen', 'codeview']]
+                ],
+                onCreateLink : function(originalLink) {
+                    return originalLink; // return original link
+                }
+            });
+        });
+        </script>
+</th:block>
+
+</html>

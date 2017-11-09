@@ -1,5 +1,4 @@
 <html xmlns:th="//www.thymeleaf.org"
-      xmlns:component="//www.getwebseed.com/thymeleaf/dialect/component"
       xmlns:field="//www.getwebseed.com/dialect/field"
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
@@ -34,11 +33,10 @@
                 <!-- Content -->
                 <div class="col-md-12" >
 
-                    <th:block component:replace="*{username}" />
-                    <th:block component:replace="*{password}" />
-                    <!--<th:block field:replace="*{password}" />-->
-                    <!--<th:block field:replace="*{passwordRepetition}" />-->
-
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" th:field="*{user.username}" th:disabled="${user?.id != null} ?: _">
+                    </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" th:formaction="@{save}">
                             <i class="fa fa-floppy-o"></i>

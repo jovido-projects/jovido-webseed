@@ -2,8 +2,10 @@
 <th:block th:with="nestedPath='item',nestingLevel=0">
     <th:block th:fragment="fields" th:with="nestingLevel=${nestingLevel+1}">
         <th:block th:with="item=*{__${nestedPath}__},structure=${@itemService.getStructure(item)}">
-            <th:block th:each="attribute : ${structure.attributes}">
+            <th:block th:each="attribute,attributeItr : ${structure.attributes}">
                 <th:block th:with="sequence=${@itemService.getOrCreateSequence(item, attribute.name)}">
+                    <!--<hr th:if="${attributeItr.index > 0}" />-->
+                    <p th:if="${attributeItr.index > 0}" ></p>
                     <th:block th:replace="${editor.sequenceTemplateProvider.getTemplate(sequence)}" />
                 </th:block>
             </th:block>

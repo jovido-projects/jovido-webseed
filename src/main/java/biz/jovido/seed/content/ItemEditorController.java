@@ -1,10 +1,10 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.mvc.Breadcrumb;
+import biz.jovido.seed.mvc.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -50,7 +50,9 @@ public class ItemEditorController {
         Item item = editor.getItem();
         if (item != null) {
             String label = itemService.getLabelText(item);
-            breadcrumbs.add(new Breadcrumb(label));
+            Text text = new Text();
+            text.setDefaultMessage(label);
+            breadcrumbs.add(new Breadcrumb(text));
         }
 
         return breadcrumbs;
@@ -65,25 +67,30 @@ public class ItemEditorController {
             @Override
             public String getTemplate(Sequence sequence) {
                 Attribute attribute = itemService.getAttribute(sequence);
-                if (attribute instanceof TextAttribute) {
-                    TextAttribute textAttribute = (TextAttribute) attribute;
-                    if (textAttribute.isMultiline()) {
-                        return "admin/item/editor/field/multiline-text-field";
+
+                if (attribute instanceof BooleanAttribute) {
+                    return "admin/item/editor/sequence-of-booleans";
+                } else {
+
+                    if (attribute instanceof TextAttribute) {
+                        boolean multiline = ((TextAttribute) attribute).isMultiline();
+                        if (multiline) {
+                            return "admin/item/editor/sequence-of-multiline-texts";
+                        } else {
+                            return "admin/item/editor/sequence-of-texts";
+                        }
+                    } else if (attribute instanceof LinkAttribute) {
+                        return "admin/item/editor/sequence-of-links";
+                    } else if (attribute instanceof IconAttribute) {
+                        return "admin/item/editor/sequence-of-icons";
+                    } else if (attribute instanceof ImageAttribute) {
+                        return "admin/item/editor/sequence-of-images";
+                    } else if (attribute instanceof ItemAttribute) {
+                        return "admin/item/editor/sequence-of-items";
                     } else {
-                        return "admin/item/editor/field/text-field";
+                        throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
                     }
-                } else if (attribute instanceof ItemAttribute) {
-                    return "admin/item/editor/field/item-field";
-                } else if (attribute instanceof ImageAttribute) {
-                    return "admin/item/editor/field/image-field";
-                } else if (attribute instanceof BooleanAttribute) {
-                    return "admin/item/editor/field/boolean-field";
-                } else if (attribute instanceof LinkAttribute) {
-                    return "admin/item/editor/field/link-field";
-                } else if (attribute instanceof IconAttribute) {
-                    return "admin/item/editor/field/icon-field";
                 }
-                return null;
             }
         });
         if (itemId != null) {
@@ -119,15 +126,14 @@ public class ItemEditorController {
 
     @RequestMapping
     protected String index(@ModelAttribute ItemEditor editor,
-                           BindingResult bindingResult,
-                           Model model) {
+                           BindingResult editorBinding) {
 
         return "admin/item/editor-page";
     }
 
     @RequestMapping(path = "/create")
     protected String create(@ModelAttribute ItemEditor editor,
-                            BindingResult bindingResult,
+                            BindingResult editorBinding,
                             @RequestParam(name = "structure") String structureName) {
 
         Item item = itemService.createItem(structureName);
@@ -146,8 +152,8 @@ public class ItemEditorController {
 
     @RequestMapping(path = "edit")
     protected String edit(@ModelAttribute ItemEditor editor,
-                          @RequestParam(name = "id") Long itemId,
-                          BindingResult bindingResult) {
+                          BindingResult editorBinding,
+                          @RequestParam(name = "id") Long itemId) {
 
         Item item = itemService.getItem(itemId);
         editor.setItem(item);
@@ -157,7 +163,7 @@ public class ItemEditorController {
 
     @RequestMapping(path = "save")
     protected String save(@ModelAttribute ItemEditor editor,
-                          BindingResult bindingResult) {
+                          BindingResult editorBinding) {
 
         Item item = editor.getItem();
         item = itemService.saveItem(item);
@@ -168,39 +174,19 @@ public class ItemEditorController {
 
     @RequestMapping(path = "close")
     protected String close(@ModelAttribute ItemEditor editor,
-                           BindingResult bindingResult) {
+                           BindingResult editorBinding) {
 
         editor.setItem(null);
 
         return "redirect:/admin/items";
     }
 
-//    @RequestMapping(path = "append", params = {"structure"})
-//    protected String append(@ModelAttribute ItemEditor editor,
-//                            @RequestParam(name = "nested-path") String nestedPath,
-//                            @RequestParam(name = "attribute") String attributeName,
-//                            @RequestParam(name = "structure") String typeName,
-//                            BindingResult bindingResult) {
-//
-//        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-//        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-//        Attribute attribute = itemService.getAttribute(sequence);
-//        RelationPayload payload = (RelationPayload) attribute.createPayload();
-//        Item target = itemService.createEmbeddedItem(typeName, 1);
-////        target.setLeaf(null);
-//        Relation relation = payload.getRelation();
-//        relation.setTarget(target);
-//        sequence.addPayload(payload);
-//
-//        return "redirect:";
-//    }
-
     @RequestMapping(path = "append", params = {"structure"})
     protected String append(@ModelAttribute ItemEditor editor,
+                            BindingResult editorBinding,
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName,
-                            @RequestParam(name = "structure") String structureName,
-                            BindingResult bindingResult) {
+                            @RequestParam(name = "structure") String structureName) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -217,9 +203,9 @@ public class ItemEditorController {
 
     @RequestMapping(path = "append", params = {"!structure"})
     protected String append(@ModelAttribute ItemEditor editor,
+                            BindingResult editorBinding,
                             @RequestParam(name = "nested-path") String nestedPath,
-                            @RequestParam(name = "attribute") String attributeName,
-                            BindingResult bindingResult) {
+                            @RequestParam(name = "attribute") String attributeName) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -232,10 +218,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "move-payload-up")
     protected String movePayloadUp(@ModelAttribute ItemEditor editor,
+                                   BindingResult editorBinding,
                                    @RequestParam(name = "nested-path") String nestedPath,
                                    @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index,
-                                   BindingResult bindingResult) {
+                                   @RequestParam(name = "index") int index) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -246,10 +232,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "move-payload-down")
     protected String movePayloadDown(@ModelAttribute ItemEditor editor,
+                                     BindingResult editorBinding,
                                      @RequestParam(name = "nested-path") String nestedPath,
                                      @RequestParam(name = "attribute") String attributeName,
-                                     @RequestParam(name = "index") int index,
-                                     BindingResult bindingResult) {
+                                     @RequestParam(name = "index") int index) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -260,10 +246,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "remove-payload")
     protected String removePayload(@ModelAttribute ItemEditor editor,
+                                   BindingResult editorBinding,
                                    @RequestParam(name = "nested-path") String nestedPath,
                                    @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index,
-                                   BindingResult bindingResult) {
+                                   @RequestParam(name = "index") int index) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -274,10 +260,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "open-payload")
     protected String openPayload(@ModelAttribute ItemEditor editor,
-                                  @RequestParam(name = "nested-path") String nestedPath,
-                                  @RequestParam(name = "attribute") String attributeName,
-                                  @RequestParam(name = "index") int index,
-                                  BindingResult bindingResult) {
+                                 BindingResult editorBinding,
+                                 @RequestParam(name = "nested-path") String nestedPath,
+                                 @RequestParam(name = "attribute") String attributeName,
+                                 @RequestParam(name = "index") int index) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -290,10 +276,10 @@ public class ItemEditorController {
 
     @RequestMapping(path = "close-payload")
     protected String closePayload(@ModelAttribute ItemEditor editor,
-                                   @RequestParam(name = "nested-path") String nestedPath,
-                                   @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index,
-                                   BindingResult bindingResult) {
+                                  BindingResult editorBinding,
+                                  @RequestParam(name = "nested-path") String nestedPath,
+                                  @RequestParam(name = "attribute") String attributeName,
+                                  @RequestParam(name = "index") int index) {
 
         String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
         Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
@@ -307,6 +293,7 @@ public class ItemEditorController {
 //    @PostMapping(path = "upload-image", params = {"type=image"})
     @PostMapping(path = "upload-image")
     protected String uploadImage(@ModelAttribute ItemEditor editor,
+                                 BindingResult editorBinding,
                                  @RequestParam(name = "token") String token,
                                  @RequestParam(name = "nested-path") String nestedPath,
                                  @RequestParam(name = "attribute") String attributeName,
@@ -345,6 +332,7 @@ public class ItemEditorController {
     @Transactional
     @PostMapping(path = "remove-image")
     protected String removeImage(@ModelAttribute ItemEditor editor,
+                                 BindingResult editorBinding,
                                  @RequestParam(name = "nested-path") String nestedPath,
                                  @RequestParam(name = "attribute") String attributeName,
                                  @RequestParam(name = "index") int index,
@@ -361,7 +349,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "publish")
     protected String publish(@ModelAttribute ItemEditor editor,
-                             BindingResult bindingResult) {
+                             BindingResult editorBinding) {
 
         Item item = editor.getItem();
         Item current = itemService.publishItem(item);
@@ -373,7 +361,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "add-node", params = {})
     protected String addNode(@ModelAttribute ItemEditor editor,
-                             BindingResult bindingResult,
+                             BindingResult editorBinding,
                              @RequestParam(name = "hierarchy") Long hierarchyId,
                              @RequestParam(name = "parent", required = false) Long parentId) {
 
@@ -401,7 +389,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "move-node-up")
     protected String moveNodeUp(@ModelAttribute ItemEditor editor,
-                                BindingResult bindingResult,
+                                BindingResult editorBinding,
                                 @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
@@ -416,7 +404,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "move-node-down")
     protected String moveNodeDown(@ModelAttribute ItemEditor editor,
-                                  BindingResult bindingResult,
+                                  BindingResult editorBinding,
                                   @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
@@ -429,7 +417,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "remove-node")
     protected String removeNode(@ModelAttribute ItemEditor editor,
-                                BindingResult bindingResult,
+                                BindingResult editorBinding,
                                 @RequestParam(name = "node") Long nodeId) {
 
         Node node = hierarchyService.getNode(nodeId);
@@ -440,7 +428,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "generate-path", params = {})
     protected String generatePath(@ModelAttribute ItemEditor editor,
-                                  BindingResult bindingResult) {
+                                  BindingResult editorBinding) {
 
         Item item = editor.getItem();
 
@@ -456,7 +444,7 @@ public class ItemEditorController {
 
     @PostMapping(path = "change-locale", params = {})
     protected String changeLocale(@ModelAttribute ItemEditor editor,
-                                  BindingResult bindingResult,
+                                  BindingResult editorBinding,
                                   @RequestParam(name = "locale") Locale locale) {
         Item item = editor.getItem();
         item.setLocale(locale);

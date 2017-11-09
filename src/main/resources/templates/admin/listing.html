@@ -13,7 +13,7 @@
                 <th:block th:if="${actionGroup.defaultAction != null}"
                           th:with="action=${listing.actionGroup.defaultAction}">
                     <a class="btn btn-primary" th:href="${action.url}">
-                        <span th:text="#{listing.create}">Create</span>
+                        <span th:text="#{seed.listing.create}">Create</span>
                     </a>
                 </th:block>
                 <th:block th:if="${actionGroup.defaultAction == null}">
@@ -54,7 +54,7 @@
         <td>
             <div class="btn-group btn-group-xs pull-right">
                 <a class="btn btn-default btn-edit" th:href="${entry.editAction?.url} ?: '#'">
-                    <span th:text="#{listing.entry.edit}">Edit action</span>
+                    <span th:text="#{seed.listing.entry.edit}">Edit action</span>
                 </a>
             </div>
         </td>

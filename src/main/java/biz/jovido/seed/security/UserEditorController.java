@@ -56,7 +56,7 @@ public class UserEditorController {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
         breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
         breadcrumbs.add(new Breadcrumb("seed.user.listing.title", "/admin/users"));
-        breadcrumbs.add(new Breadcrumb("User"));
+        breadcrumbs.add(new Breadcrumb("seed.user"));
         return breadcrumbs;
     }
 
