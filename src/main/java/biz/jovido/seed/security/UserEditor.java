@@ -1,5 +1,7 @@
 package biz.jovido.seed.security;
 
+import biz.jovido.seed.ui.Field;
+
 import javax.validation.Valid;
 
 /**
@@ -7,10 +9,18 @@ import javax.validation.Valid;
  */
 public class UserEditor {
 
+    public static class TextField extends Field<String> {
+
+        public TextField(Object object, String bindingPath) {
+            super(object, bindingPath);
+            setTemplate("admin/user/text-field");
+        }
+    }
+
     @Valid
     private User user;
 
-    private String password2;
+    private final TextField username = new TextField(this, "user.username");
 
     public User getUser() {
         return user;
@@ -18,13 +28,12 @@ public class UserEditor {
 
     public void setUser(User user) {
         this.user = user;
+
+        username.setDisabled(user != null &&
+                "admin".equals(user.getUsername()));
     }
 
-    public String getPassword2() {
-        return password2;
-    }
-
-    public void setPassword2(String password2) {
-        this.password2 = password2;
+    public TextField getUsername() {
+        return username;
     }
 }

@@ -1,81 +1,76 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.UUIDConverter;
-import biz.jovido.seed.content.Sequence;
-
 import javax.persistence.*;
-import java.util.UUID;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
 @DiscriminatorColumn(name = "type")
-public abstract class Payload<T> {
+public abstract class Payload {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
-    @Convert(converter = UUIDConverter.class)
-    private UUID uuid;
-
-    @ManyToOne(targetEntity = Sequence.class)
-    private Sequence<T> sequence;
+    @ManyToOne(targetEntity = PayloadGroup.class)
+    private PayloadGroup group;
 
     private int ordinal = -1;
+
+    @Lob
+    private String text;
+
+    @Transient
+    private boolean compressed = true;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /*public*/ void setId(Long id) {
         this.id = id;
     }
 
-    public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-
-        return uuid;
+    public PayloadGroup getGroup() {
+        return group;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public Sequence<T> getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Sequence<T> sequence) {
-        this.sequence = sequence;
+    /*public*/ void setGroup(PayloadGroup group) {
+        this.group = group;
     }
 
     public int getOrdinal() {
         return ordinal;
     }
 
-    public void setOrdinal(int ordinal) {
+    /*public*/ void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
     }
 
-    public abstract T getValue();
-    public abstract void setValue(T value);
+    protected String getText() {
+        return text;
+    }
 
-//    @SuppressWarnings("unchecked")
-//    public Payload<T> copy() {
-//        Sequence<T> sequence = getSequence();
-//        Attribute attribute = sequence.getAttribute();
-//        Payload<T> copy = (Payload<T>) attribute.createPayload();
-//        copy.setValue(resolveValue());
-//
-//        return copy;
-//    }
+    protected void setText(String text) {
+        this.text = text;
+    }
 
-    public boolean differsFrom(Payload<T> other) {
+    public boolean isCompressed() {
+        return compressed;
+    }
+
+    public void setCompressed(boolean compressed) {
+        this.compressed = compressed;
+    }
+
+    public void remove() {
+        group.removePayload(getOrdinal());
+    }
+
+    public boolean differsFrom(Payload other) {
         return true;
     }
+
+    public abstract Payload copy();
 }

@@ -18,15 +18,15 @@ public class ItemController {
 
     private String respond(Item item, Model model) {
         model.addAttribute("this", item);
-        Sequence label = itemService.getLabel(item);
+        PayloadGroup label = itemService.getLabel(item);
         model.addAttribute("label", label);
         model.addAttribute("mode", itemService.getMode(item));
 
         Structure structure = itemService.getStructure(item);
         for (Attribute attribute : structure.getAttributes()) {
             String attributeName = attribute.getName();
-            Sequence<?> sequence = item.getSequence(attributeName);
-            model.addAttribute(attributeName, sequence);
+            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+            model.addAttribute(attributeName, payloadGroup);
         }
 
         return structure.getName();

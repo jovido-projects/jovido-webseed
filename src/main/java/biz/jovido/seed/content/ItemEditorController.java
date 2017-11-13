@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.mvc.Breadcrumb;
-import biz.jovido.seed.mvc.Text;
+import biz.jovido.seed.ui.Breadcrumb;
+import biz.jovido.seed.ui.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,36 +63,46 @@ public class ItemEditorController {
                                 @RequestParam(name = "new", required = false) String structureName) {
         ItemEditor editor = new ItemEditor();
 
-        editor.setSequenceTemplateProvider(new ItemEditor.SequenceTemplateProvider() {
+        editor.setPayloadGroupTemplateProvider(new ItemEditor.PayloadGroupTemplateProvider() {
             @Override
-            public String getTemplate(Sequence sequence) {
-                Attribute attribute = itemService.getAttribute(sequence);
+            public String getTemplate(PayloadGroup payloadGroup) {
+                Attribute attribute = itemService.getAttribute(payloadGroup);
 
-                if (attribute instanceof BooleanAttribute) {
-                    return "admin/item/editor/sequence-of-booleans";
+                if (attribute instanceof ItemAttribute) {
+                    return "admin/item/editor/item-payload-group";
                 } else {
-
-                    if (attribute instanceof TextAttribute) {
-                        boolean multiline = ((TextAttribute) attribute).isMultiline();
-                        if (multiline) {
-                            return "admin/item/editor/sequence-of-multiline-texts";
-                        } else {
-                            return "admin/item/editor/sequence-of-texts";
-                        }
-                    } else if (attribute instanceof LinkAttribute) {
-                        return "admin/item/editor/sequence-of-links";
-                    } else if (attribute instanceof IconAttribute) {
-                        return "admin/item/editor/sequence-of-icons";
-                    } else if (attribute instanceof ImageAttribute) {
-                        return "admin/item/editor/sequence-of-images";
-                    } else if (attribute instanceof ItemAttribute) {
-                        return "admin/item/editor/sequence-of-items";
-                    } else {
-                        throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
-                    }
+                    return "admin/item/editor/payload-group";
                 }
             }
         });
+
+        editor.setPayloadTemplateProvider(new ItemEditor.PayloadTemplateProvider() {
+            @Override
+            public String getTemplate(Payload payload) {
+                Attribute attribute = itemService.getAttribute(payload);
+
+                if (attribute instanceof TextAttribute) {
+                    boolean multiline = ((TextAttribute) attribute).isMultiline();
+                    if (multiline) {
+                        return "admin/item/editor/multiline-text-payload";
+                    } else {
+                        return "admin/item/editor/text-payload";
+                    }
+                } else if (attribute instanceof LinkAttribute) {
+                    return "admin/item/editor/link-payload";
+                } else if (attribute instanceof IconAttribute) {
+                    return "admin/item/editor/icon-payload";
+                } else if (attribute instanceof ImageAttribute) {
+                    return "admin/item/editor/image-payload";
+                } else if (attribute instanceof YesNoAttribute) {
+                    return "admin/item/editor/boolean-payload";
+                } else {
+                    throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
+                }
+            }
+        });
+
+
         if (itemId != null) {
             Item item = itemService.getItem(itemId);
             editor.setItem(item);
@@ -142,14 +152,6 @@ public class ItemEditorController {
         return redirect(item);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    protected ModelAndView handleError(Exception e, ModelAndView modelAndView) {
-//
-//        modelAndView.addObject("e", e);
-//        modelAndView.setViewName("admin/exception");
-//        return modelAndView;
-//    }
-
     @RequestMapping(path = "edit")
     protected String edit(@ModelAttribute ItemEditor editor,
                           BindingResult editorBinding,
@@ -188,15 +190,15 @@ public class ItemEditorController {
                             @RequestParam(name = "attribute") String attributeName,
                             @RequestParam(name = "structure") String structureName) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
 
         Item item = itemService.createEmbeddedItem(structureName);
         Attribute attribute = itemService.getAttribute(sequence);
-        ItemPayload payload = (ItemPayload) attribute.createPayload();
-        payload.setValue(item);
+        ItemRelation payload = (ItemRelation) attribute.createPayload();
+        payload.setTarget(item);
         sequence.addPayload(payload);
-        editor.setCollapsed(payload, false);
+        payload.setCompressed(false);
 
         return redirect(item);
     }
@@ -207,8 +209,8 @@ public class ItemEditorController {
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         Attribute attribute = itemService.getAttribute(sequence);
         Payload payload = attribute.createPayload();
         sequence.addPayload(payload);
@@ -223,8 +225,8 @@ public class ItemEditorController {
                                    @RequestParam(name = "attribute") String attributeName,
                                    @RequestParam(name = "index") int index) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         sequence.movePayload(index, index - 1);
 
         return redirect(editor);
@@ -237,8 +239,8 @@ public class ItemEditorController {
                                      @RequestParam(name = "attribute") String attributeName,
                                      @RequestParam(name = "index") int index) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         sequence.movePayload(index, index + 1);
 
         return redirect(editor);
@@ -251,8 +253,8 @@ public class ItemEditorController {
                                    @RequestParam(name = "attribute") String attributeName,
                                    @RequestParam(name = "index") int index) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         sequence.removePayload(index);
 
         return redirect(editor);
@@ -265,10 +267,10 @@ public class ItemEditorController {
                                  @RequestParam(name = "attribute") String attributeName,
                                  @RequestParam(name = "index") int index) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        ItemPayload payload = (ItemPayload) sequence.getPayload(index);
-        editor.setCollapsed(payload, false);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
+        ItemRelation payload = (ItemRelation) sequence.getPayload(index);
+        payload.setCompressed(false);
 
         return redirect(editor);
     }
@@ -281,10 +283,10 @@ public class ItemEditorController {
                                   @RequestParam(name = "attribute") String attributeName,
                                   @RequestParam(name = "index") int index) {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        ItemPayload payload = (ItemPayload) sequence.getPayload(index);
-        editor.setCollapsed(payload, true);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
+        ItemRelation payload = (ItemRelation) sequence.getPayload(index);
+        payload.setCompressed(true);
 
         return redirect(editor);
     }
@@ -300,14 +302,14 @@ public class ItemEditorController {
                                  @RequestParam(name = "index") int index,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        ImagePayload payload = (ImagePayload) sequence.getPayload(index);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup payloadGroup = (PayloadGroup) editor.getPropertyValue(propertyPath);
+        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+        Image image = relation.getTarget();
 
-        Image image = payload.getImage();
         if (image == null) {
             image = new Image();
-            payload.setImage(image);
+            relation.setTarget(image);
         }
 
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -338,11 +340,12 @@ public class ItemEditorController {
                                  @RequestParam(name = "index") int index,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        String propertyPath = String.format("%s.sequences[%s]", nestedPath, attributeName);
-        Sequence sequence = (Sequence) editor.getPropertyValue(propertyPath);
-        ImagePayload payload = (ImagePayload) sequence.getPayload(index);
+        String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
+        PayloadGroup payloadGroup = (PayloadGroup) editor.getPropertyValue(propertyPath);
+        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+        Image image = (Image) relation.getTarget();
 
-        payload.setImage(null);
+        relation.setTarget(null);
 
         return redirect(editor);
     }

@@ -8,6 +8,6 @@ public class ImageAttribute extends AssetAttribute {
 
     @Override
     public Payload createPayload() {
-        return new ImagePayload();
+        return new ImageRelation();
     }
 }

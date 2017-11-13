@@ -8,6 +8,6 @@ public class LinkAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new LinkPayload();
+        return new Link();
     }
 }

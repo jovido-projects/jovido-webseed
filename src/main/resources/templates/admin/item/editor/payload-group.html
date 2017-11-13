@@ -1,0 +1,31 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<div class="form-group" th:each="payload,payloadItr : ${group.payloads}">
+    <th:block>
+        <label>
+            <span th:text="${attribute.name}">Attribute name</span>
+            <span th:if="${group.payloads.size() > 1}">#[[${payloadItr.index + 1}]]</span>
+            <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
+
+        </label>
+        <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
+            <th:block th:replace="admin/item/editor/payload-actions" />
+        </div>
+    </th:block>
+
+    <th:block th:replace="${editor.getPayloadTemplate(payload)}" />
+</div>
+<th:block th:remove="${group.length() >= attribute.capacity} ? all : _">
+    <div class="btn-group btn-group-sm">
+        <button class="btn btn-default"
+                th:disabled="${group.length() >= attribute.capacity} ? disabled : _"
+                th:formaction="@{append(
+                    nested-path=${nestedPath},
+                    attribute=${attribute.name})}">
+            <span>Append</span>
+            <span th:text="${attribute.name}">Attribute name</span>
+        </button>
+    </div>
+</th:block>
+
+</html>

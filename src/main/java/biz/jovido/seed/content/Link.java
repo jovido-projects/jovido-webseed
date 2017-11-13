@@ -9,33 +9,22 @@ import java.net.URI;
  * @author Stephan Grundner
  */
 @Entity
-public class Link {
+@SecondaryTable(name = "link")
+public class Link extends Payload {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String text;
-
-    @Column(length = 255 * 16)
+    @Column(table = "link", length = 255 * 16)
     @Convert(converter = URIConverter.class)
     private URI uri;
+
+    @Column(table = "link")
     private String target;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getText() {
-        return text;
+        return super.getText();
     }
 
     public void setText(String text) {
-        this.text = text;
+        super.setText(text);
     }
 
     public URI getUri() {
@@ -52,5 +41,14 @@ public class Link {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    @Override
+    public Payload copy() {
+        Link copy = new Link();
+        copy.setUri(getUri());
+        copy.setTarget(getTarget());
+
+        return copy;
     }
 }

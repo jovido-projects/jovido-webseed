@@ -1,11 +1,18 @@
 package biz.jovido.seed.configuration;
 
+import biz.jovido.seed.TemplateResolver;
+import biz.jovido.seed.component.ClassNameTemplateResolver;
+import biz.jovido.seed.thymeleaf.ComponentDialect;
+import biz.jovido.seed.thymeleaf.ContentDialect;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import java.util.Set;
 
 /**
  * @author Stephan Grundner
@@ -36,27 +43,25 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
         registry.addRedirectViewController("/admin/user", "/admin/user/");
     }
 
-//    @Autowired
-//    private SpringTemplateEngine templateEngine;
-//
-//    @PostConstruct
-//    void init() {
-//        templateEngine.addDialect(new ComponentDialect());
-//    }
+    @Bean
+    public ClassNameTemplateResolver classNameTemplateResolver() {
+        return new ClassNameTemplateResolver();
+    }
 
-//    @Bean
-//    public AliasRequestMapping aliasRequestMapping() {
-//        AliasRequestMapping requestMapping = new AliasRequestMapping();
-//        requestMapping.setOrder(0);
-//
-//
-//        return requestMapping;
-//    }
+    @Bean
+    public ContentDialect contentDialect() {
+        ContentDialect dialect = new ContentDialect();
 
-//    @Bean
-//    OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
-//
-//    }
+        return dialect;
+    }
+
+    @Bean
+    public ComponentDialect componentDialect(Set<TemplateResolver> templateResolvers) {
+        ComponentDialect dialect = new ComponentDialect();
+        dialect.setTemplateResolvers(templateResolvers);
+
+        return dialect;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

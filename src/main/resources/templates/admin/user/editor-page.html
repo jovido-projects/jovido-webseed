@@ -1,5 +1,5 @@
-<html xmlns:th="//www.thymeleaf.org"
-      xmlns:field="//www.getwebseed.com/dialect/field"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:component="http://www.getwebseed.com/dialect/component"
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 <th:block th:fragment="main">
@@ -33,10 +33,8 @@
                 <!-- Content -->
                 <div class="col-md-12" >
 
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" class="form-control" th:field="*{user.username}" th:disabled="${user?.id != null} ?: _">
-                    </div>
+                    <th:block component:replace="${editor.username}"/>
+
                     <div class="btn-group">
                         <button class="btn btn-primary" th:formaction="@{save}">
                             <i class="fa fa-floppy-o"></i>

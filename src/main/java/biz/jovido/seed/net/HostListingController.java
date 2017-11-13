@@ -1,6 +1,6 @@
 package biz.jovido.seed.net;
 
-import biz.jovido.seed.mvc.Breadcrumb;
+import biz.jovido.seed.ui.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

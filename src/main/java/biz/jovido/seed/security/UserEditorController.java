@@ -1,7 +1,7 @@
 package biz.jovido.seed.security;
 
-import biz.jovido.seed.mvc.Breadcrumb;
-import biz.jovido.seed.mvc.ErrorUtils;
+import biz.jovido.seed.ui.Breadcrumb;
+import biz.jovido.seed.ui.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

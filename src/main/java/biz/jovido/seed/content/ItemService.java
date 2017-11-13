@@ -1,12 +1,11 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.UsedInTemplates;
 import biz.jovido.seed.net.HostService;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -69,79 +68,102 @@ public class ItemService {
         return null;
     }
 
-    public Sequence<String> getLabel(Item item) {
+    @Deprecated
+    public PayloadGroup getLabel(Item item) {
         if (item != null) {
             Structure structure = getStructure(item);
             String attributeName = structure.getLabelAttributeName();
-            return (Sequence<String>) item.getSequence(attributeName);
+            return item.getPayloadGroup(attributeName);
         }
 
         return null;
     }
 
+    public Object getPayloadValue(Payload payload) {
+//        if (payload != null) {
+//            Object value = payload.getValue();
+//            if (value != null) {
+//                return value;
+//            }
+//        }
+
+        return null;
+    }
+
+    public Object getPayloadValue(PayloadGroup payloadGroup, int index) {
+        if (payloadGroup != null) {
+            Payload payload = payloadGroup.getPayload(index);
+            return getPayloadValue(payload);
+        }
+
+        return null;
+    }
+
+    @Deprecated
     public String getLabelText(Item item) {
-        if (item != null) {
-            Sequence<String> label = getLabel(item);
-            if (label == null) {
-//                Structure structure = getStructure(item);
-                Sequence<?> title = item.getSequence("title");
-                if (title != null && title.size() > 0) {
-                    Object titleObject = title.get(0);
-                    return titleObject != null
-                            ? titleObject.toString() : null;
-                }
-                return null;
-            }
-            return label.get(0);
-        }
+//        if (item != null) {
+//            PayloadGroup label = getLabel(item);
+//            if (label == null) {
+////                Structure structure = getStructure(item);
+//                PayloadGroup title = item.getPayloadGroup("title");
+//                if (title != null && title.getPayloads().size() > 0) {
+//                    Object titleObject = title.getPayload(0).getValue();
+//                    return titleObject != null
+//                            ? titleObject.toString() : null;
+//                }
+//                return null;
+//            }
+//            return (String) getPayloadValue(label, 0);
+//        }
 
         return null;
     }
 
-    private Sequence applySequence(Item item, Structure structure, String attributeName) {
-        Sequence sequence = item.getSequence(attributeName);
-        if (sequence == null) {
-            sequence = new Sequence();
-            item.setSequence(attributeName, sequence);
+    private PayloadGroup applyPayloadGroup(Item item, Structure structure, String attributeName) {
+        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+        if (payloadGroup == null) {
+            payloadGroup = new PayloadGroup();
+            item.setPayloadGroup(attributeName, payloadGroup);
         }
 
         Attribute attribute = structure.getAttribute(attributeName);
         if (!(attribute instanceof ItemAttribute)) {
-            int remaining = attribute.getRequired() - sequence.length();
+            int remaining = attribute.getRequired() - payloadGroup.length();
             while (remaining-- > 0) {
                 Payload payload = attribute.createPayload();
-                sequence.addPayload(payload);
+                payloadGroup.addPayload(payload);
             }
         }
 
-        return sequence;
+        return payloadGroup;
     }
 
-    private Sequence applySequence(Item item, String attributeName) {
+    private PayloadGroup applyPayloadGroup(Item item, String attributeName) {
         Structure structure = getStructure(item);
-        return applySequence(item, structure, attributeName);
+        return applyPayloadGroup(item, structure, attributeName);
     }
 
-    public Sequence getOrCreateSequence(Item item, String attributeName) {
-        Sequence sequence = item.getSequence(attributeName);
-        if (sequence == null) {
-            sequence = applySequence(item, attributeName);
+    @UsedInTemplates
+    public PayloadGroup getOrCreatePayloadGroup(Item item, String attributeName) {
+        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+        if (payloadGroup == null) {
+            payloadGroup = applyPayloadGroup(item, attributeName);
         }
 
-        return sequence;
+        return payloadGroup;
     }
 
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
-            Sequence sequence = applySequence(item, structure, attributeName);
+            PayloadGroup payloadGroup = applyPayloadGroup(item, structure, attributeName);
 
             Attribute attribute = structure.getAttribute(attributeName);
             if (!(attribute instanceof ItemAttribute)) {
-                int remaining = attribute.getRequired() - sequence.length();
+                int remaining = attribute.getRequired() - payloadGroup.length();
                 while (remaining-- > 0) {
                     Payload payload = attribute.createPayload();
-                    sequence.addPayload(payload);
+                    payloadGroup.addPayload(payload);
                 }
             }
         }
@@ -193,7 +215,9 @@ public class ItemService {
         return isPublished(item) ? Mode.LIVE : Mode.PREVIEW;
     }
 
-    public String getPath(Item item) {
+    @UsedInTemplates
+    public String getPath2(Object object) {
+        Item item = (Item) object;
         if (item != null) {
             String path = item.getPath();
             if (StringUtils.isEmpty(path)) {
@@ -211,34 +235,34 @@ public class ItemService {
         return null;
     }
 
-    public String getHtml(Sequence<String> sequence, int index) {
-        int size = sequence.size();
-        if (index < size) {
-            String html = sequence.get(index);
-            return htmlService.filterHtml(html);
-        }
-
-        return null;
-    }
-
-    public String getHtml(Sequence<String> sequence) {
-        return getHtml(sequence, 0);
-    }
-
-    public String getHtml(Item item, String attributeName, int index) {
-        if (item != null) {
-            Sequence<String> sequence = item.getSequence(attributeName);
-            if (sequence != null) {
-                return getHtml(sequence, index);
-            }
-        }
-
-        return null;
-    }
-
-    public String getHtml(Item item, String attributeName) {
-        return getHtml(item, attributeName, 0);
-    }
+//    public String getHtml(PayloadGroup payloadGroup, int index) {
+////        int size = payloadGroup.getPayloads().size();
+////        if (index < size) {
+////            String html = (String) payloadGroup.getPayload(index).getValue();
+////            return htmlService.filterHtml(html);
+////        }
+//
+//        return null;
+//    }
+//
+//    public String getHtml(PayloadGroup payloadGroup) {
+//        return getHtml(payloadGroup, 0);
+//    }
+//
+//    public String getHtml(Item item, String attributeName, int index) {
+//        if (item != null) {
+//            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+//            if (payloadGroup != null) {
+//                return getHtml(payloadGroup, index);
+//            }
+//        }
+//
+//        return null;
+//    }
+//
+//    public String getHtml(Item item, String attributeName) {
+//        return getHtml(item, attributeName, 0);
+//    }
 
     @Transactional
     public Item saveItem(Item item) {
@@ -249,46 +273,9 @@ public class ItemService {
         return entityManager.merge(item);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Payload<T> copyPayload(Payload<T> from) {
-        Attribute attribute = getAttribute(from);
-        Payload<T> to = (Payload<T>) attribute.createPayload();
-        to.setValue(from.getValue());
-
-        return to;
-    }
-
-    private <T> Sequence<T> copySequence(Sequence<T> from) {
-        Sequence<T> to = new Sequence<>();
-        to.setAttributeName(from.getAttributeName());
-
-        for (int i = 0; i < from.length(); i++) {
-            Payload<T> payload = from.getPayload(i);
-            to.addPayload(copyPayload(payload));
-        }
-
-        return to;
-    }
-
-    private Item copyItem(Item from) {
-        Item to = new Item();
-        to.setLeaf(from.getLeaf());
-        to.setStructureName(from.getStructureName());
-        to.setLocale(from.getLocale());
-        to.setPath(from.getPath());
-
-        Structure structure = getStructure(from);
-        for (String attributeName : structure.getAttributeNames()) {
-            Sequence<?> sequence = from.getSequence(attributeName);
-            to.setSequence(attributeName, copySequence(sequence));
-        }
-
-        return to;
-    }
-
     @Transactional
     public Item publishItem(final Item item) {
-        Item current = copyItem(item);
+        Item current = item.copy();
         current = entityManager.merge(current);
         Leaf history = current.getLeaf();
         history.setPublished(item);
@@ -298,61 +285,15 @@ public class ItemService {
         return current;
     }
 
-    public Leaf getLeaf(Sequence sequence) {
-        if (sequence != null) {
-            Item item = sequence.getItem();
-            return getLeaf(item);
-        }
-
-        return null;
-    }
-
-    public Leaf getLeaf(Payload payload) {
-        if (payload != null) {
-            Sequence sequence = payload.getSequence();
-            return getLeaf(sequence);
-        }
-
-        return null;
-    }
-
-    public Leaf getLeaf(Item item) {
-        if (item != null) {
-            Leaf leaf = item.getLeaf();
-            if (leaf == null) {
-                ItemPayload payload = item.getPayload();
-                if (payload != null) {
-                    Sequence sequence = payload.getSequence();
-                    return getLeaf(sequence);
-                }
-            }
-        }
-
-        return null;
-    }
-
-//    public Item getPublishedItem(Item item) {
-//        if (item != null) {
-//            Leaf leaf = item.getLeaf();
-//            if (leaf != null) {
-//                return leaf.getPublished();
-//            }
-//        }
-//
-//        return null;
-//    }
-
-
-
-    public Attribute getAttribute(Sequence sequence) {
-        Item item = sequence.getItem();
+    public Attribute getAttribute(PayloadGroup payloadGroup) {
+        Item item = payloadGroup.getItem();
         Structure structure = getStructure(item);
-        String attributeName = sequence.getAttributeName();
+        String attributeName = payloadGroup.getAttributeName();
         return structure.getAttribute(attributeName);
     }
 
     public Attribute getAttribute(Payload payload) {
-        return getAttribute(payload.getSequence());
+        return getAttribute(payload.getGroup());
     }
 
     public List<Locale> getAllSupportedLocales() {

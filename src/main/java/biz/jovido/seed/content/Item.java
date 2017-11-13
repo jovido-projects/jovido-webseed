@@ -1,8 +1,7 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.security.User;
 import biz.jovido.seed.LocaleConverter;
-import biz.jovido.seed.util.UnmodifiableMapProxy;
+import biz.jovido.seed.security.User;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -17,7 +16,7 @@ import java.util.*;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Item extends UnmodifiableMapProxy<String, Sequence> {
+public class Item {
 
     @Id
     @GeneratedValue
@@ -25,9 +24,6 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Leaf leaf;
-
-    @OneToOne
-    private ItemPayload payload;
 
     private String structureName;
 
@@ -38,9 +34,9 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     @Column(length = 255 * 4)
     private String path;
 
-    @OneToMany(mappedBy = "item", targetEntity = Sequence.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "item", targetEntity = PayloadGroup.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "attributeName")
-    private final Map<String, Sequence> sequences = new HashMap<>();
+    private final Map<String, PayloadGroup> payloadGroups = new HashMap<>();
 
     @CreatedDate
     private Date createdAt;
@@ -56,11 +52,14 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
     @ManyToOne
     private User lastModifiedBy;
 
+    @Transient
+    private final Set<ItemChangeListener> changeListeners = new LinkedHashSet<>();
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /*public*/ void setId(Long id) {
         this.id = id;
     }
 
@@ -68,23 +67,15 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return leaf;
     }
 
-    public void setLeaf(Leaf leaf) {
+    /*public*/ void setLeaf(Leaf leaf) {
         this.leaf = leaf;
-    }
-
-    public ItemPayload getPayload() {
-        return payload;
-    }
-
-    /*public*/ void setPayload(ItemPayload payload) {
-        this.payload = payload;
     }
 
     public String getStructureName() {
         return structureName;
     }
 
-    public void setStructureName(String structureName) {
+    /*public*/ void setStructureName(String structureName) {
         this.structureName = structureName;
     }
 
@@ -92,7 +83,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return locale;
     }
 
-    public void setLocale(Locale locale) {
+    /*public*/ void setLocale(Locale locale) {
         this.locale = locale;
     }
 
@@ -100,28 +91,32 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return path;
     }
 
-    public void setPath(String path) {
+    /*public*/ void setPath(String path) {
         this.path = path;
     }
 
-    public Map<String, Sequence> getSequences() {
-        return Collections.unmodifiableMap(sequences);
+    public Map<String, PayloadGroup> getPayloadGroups() {
+        return Collections.unmodifiableMap(payloadGroups);
     }
 
-    public Sequence getSequence(String attributeName) {
-        return sequences.get(attributeName);
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(payloadGroups.keySet());
     }
 
-    public void setSequence(String attributeName, Sequence sequence) {
-        Sequence replaced = sequences.put(attributeName, sequence);
-        if (replaced != null) {
-            replaced.setItem(null);
-            replaced.setAttributeName(null);
+    public PayloadGroup getPayloadGroup(String attributeName) {
+        return payloadGroups.get(attributeName);
+    }
+
+    /*public*/ void setPayloadGroup(String attributeName, PayloadGroup payloadGroup) {
+        PayloadGroup replacedPayloadGroup = payloadGroups.put(attributeName, payloadGroup);
+        if (replacedPayloadGroup != null) {
+            replacedPayloadGroup.setItem(null);
+            replacedPayloadGroup.setAttributeName(null);
         }
 
-        if (sequence != null) {
-            sequence.setItem(this);
-            sequence.setAttributeName(attributeName);
+        if (payloadGroup != null) {
+            payloadGroup.setItem(this);
+            payloadGroup.setAttributeName(attributeName);
         }
     }
 
@@ -129,7 +124,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    /*public*/ void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -137,7 +132,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return lastModifiedAt;
     }
 
-    public void setLastModifiedAt(Date lastModifiedAt) {
+    /*public*/ void setLastModifiedAt(Date lastModifiedAt) {
         this.lastModifiedAt = lastModifiedAt;
     }
 
@@ -145,7 +140,7 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    /*public*/ void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -153,19 +148,9 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return lastModifiedBy;
     }
 
-    public void setLastModifiedBy(User lastModifiedBy) {
+    /*public*/ void setLastModifiedBy(User lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
     }
-
-//    public Locale getLocale() {
-//        Leaf chronicle = getLeaf();
-//        if (chronicle != null) {
-//
-//            return chronicle.getLocale();
-//        }
-//
-//        return null;
-//    }
 
     public boolean isCurrent() {
         Leaf history = getLeaf();
@@ -190,8 +175,35 @@ public class Item extends UnmodifiableMapProxy<String, Sequence> {
         return false;
     }
 
-    @Override
-    protected Map<String, Sequence> getMap() {
-        return sequences;
+    public Set<ItemChangeListener> getChangeListeners() {
+        return Collections.unmodifiableSet(changeListeners);
+    }
+
+    public boolean addChangeListener(ItemChangeListener changeListener) {
+        return changeListeners.add(changeListener);
+    }
+
+    public boolean removeChangeListener(ItemChangeListener changeListener) {
+        return changeListeners.remove(changeListener);
+    }
+
+    public Item copy() {
+        Item copy = new Item();
+        copy.setLeaf(getLeaf());
+        copy.setStructureName(getStructureName());
+        copy.setLocale(getLocale());
+        copy.setPath(getPath());
+
+        copy.setCreatedAt(getCreatedAt());
+        copy.setLastModifiedAt(getLastModifiedAt());
+        copy.setCreatedBy(getCreatedBy());
+        copy.setLastModifiedBy(getLastModifiedBy());
+
+        for (String attributeName : getAttributeNames()) {
+            PayloadGroup payloadGroup = getPayloadGroup(attributeName);
+            copy.setPayloadGroup(attributeName, payloadGroup.copy());
+        }
+
+        return copy;
     }
 }

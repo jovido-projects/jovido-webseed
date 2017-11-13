@@ -16,6 +16,6 @@ public class ItemAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new ItemPayload();
+        return new ItemRelation();
     }
 }

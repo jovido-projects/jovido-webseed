@@ -1,7 +1,7 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
-import biz.jovido.seed.content.Sequence;
+import biz.jovido.seed.content.PayloadGroup;
 import biz.jovido.seed.thymeleaf.TemplateNameResolver;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
@@ -69,7 +69,7 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
                 templateName = item.getStructureName();
             }
 
-            for (Sequence<?> sequence : item.getSequences().values()) {
+            for (PayloadGroup sequence : item.getPayloadGroups().values()) {
                 String attributeName = sequence.getAttributeName();
                 structureHandler.setLocalVariable(attributeName, sequence);
             }

@@ -53,8 +53,8 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
-    public BooleanAttributeConfigurer addBooleanAttribute(String name) {
-        return parentConfigurer.addBooleanAttribute(name);
+    public YesNoAttributeConfigurer addYesNoAttribute(String name) {
+        return parentConfigurer.addYesNoAttribute(name);
     }
 
     @Override

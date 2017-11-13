@@ -3,40 +3,27 @@ package biz.jovido.seed.content;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * @author Stephan Grundner
  */
 public class ItemEditor {
 
-    public interface SequenceTemplateProvider {
+    public interface PayloadGroupTemplateProvider {
 
-        String getTemplate(Sequence sequence);
+        String getTemplate(PayloadGroup payloadGroup);
     }
 
-    public static class PayloadState {
+    public interface PayloadTemplateProvider {
 
-        private boolean collapsed = true;
-
-        public boolean isCollapsed() {
-            return collapsed;
-        }
-
-        public void setCollapsed(boolean collapsed) {
-            this.collapsed = collapsed;
-        }
+        String getTemplate(Payload payload);
     }
 
     private final BeanWrapper wrapper = new BeanWrapperImpl(this);
 
     private Item item;
-//    private UUID parentNodeUuid;
-    private SequenceTemplateProvider sequenceTemplateProvider;
 
-    private final Map<UUID, PayloadState> stateByUuid = new HashMap<>();
+    private PayloadGroupTemplateProvider payloadGroupTemplateProvider;
+    private PayloadTemplateProvider payloadTemplateProvider;
 
     public Item getItem() {
         return item;
@@ -46,49 +33,31 @@ public class ItemEditor {
         this.item = item;
     }
 
-//    public UUID getParentNodeUuid() {
-//        return parentNodeUuid;
-//    }
-//
-//    public void setParentNodeUuid(UUID parentNodeUuid) {
-//        this.parentNodeUuid = parentNodeUuid;
-//    }
-
-    public SequenceTemplateProvider getSequenceTemplateProvider() {
-        return sequenceTemplateProvider;
+    public PayloadGroupTemplateProvider getPayloadGroupTemplateProvider() {
+        return payloadGroupTemplateProvider;
     }
 
-    public void setSequenceTemplateProvider(SequenceTemplateProvider sequenceTemplateProvider) {
-        this.sequenceTemplateProvider = sequenceTemplateProvider;
+    public void setPayloadGroupTemplateProvider(PayloadGroupTemplateProvider payloadGroupTemplateProvider) {
+        this.payloadGroupTemplateProvider = payloadGroupTemplateProvider;
+    }
+
+    public String getPayloadGroupTemplate(PayloadGroup payloadGroup) {
+        return getPayloadGroupTemplateProvider().getTemplate(payloadGroup);
+    }
+
+    public PayloadTemplateProvider getPayloadTemplateProvider() {
+        return payloadTemplateProvider;
+    }
+
+    public void setPayloadTemplateProvider(PayloadTemplateProvider payloadTemplateProvider) {
+        this.payloadTemplateProvider = payloadTemplateProvider;
+    }
+
+    public String getPayloadTemplate(Payload payload) {
+        return getPayloadTemplateProvider().getTemplate(payload);
     }
 
     public Object getPropertyValue(String propertyPath) {
         return wrapper.getPropertyValue(propertyPath);
-    }
-
-    private PayloadState getState(UUID uuid) {
-        PayloadState state = stateByUuid.get(uuid);
-        if (state == null) {
-            state = new PayloadState();
-            stateByUuid.put(uuid, state);
-        }
-
-        return state;
-    }
-
-    public boolean isCollapsed(Payload payload) {
-        if (payload != null) {
-            UUID uuid = payload.getUuid();
-            PayloadState state = getState(uuid);
-            return state.isCollapsed();
-        }
-
-        return false;
-    }
-
-    public void setCollapsed(Payload payload, boolean collapsed) {
-        UUID uuid = payload.getUuid();
-        PayloadState state = getState(uuid);
-        state.setCollapsed(collapsed);
     }
 }

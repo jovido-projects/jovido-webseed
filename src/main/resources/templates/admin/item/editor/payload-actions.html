@@ -1,0 +1,28 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:if="${group.length() > 1}">
+    <button class="btn btn-default"
+            th:disabled="${payloadItr.index == 0} ? disabled : _"
+            th:formaction="@{move-payload-up(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+    <button class="btn btn-default"
+            th:disabled="${payloadItr.index == group.length() - 1} ? disabled : _"
+            th:formaction="@{move-payload-down(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+        <i class="fa fa-arrow-down"></i>
+    </button>
+</th:block>
+
+<button class="btn btn-default" th:if="${group.length() > attribute.required}"
+        th:formaction="@{remove-payload(
+                        nested-path=${nestedPath},
+                        attribute=${attribute.name},
+                        index=${payloadItr.index})}">
+    <i class="fa fa-remove"></i>
+</button>
+</html>

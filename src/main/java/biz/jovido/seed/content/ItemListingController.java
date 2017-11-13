@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.mvc.*;
 import biz.jovido.seed.security.User;
+import biz.jovido.seed.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -42,7 +42,7 @@ public class ItemListingController {
         HasColumns.Column labelColumn = listing.addColumn("label", "seed.item.label");
         labelColumn.setValueResolver((HasColumns.Column column, Object source) -> {
             Item item = (Item) source;
-            return itemService.getLabelText(item);
+            return "juhu";
         });
         labelColumn.setValueTemplate("admin/item/listing/label-value");
 

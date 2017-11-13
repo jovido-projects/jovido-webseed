@@ -9,7 +9,7 @@ public interface StructureConfiguration extends Configuration {
     StructureConfigurer setLabelAttribute(String name);
 
     TextAttributeConfigurer addTextAttribute(String name);
-    BooleanAttributeConfigurer addBooleanAttribute(String name);
+    YesNoAttributeConfigurer addYesNoAttribute(String name);
     IconAttributeConfigurer addIconAttribute(String name);
     ImageAttributeConfigurer addImageAttribute(String name);
     ItemAttributeConfigurer addItemAttribute(String name);

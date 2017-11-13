@@ -57,8 +57,8 @@ public class StructureConfigurer implements StructureConfiguration {
     }
 
     @Override
-    public BooleanAttributeConfigurer addBooleanAttribute(String name) {
-        return addAttribute(BooleanAttribute.class, BooleanAttributeConfigurer.class, name);
+    public YesNoAttributeConfigurer addYesNoAttribute(String name) {
+        return addAttribute(YesNoAttribute.class, YesNoAttributeConfigurer.class, name);
     }
 
     @Override

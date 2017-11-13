@@ -7,6 +7,6 @@ public class IconAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new IconPayload();
+        return new Icon();
     }
 }

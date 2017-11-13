@@ -18,6 +18,6 @@ public class TextAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new TextPayload();
+        return new Text();
     }
 }

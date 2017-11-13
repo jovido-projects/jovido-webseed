@@ -1,8 +1,8 @@
 package biz.jovido.seed.security;
 
-import biz.jovido.seed.mvc.Action;
-import biz.jovido.seed.mvc.Breadcrumb;
-import biz.jovido.seed.mvc.Listing;
+import biz.jovido.seed.ui.Action;
+import biz.jovido.seed.ui.Breadcrumb;
+import biz.jovido.seed.ui.Listing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

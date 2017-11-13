@@ -1,6 +1,6 @@
 package biz.jovido.seed.security;
 
-import biz.jovido.seed.mvc.Listing;
+import biz.jovido.seed.ui.Listing;
 
 /**
  * @author Stephan Grundner
