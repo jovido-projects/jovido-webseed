@@ -27,6 +27,10 @@ public class PayloadFieldGroup {
         return id;
     }
 
+    public NestedItemEditor getEditor() {
+        return editor;
+    }
+
     public Attribute getAttribute() {
         return editor.itemService.getAttribute(getPayloadGroup());
     }

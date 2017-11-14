@@ -142,6 +142,16 @@ public class NestedItemEditor extends PayloadField {
         return null;
     }
 
+    @Override
+    public String getCaption() {
+        Payload payload = getPayload();
+        if (payload != null) {
+            return getStructure().getName() + " " + (payload.getOrdinal() + 1);
+        } else {
+            return getStructure().getName();
+        }
+    }
+
     public NestedItemEditor(PayloadFieldGroup group, ItemService itemService) {
         super(group);
         this.itemService = itemService;
