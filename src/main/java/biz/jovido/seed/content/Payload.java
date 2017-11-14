@@ -13,6 +13,10 @@ public abstract class Payload {
     @GeneratedValue
     private Long id;
 
+//    @Column(unique = true)
+//    @Convert(converter = UUIDConverter.class)
+//    private UUID uuid;
+
     @ManyToOne(targetEntity = PayloadGroup.class)
     private PayloadGroup group;
 
@@ -31,6 +35,18 @@ public abstract class Payload {
     /*public*/ void setId(Long id) {
         this.id = id;
     }
+
+//    public UUID getUuid() {
+//        if (uuid == null) {
+//            uuid = UUID.randomUUID();
+//        }
+//
+//        return uuid;
+//    }
+//
+//    /*public*/ void setUuid(UUID uuid) {
+//        this.uuid = uuid;
+//    }
 
     public PayloadGroup getGroup() {
         return group;

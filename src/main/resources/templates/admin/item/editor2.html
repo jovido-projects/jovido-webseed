@@ -1,9 +1,0 @@
-<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-
-<th:block th:each="fieldGroup,fieldGroupItr : ${self.fieldGroups.values()}">
-    <p th:if="${fieldGroupItr.index > 0}"></p>
-    <p th:if="${fieldGroupItr.index > 0}"><br /></p>
-    <th:block component:replace="${fieldGroup}" />
-</th:block>
-
-</html>

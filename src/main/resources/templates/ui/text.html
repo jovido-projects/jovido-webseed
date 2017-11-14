@@ -1,8 +1,0 @@
-<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<th:block th:if="${text.messageCode != null}">
-    [[${#messages.msg(text.messageCode, text.messageArguments)}]]
-</th:block>
-<th:block th:if="${text.messageCode == null}">
-    [[${text.defaultMessage}]]
-</th:block>
-</html>
