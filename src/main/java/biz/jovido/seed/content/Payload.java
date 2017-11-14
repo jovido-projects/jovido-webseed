@@ -9,6 +9,9 @@ import javax.persistence.*;
 @DiscriminatorColumn(name = "type")
 public abstract class Payload {
 
+    @Column(insertable = false, updatable = false)
+    private String type;
+
     @Id
     @GeneratedValue
     private Long id;
@@ -27,6 +30,14 @@ public abstract class Payload {
 
     @Transient
     private boolean compressed = false;
+
+    public String getType() {
+        return type;
+    }
+
+    /*public*/ void setType(String type) {
+        this.type = type;
+    }
 
     public Long getId() {
         return id;

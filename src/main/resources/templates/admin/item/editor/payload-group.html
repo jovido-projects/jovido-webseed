@@ -9,11 +9,11 @@
 
         </label>
         <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
-            <th:block th:replace="admin/item/editor/payload-actions" />
+            <th:block th:replace="admin/item/editor/payload::actions" />
         </div>
     </th:block>
 
-    <th:block th:replace="${editor.getPayloadTemplate(payload)}" />
+    <th:block th:replace="__${editor.getPayloadTemplate(payload)}__" />
 </div>
 <th:block th:remove="${group.length() >= attribute.capacity} ? all : _">
     <div class="btn-group btn-group-sm">

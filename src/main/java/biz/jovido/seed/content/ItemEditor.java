@@ -1,12 +1,13 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.admin.NestedItemEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemEditor {
+public class ItemEditor extends NestedItemEditor {
 
     public interface PayloadGroupTemplateProvider {
 
@@ -20,18 +21,18 @@ public class ItemEditor {
 
     private final BeanWrapper wrapper = new BeanWrapperImpl(this);
 
-    private Item item;
+//    private Item item;
 
     private PayloadGroupTemplateProvider payloadGroupTemplateProvider;
     private PayloadTemplateProvider payloadTemplateProvider;
 
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
+//    public Item getItem() {
+//        return item;
+//    }
+//
+//    public void setItem(Item item) {
+//        this.item = item;
+//    }
 
     public PayloadGroupTemplateProvider getPayloadGroupTemplateProvider() {
         return payloadGroupTemplateProvider;
@@ -59,5 +60,13 @@ public class ItemEditor {
 
     public Object getPropertyValue(String propertyPath) {
         return wrapper.getPropertyValue(propertyPath);
+    }
+
+    public ItemEditor getSelf() {
+        return this;
+    }
+
+    public ItemEditor(ItemService itemService) {
+        super(null, itemService);
     }
 }

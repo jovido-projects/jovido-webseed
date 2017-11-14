@@ -1,0 +1,60 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div class="form-group" th:each="field,fieldItr : ${group.fields}">
+    <th:block>
+        <label th:if="${group.labelVisible}">
+            <span th:text="${attribute.name}">Attribute name</span>
+            <span th:if="${group.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
+            <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
+
+        </label>
+        <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
+            <th:block th:replace="admin/item/editor/field::actions" />
+        </div>
+    </th:block>
+
+    <th:block th:with="payload=${field.payload}">
+        <th:block th:replace="__${field.template}__" />
+    </th:block>
+</div>
+<!--<th:block th:remove="${group.fields.size() >= attribute.capacity} ? all : _">-->
+    <!--<div class="btn-group btn-group-sm">-->
+        <!--<button class="btn btn-default"-->
+                <!--th:disabled="${group.fields.size() >= attribute.capacity} ? disabled : _"-->
+                <!--th:formaction="@{append(-->
+                    <!--nested-path=${nestedPath},-->
+                    <!--attribute=${attribute.name})}">-->
+            <!--<span>Append</span>-->
+            <!--<span th:text="${attribute.name}">Attribute name</span>-->
+        <!--</button>-->
+    <!--</div>-->
+<!--</th:block>-->
+
+<th:block th:if="${group?.actions?.size() == 1}"
+          th:with="action=${group.actions[0]}">
+    <button class="btn btn-default"
+            th:formaction="${action.url}">
+        <span th:replace="admin/text(text=${action})">Append</span>
+    </button>
+</th:block>
+<th:block th:if="${group?.actions?.size() > 1}">
+    <div class="btn-group dropup">
+        <button type="button" th_disabled="${group.length() >= attribute.capacity} ? disabled : _"
+                class="btn btn-default dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <span th:replace="admin/text(text=${group.actions.text})">Append</span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li th:each="action : ${group.actions}">
+                <a th:href="${action.url}">
+                    <span th:replace="admin/text(text=${action})">Name</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</th:block>
+
+
+</html>

@@ -2,29 +2,53 @@ package biz.jovido.seed.content.admin;
 
 import biz.jovido.seed.content.Payload;
 
+import java.util.UUID;
+
 /**
  * @author Stephan Grundner
  */
 public class PayloadField {
 
-    private final PayloadFieldGroup fieldGroup;
-    private int ordinal;
+    private final String id = UUID.randomUUID().toString();
 
-    public int getOrdinal() {
-        return ordinal;
+    private final PayloadFieldGroup group;
+    private Payload payload;
+    private String template;
+    private boolean collapsed;
+
+    public String getId() {
+        return id;
     }
 
-    public void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
+    public PayloadFieldGroup getGroup() {
+        return group;
     }
 
     public Payload getPayload() {
-        return fieldGroup.getPayloadGroup().getPayload(ordinal);
+        return payload;
     }
 
-    public PayloadField(PayloadFieldGroup fieldGroup, int ordinal) {
-        this.fieldGroup = fieldGroup;
+    public void setPayload(Payload payload) {
+        this.payload = payload;
+    }
 
-        setOrdinal(ordinal);
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    public boolean isCollapsed() {
+        return collapsed;
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        this.collapsed = collapsed;
+    }
+
+    public PayloadField(PayloadFieldGroup group) {
+        this.group = group;
     }
 }

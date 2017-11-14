@@ -23,12 +23,12 @@
                     index=${payloadItr.index})}">
                 <i class="fa fa-expand"></i>
             </button>
-            <th:block th:replace="admin/item/editor/payload-actions" />
+            <th:block th:replace="admin/item/editor/payload::actions" />
         </div>
         </h4>
     </th:block>
 
-    <th:block th:replace="admin/item/editor/item-payload" />
+    <th:block th:replace="admin/item/editor/payload::item" />
 
 </div>
 <th:block th:remove="${group.length() >= attribute.capacity} ? all : _">

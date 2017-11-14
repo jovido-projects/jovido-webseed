@@ -74,6 +74,10 @@ public class PayloadGroup {
         if (payloads.add(payload)) {
             payload.setGroup(this);
             payload.setOrdinal(payloads.size() - 1);
+
+            for (ItemChangeListener changeListener : item.getChangeListeners()) {
+                changeListener.payloadAdded(item, payload);
+            }
         }
 
         return payload;
@@ -82,6 +86,10 @@ public class PayloadGroup {
     public void removePayload(int index) {
         Payload removed = payloads.remove(index);
         if (removed != null) {
+            for (ItemChangeListener changeListener : item.getChangeListeners()) {
+                changeListener.payloadRemoved(item, removed);
+            }
+
             removed.setGroup(null);
             removed.setOrdinal(-1);
 

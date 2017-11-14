@@ -1,9 +1,0 @@
-<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<th:block th:if="${!payload.compressed}">
-    <input type="text" class="form-control input-sm"
-           th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
-</th:block>
-<th:block th:if="${payload.compressed}">
-    <p th:text="${payload.value}">Text</p>
-</th:block>
-</html>

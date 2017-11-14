@@ -9,6 +9,16 @@ import java.util.ArrayList;
  */
 public class Actions extends AbstractListDecorator<Action> {
 
+    private Text text = new Text();
+
+    public Text getText() {
+        return text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
+    }
+
     public Actions() {
         super(new ArrayList<>());
     }

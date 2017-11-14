@@ -10,6 +10,7 @@ import java.net.URI;
  */
 @Entity
 @SecondaryTable(name = "link")
+@DiscriminatorValue("Link")
 public class Link extends Payload {
 
     @Column(table = "link", length = 255 * 16)
