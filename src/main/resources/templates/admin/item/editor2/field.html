@@ -1,0 +1,13 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag"
+      th:with="item=${entry.source}">
+
+<th:block th:fragment="actions">
+    <div class="btn-group btn-group-xs pull-right">
+        <button class="btn btn-default"
+                th:formaction="@{remove-field(field=${field.id})}">
+            <i class="fa fa-remove"></i>
+        </button>
+    </div>
+</th:block>
+
+</html>

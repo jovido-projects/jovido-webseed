@@ -1,0 +1,16 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+
+<div class="form-group" th:each="field : ${self.fields}">
+    <th:block th:with="attribute=${self.attribute}">
+        <th:block component:replace="${field}" />
+    </th:block>
+</div>
+<button th:if="${self.actions.size() == 1}" class="btn btn-default btn-sm"
+        th_disabled="${group.length() >= attribute.capacity} ? disabled : _"
+        th_formaction="@{append(
+                    nested-path=${nestedPath},
+                    attribute=${attribute.name})}">
+    <span th:replace="ui/text(text=${self.actions[0]})">Text</span>
+</button>
+
+</html>

@@ -22,7 +22,7 @@ public abstract class Payload {
     private String text;
 
     @Transient
-    private boolean compressed = true;
+    private boolean compressed = false;
 
     public Long getId() {
         return id;

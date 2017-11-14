@@ -28,4 +28,38 @@ public class ItemUtils {
 
         return one.getId().equals(other.getId());
     }
+
+    public static ItemVisitResult walkPayload(Payload payload, ItemVisitor visitor) {
+        ItemVisitResult result = visitor.visitPayload(payload);
+        if (result == ItemVisitResult.CONTINUE) {
+            if (payload instanceof ItemRelation) {
+                Item item = ((ItemRelation) payload).getTarget();
+                result = walkItem(item, visitor);
+            }
+        }
+
+        return result;
+    }
+
+    public static ItemVisitResult walkPayloadGroup(PayloadGroup payloadGroup, ItemVisitor visitor) {
+        for (Payload payload : payloadGroup.getPayloads()) {
+            ItemVisitResult result = walkPayload(payload, visitor);
+            if (result != ItemVisitResult.CONTINUE) {
+                return result;
+            }
+        }
+
+        return ItemVisitResult.CONTINUE;
+    }
+
+    public static ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
+        for (PayloadGroup payloadGroup : item.getPayloadGroups().values()) {
+            ItemVisitResult result = walkPayloadGroup(payloadGroup, visitor);
+            if (result != ItemVisitResult.CONTINUE) {
+                return result;
+            }
+        }
+
+        return ItemVisitResult.CONTINUE;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * @author Stephan Grundner
  */
+@Deprecated
 public class ActionGroup extends Text {
 
     private final List<Action> actions = new ArrayList<>();

@@ -70,6 +70,8 @@ public class ItemEditorController {
 
                 if (attribute instanceof ItemAttribute) {
                     return "admin/item/editor/item-payload-group";
+                } else if (attribute instanceof YesNoAttribute) {
+                    return "admin/item/editor/yesno-payload-group";
                 } else {
                     return "admin/item/editor/payload-group";
                 }
@@ -88,6 +90,8 @@ public class ItemEditorController {
                     } else {
                         return "admin/item/editor/text-payload";
                     }
+                } else if (attribute instanceof ItemAttribute) {
+                    return "admin/item/editor/item-payload";
                 } else if (attribute instanceof LinkAttribute) {
                     return "admin/item/editor/link-payload";
                 } else if (attribute instanceof IconAttribute) {
@@ -95,13 +99,12 @@ public class ItemEditorController {
                 } else if (attribute instanceof ImageAttribute) {
                     return "admin/item/editor/image-payload";
                 } else if (attribute instanceof YesNoAttribute) {
-                    return "admin/item/editor/boolean-payload";
+                    return "admin/item/editor/yesno-payload";
                 } else {
                     throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
                 }
             }
         });
-
 
         if (itemId != null) {
             Item item = itemService.getItem(itemId);
@@ -159,6 +162,21 @@ public class ItemEditorController {
 
         Item item = itemService.getItem(itemId);
         editor.setItem(item);
+
+        for (PayloadGroup payloadGroup : item.getPayloadGroups().values()) {
+            for (Payload payload : payloadGroup.getPayloads()) {
+                if (payload instanceof ItemRelation) {
+                    Item nestedItem = ((ItemRelation) payload).getTarget();
+                    ItemUtils.walkItem(nestedItem, new SimpleItemVisitor() {
+                        @Override
+                        public ItemVisitResult visitPayload(Payload payload) {
+                            payload.setCompressed(true);
+                            return super.visitPayload(payload);
+                        }
+                    });
+                }
+            }
+        }
 
         return redirect(item);
     }
@@ -270,6 +288,16 @@ public class ItemEditorController {
         String propertyPath = String.format("%s.payloadGroups[%s]", nestedPath, attributeName);
         PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         ItemRelation payload = (ItemRelation) sequence.getPayload(index);
+
+        Item item = payload.getTarget();
+        for (PayloadGroup payloadGroup : item.getPayloadGroups().values()) {
+            for (Payload nestedPayload : payloadGroup.getPayloads()) {
+                if (!( nestedPayload instanceof ItemRelation)) {
+                    nestedPayload.setCompressed(false);
+                }
+            }
+        }
+
         payload.setCompressed(false);
 
         return redirect(editor);
@@ -287,6 +315,14 @@ public class ItemEditorController {
         PayloadGroup sequence = (PayloadGroup) editor.getPropertyValue(propertyPath);
         ItemRelation payload = (ItemRelation) sequence.getPayload(index);
         payload.setCompressed(true);
+
+        ItemUtils.walkPayload(payload, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitPayload(Payload payload) {
+                payload.setCompressed(true);
+                return super.visitPayload(payload);
+            }
+        });
 
         return redirect(editor);
     }

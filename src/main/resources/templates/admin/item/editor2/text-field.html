@@ -1,0 +1,5 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<label th:text="${attribute.name}">Label</label>
+<th:block th:insert="admin/item/editor2/field::actions" />
+<input type="text" class="form-control" th:field="*{__${self.bindingPath}__.payload.value}">
+</html>

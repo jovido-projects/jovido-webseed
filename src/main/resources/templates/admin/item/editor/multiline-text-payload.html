@@ -1,4 +1,5 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:if="${!payload.compressed}">
 <th:block th:with="id=${#ids.seq('foobar')}">
     <textarea th:id="${id}" class="form-control"
               th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}"></textarea>
@@ -21,5 +22,10 @@
             });
         });
         </script>
+</th:block>
+</th:block>
+
+<th:block th:if="${payload.compressed}">
+    <p th:utext="${payload.value}">Text</p>
 </th:block>
 </html>

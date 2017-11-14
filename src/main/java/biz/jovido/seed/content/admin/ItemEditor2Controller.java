@@ -28,6 +28,14 @@ public class ItemEditor2Controller {
         return editor;
     }
 
+    @RequestMapping()
+    public String index(@ModelAttribute ItemEditor2 editor,
+                       BindingResult editorBinding) {
+
+        return "admin/item/editor2-page";
+    }
+
+
     @RequestMapping(path = "edit")
     public String edit(@ModelAttribute ItemEditor2 editor,
                        BindingResult editorBinding,
@@ -38,7 +46,18 @@ public class ItemEditor2Controller {
 
 //        editor.getFieldGroups().get("title").getFields().get(0).remove();
 
-        return "admin/item/editor2/editor";
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "save")
+    public String save(@ModelAttribute ItemEditor2 editor,
+                       BindingResult editorBinding) {
+
+        Item item = editor.getItem();
+        item = itemService.saveItem(item);
+        editor.setItem(item);
+
+        return "redirect:edit?id=" + editor.getItem().getId();
     }
 
     @RequestMapping(path = "remove-field")
@@ -49,7 +68,7 @@ public class ItemEditor2Controller {
         ItemEditor2.PayloadField field = editor.findField(fieldId);
         field.remove();
 
-        return "admin/item/editor2/editor";
+        return "admin/item/editor2-page";
     }
 
     @RequestMapping(path = "move-field-up")
@@ -60,6 +79,16 @@ public class ItemEditor2Controller {
         ItemEditor2.PayloadField field = editor.findField(fieldId);
         field.moveUp();
 
-        return "admin/item/editor2/editor";
+        return "admin/item/editor2-page";
+    }
+
+    @RequestMapping(path = "add-field")
+    public String addField(@ModelAttribute ItemEditor2 editor,
+                              BindingResult editorBinding,
+                              @RequestParam(name = "field-group") String attributeName) {
+
+        ItemEditor2.PayloadFieldGroup fieldGroup = editor.getFieldGroup(attributeName);
+
+        return "admin/item/editor2-page";
     }
 }

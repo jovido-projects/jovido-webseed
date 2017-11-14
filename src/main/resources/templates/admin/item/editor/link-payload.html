@@ -1,4 +1,5 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:if="${!payload.compressed}">
 <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
     <div class="panel-body" style="margin-bottom:5px;">
         <label th:text="__${attribute.name}__.text">Text</label>
@@ -12,4 +13,8 @@
 
     </div>
 </div>
+</th:block>
+<th:block th:if="${payload.compressed}">
+    <a href="#" th:text="${payload.text}"></a>
+</th:block>
 </html>

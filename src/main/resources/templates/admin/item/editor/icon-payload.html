@@ -1,7 +1,12 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<th:block th:if="${!payload.compressed}">
     <div class="input-group input-group-sm">
         <span class="input-group-addon"></span>
         <input class="form-control input-sm icp icp-auto" data-input-search="true" type="text"
                th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
     </div>
+</th:block>
+<th:block th:if="${payload.compressed}">
+    <i class="fa" th:classappend="'fa-' + ${payload.value}"></i>
+</th:block>
 </html>

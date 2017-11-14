@@ -5,7 +5,7 @@
             <th:block th:each="attribute,attributeItr : ${structure.attributes}">
                 <th:block th:with="group=${@itemService.getOrCreatePayloadGroup(item, attribute.name)}">
                     <!--<hr th:if="${attributeItr.index > 0}" />-->
-                    <p th:if="${attributeItr.index > 0}" ></p>
+                    <p th:if="${attributeItr.index > 0}"></p>
                     <th:block th:replace="${editor.getPayloadGroupTemplate(group)}" />
                 </th:block>
             </th:block>

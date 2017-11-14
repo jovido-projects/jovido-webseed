@@ -1,6 +1,10 @@
 package biz.jovido.seed.content.admin;
 
+import biz.jovido.seed.component.HasTemplate;
 import biz.jovido.seed.content.*;
+import biz.jovido.seed.ui.Action;
+import biz.jovido.seed.ui.ActionGroup;
+import biz.jovido.seed.ui.Actions;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8,13 +12,19 @@ import java.util.stream.Collectors;
 /**
  * @author Stephan Grundner
  */
-public class ItemEditor2 {
+public class ItemEditor2 implements HasTemplate {
 
-    public static class PayloadField {
+    @Override
+    public String getTemplate() {
+        return "admin/item/editor2";
+    }
+
+    public static abstract class PayloadField implements HasTemplate {
 
         private final PayloadFieldGroup fieldGroup;
         private final Payload payload;
         private String id;
+        private ActionGroup actions = new ActionGroup();
 
         public PayloadFieldGroup getFieldGroup() {
             return fieldGroup;
@@ -30,6 +40,12 @@ public class ItemEditor2 {
 
         public void setId(String id) {
             this.id = id;
+        }
+
+        public String getBindingPath() {
+            return String.format("fieldGroups[%s].fields[%d]",
+                    getFieldGroup().getAttributeName(),
+                    getPayload().getOrdinal());
         }
 
         public void remove() {
@@ -58,15 +74,89 @@ public class ItemEditor2 {
             return (ItemRelation) super.getPayload();
         }
 
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/item-editor-field";
+        }
+
         public ItemEditorField(PayloadFieldGroup fieldGroup, ItemRelation payload) {
             super(fieldGroup, payload);
         }
     }
 
-    public static class PayloadFieldGroup {
+    public static class TextField extends PayloadField {
+
+        public Text getPayload() {
+            return (Text) super.getPayload();
+        }
+
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/text-field";
+        }
+
+        public TextField(PayloadFieldGroup fieldGroup, Payload payload) {
+            super(fieldGroup, payload);
+        }
+    }
+
+    public static class ImageField extends PayloadField {
+
+        public ImageRelation getPayload() {
+            return (ImageRelation) super.getPayload();
+        }
+
+        public Image getImage() {
+            return getPayload().getTarget();
+        }
+
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/image-field";
+        }
+
+        public ImageField(PayloadFieldGroup fieldGroup, Payload payload) {
+            super(fieldGroup, payload);
+        }
+    }
+
+    public static class YesNoField extends PayloadField {
+
+        public YesNo getPayload() {
+            return (YesNo) super.getPayload();
+        }
+
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/yesno-field";
+        }
+
+        public YesNoField(PayloadFieldGroup fieldGroup, Payload payload) {
+            super(fieldGroup, payload);
+        }
+    }
+
+    public static class LinkField extends PayloadField {
+
+        public Link getPayload() {
+            return (Link) super.getPayload();
+        }
+
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/link-field";
+        }
+
+        public LinkField(PayloadFieldGroup fieldGroup, Payload payload) {
+            super(fieldGroup, payload);
+        }
+    }
+
+    public static class PayloadFieldGroup implements HasTemplate {
 
         private final ItemEditor2 editor;
         private final String attributeName;
+        private final Actions actions = new Actions();
 
         private final Set<PayloadField> fields = new HashSet<>();
 
@@ -78,9 +168,17 @@ public class ItemEditor2 {
             return attributeName;
         }
 
+        public Actions getActions() {
+            return actions;
+        }
+
         @Deprecated
         public PayloadGroup getPayloadGroup() {
             return editor.item.getPayloadGroup(attributeName);
+        }
+
+        public Attribute getAttribute() {
+            return editor.itemService.getAttribute(getPayloadGroup());
         }
 
         public List<PayloadField> getFields() {
@@ -92,7 +190,22 @@ public class ItemEditor2 {
         }
 
         public PayloadField addField(Payload payload) {
-            PayloadField field = new PayloadField(this, payload);
+            PayloadField field;// = new PayloadField(this, payload);
+
+            if (payload instanceof YesNo) {
+                field = new YesNoField(this, payload);
+            } else if (payload instanceof Text) {
+                field = new TextField(this, payload);
+            } else if (payload instanceof Link) {
+                field = new LinkField(this, payload);
+            } else if (payload instanceof ImageRelation) {
+                field = new ImageField(this, payload);
+            } else if (payload instanceof ItemRelation) {
+                field = new ItemEditorField(this, (ItemRelation) payload);
+            } else {
+                throw new RuntimeException("Unexpected payload type: " + payload.getClass());
+            }
+
             field.setId(UUID.randomUUID().toString());
             fields.add(field);
 
@@ -108,6 +221,11 @@ public class ItemEditor2 {
         public PayloadFieldGroup(ItemEditor2 editor, String attributeName) {
             this.editor = editor;
             this.attributeName = attributeName;
+        }
+
+        @Override
+        public String getTemplate() {
+            return "admin/item/editor2/field-group";
         }
     }
 
@@ -129,6 +247,11 @@ public class ItemEditor2 {
         for (String attributeName : structure.getAttributeNames()) {
             PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
             PayloadFieldGroup fieldGroup = addFieldGroup(attributeName);
+            Actions actions = fieldGroup.getActions();
+            Action appendAction = new Action();
+            appendAction.setDefaultMessage("Append " + attributeName);
+            appendAction.setUrl("/admin/item2/add-field?field-group=" + attributeName);
+            actions.add(appendAction);
             for (Payload payload : payloadGroup.getPayloads()) {
                 fieldGroup.addField(payload);
             }

@@ -1,9 +1,0 @@
-<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="checkbox form-control">
-    <label>
-        <input type="checkbox" class=""
-               th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
-        <span th:text="${attribute.name}">Field name</span>
-    </label>
-</div>
-</html>
