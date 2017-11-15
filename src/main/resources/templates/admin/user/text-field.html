@@ -1,6 +1,0 @@
-<html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
-<div class="form-group">
-    <label th:text="#{__${self.bindingPath}__}">Label</label>
-    <input type="text" th:field="*{__${self.bindingPath}__}" th:disabled="${self.disabled} ?: _" class="form-control">
-</div>
-</html>

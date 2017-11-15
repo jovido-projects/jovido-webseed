@@ -15,15 +15,10 @@
 
                     <table class="table">
                         <thead>
-                        <tr>
-                            <th width="1%">ID</th>
-                            <th>Name</th>
-                            <th>&nbsp;</th>
-                        </tr>
                         </thead>
                         <tbody>
                         <tr th:each="host : ${hosts}">
-                            <td th:text="${host.id}">ID</td>
+                            <!--<td th:text="${host.id}">ID</td>-->
                             <td th:text="${host.name}">Name</td>
                             <td>
                                 <div class="btn-group btn-group-xs pull-right">

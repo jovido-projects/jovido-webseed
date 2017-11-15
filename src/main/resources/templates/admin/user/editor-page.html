@@ -22,11 +22,12 @@
                 </th:block>
             </h1>
 
-            <ul th:if="${#fields.hasErrors('*')}">
-                <li th:each="err : ${#fields.detailedErrors('*')}" >
-                    <span th:text="${err}">Error</span>
-                </li>
-            </ul>
+            <!--<ul th:if="${#fields.hasErrors('*')}">-->
+                <!--<li th:each="err : ${#fields.detailedErrors('*')}" >-->
+                    <!--<span th:text="${err}">Error</span>-->
+                <!--</li>-->
+            <!--</ul>-->
+            <th:block th:replace="admin/error-list" />
 
             <div class="row">
 
@@ -34,6 +35,9 @@
                 <div class="col-md-12" >
 
                     <th:block component:replace="${editor.username}"/>
+                    <th:block component:replace="${editor.password}"/>
+
+                    <th:block component:replace="${editor.password2}"/>
 
                     <div class="btn-group">
                         <button class="btn btn-primary" th:formaction="@{save}">

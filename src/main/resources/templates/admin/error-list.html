@@ -1,0 +1,5 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<ul class="list-group" th:if="${#fields.hasErrors('*')}">
+    <li class="list-group-item list-group-item-danger" th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
+</ul>
+</html>

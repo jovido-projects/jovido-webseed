@@ -12,6 +12,7 @@ public abstract class Field<T> implements HasTemplate {
     private final BeanWrapper wrapper;
     private String bindingPath;
     private String template;
+    private String type;
 
     private boolean disabled;
 
@@ -29,6 +30,14 @@ public abstract class Field<T> implements HasTemplate {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean isDisabled() {

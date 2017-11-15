@@ -43,7 +43,7 @@ public class ItemEditorController {
 
     @InitBinder("itemEditor")
     protected void initDataBinderForEditor(WebDataBinder dataBinder) {
-        dataBinder.addValidators(new ItemValidator(itemService));
+//        dataBinder.addValidators(new ItemValidator(itemService));
     }
 
     @ModelAttribute("breadcrumbs")

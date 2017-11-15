@@ -1,0 +1,9 @@
+<html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
+<div class="form-group" th:classappend="${#fields.hasErrors('__${self.bindingPath}__')}? has-error">
+    <label class="control-label" th:text="#{__${self.bindingPath}__}">Label</label>
+    <input th:type="${self.type}"
+           th:field="*{__${self.bindingPath}__}"
+           th:disabled="${self.disabled} ?: _"
+           class="form-control">
+</div>
+</html>

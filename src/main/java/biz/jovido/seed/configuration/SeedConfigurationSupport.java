@@ -5,6 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -46,6 +47,12 @@ public class SeedConfigurationSupport implements ApplicationContextAware, BeanFa
         ItemRequestMapping requestMapping = new ItemRequestMapping();
         requestMapping.setOrder(0);
         return requestMapping;
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "seed.ui")
+    public UIProperties uiProperties() {
+        return new UIProperties();
     }
 
 //    @PostConstruct
