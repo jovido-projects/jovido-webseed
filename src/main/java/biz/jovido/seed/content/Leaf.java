@@ -19,13 +19,6 @@ public class Leaf {
     @GeneratedValue
     private Long id;
 
-//    @Column(unique = true, nullable = false)
-//    private String code;
-
-//    @Column(name = "language_tag")
-//    @Convert(converter = LocaleConverter.class)
-//    private Locale locale;
-
     @OneToOne
     private Item published;
 
@@ -36,7 +29,7 @@ public class Leaf {
     @Fetch(FetchMode.SUBSELECT)
     private final List<Node> nodes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "leaf", fetch = FetchType.LAZY)
     private final List<Item> items = new ArrayList<>();
 
     public Long getId() {
@@ -46,14 +39,6 @@ public class Leaf {
     public void setId(Long id) {
         this.id = id;
     }
-
-//    public Locale getLocale() {
-//        return locale;
-//    }
-
-//    public void setLocale(Locale locale) {
-//        this.locale = locale;
-//    }
 
     public Item getPublished() {
         return published;

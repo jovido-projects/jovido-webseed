@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.LocaleConverter;
 import biz.jovido.seed.security.User;
+import org.apache.commons.collections4.map.AbstractMapDecorator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -16,7 +17,7 @@ import java.util.*;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Item {
+public class Item extends AbstractMapDecorator<String, PayloadGroup> {
 
     @Id
     @GeneratedValue
@@ -185,6 +186,11 @@ public class Item {
 
     public boolean removeChangeListener(ItemChangeListener changeListener) {
         return changeListeners.remove(changeListener);
+    }
+
+    @Override
+    protected Map<String, PayloadGroup> decorated() {
+        return getPayloadGroups();
     }
 
     public Item copy() {

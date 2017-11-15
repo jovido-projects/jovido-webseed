@@ -1,6 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag"
       th:with="item=${entry.source}">
-<a th:href="${@itemService.getPath2(item)}" target="_blank">
+<a th:href="${@itemService.getPath(item)}" target="_blank">
     [[${@itemService.getLabelText(item)}]]
 </a>
 </html>

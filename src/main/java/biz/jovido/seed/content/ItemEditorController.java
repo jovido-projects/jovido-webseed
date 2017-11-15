@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -39,6 +40,11 @@ public class ItemEditorController {
 
     @Autowired
     private StructureService structureService;
+
+    @InitBinder("itemEditor")
+    protected void initDataBinderForEditor(WebDataBinder dataBinder) {
+        dataBinder.addValidators(new ItemValidator(itemService));
+    }
 
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
@@ -204,7 +210,6 @@ public class ItemEditorController {
         ItemRelation payload = (ItemRelation) attribute.createPayload();
         payload.setTarget(item);
         payloadGroup.addPayload(payload);
-        payload.setCompressed(false);
 
         return redirect(item);
     }
@@ -223,7 +228,6 @@ public class ItemEditorController {
         ItemRelation payload = (ItemRelation) attribute.createPayload();
         payload.setTarget(item);
         payloadGroup.addPayload(payload);
-        payload.setCompressed(false);
 
         return redirect(item);
     }
@@ -323,17 +327,6 @@ public class ItemEditorController {
         PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
         ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
 
-//        Item item = payload.getTarget();
-//        for (PayloadGroup payloadGroup : item.getPayloadGroups().values()) {
-//            for (Payload nestedPayload : payloadGroup.getPayloads()) {
-//                if (!( nestedPayload instanceof ItemRelation)) {
-//                    nestedPayload.setCompressed(false);
-//                }
-//            }
-//        }
-
-        payload.setCompressed(false);
-
         return redirect(editor);
     }
 
@@ -349,15 +342,6 @@ public class ItemEditorController {
         PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
         PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
         ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
-        payload.setCompressed(true);
-
-        ItemUtils.walkPayload(payload, new SimpleItemVisitor() {
-            @Override
-            public ItemVisitResult visitPayload(Payload payload) {
-                payload.setCompressed(true);
-                return super.visitPayload(payload);
-            }
-        });
 
         return redirect(editor);
     }

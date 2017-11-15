@@ -21,14 +21,8 @@ public class ItemController {
         PayloadGroup label = itemService.getLabel(item);
         model.addAttribute("label", label);
         model.addAttribute("mode", itemService.getMode(item));
-
+        model.addAllAttributes(ItemUtils.toModel(item));
         Structure structure = itemService.getStructure(item);
-        for (Attribute attribute : structure.getAttributes()) {
-            String attributeName = attribute.getName();
-            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-            model.addAttribute(attributeName, payloadGroup);
-        }
-
         return structure.getName();
     }
 

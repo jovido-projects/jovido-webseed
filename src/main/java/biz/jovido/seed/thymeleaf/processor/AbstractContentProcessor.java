@@ -1,7 +1,9 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
-import biz.jovido.seed.content.PayloadGroup;
+import biz.jovido.seed.content.frontend.ItemValues;
+import biz.jovido.seed.content.ItemUtils;
+import biz.jovido.seed.content.frontend.ValuesList;
 import biz.jovido.seed.thymeleaf.TemplateNameResolver;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
@@ -17,6 +19,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,8 +60,8 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
             throw new RuntimeException("[String] not supported");
         }
 
-        if (result instanceof Item) {
-            Item item = (Item) result;
+        if (result instanceof ItemValues) {
+            Item item = ((ItemValues) result).getItem();
             String templateName = getTemplateNameResolvers().stream()
                     .map(it -> it.resolveTemplateName(item))
                     .filter(Objects::nonNull)
@@ -69,21 +72,10 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
                 templateName = item.getStructureName();
             }
 
-            for (PayloadGroup sequence : item.getPayloadGroups().values()) {
-                String attributeName = sequence.getAttributeName();
-                structureHandler.setLocalVariable(attributeName, sequence);
+            ItemValues model = ItemUtils.toModel(item);
+            for (Map.Entry<String, ValuesList> entry : model.entrySet()) {
+                structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
             }
-
-//            String template = annotation.template();
-//            structureHandler.setLocalVariable("component", result);
-
-//            BeanWrapper resultWrapper = new BeanWrapperImpl(result);
-//            PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(result.getClass());
-//            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-//                String name = propertyDescriptor.getName();
-//                Object value = resultWrapper.getPropertyValue(name);
-//                structureHandler.setLocalVariable(name, value);
-//            }
 
             String newAttributeName = "th:" + currentAttributeName.getAttributeName();
             structureHandler.replaceAttribute(currentAttributeName, newAttributeName, templateName);

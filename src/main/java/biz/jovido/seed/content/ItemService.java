@@ -79,42 +79,42 @@ public class ItemService {
         return null;
     }
 
-    public Object getPayloadValue(Payload payload) {
-//        if (payload != null) {
-//            Object value = payload.getValue();
-//            if (value != null) {
-//                return value;
-//            }
+//    public Object getPayloadValue(Payload payload) {
+////        if (payload != null) {
+////            Object value = payload.getValue();
+////            if (value != null) {
+////                return value;
+////            }
+////        }
+//
+//        return null;
+//    }
+//
+//    public Object getPayloadValue(PayloadGroup payloadGroup, int index) {
+//        if (payloadGroup != null) {
+//            Payload payload = payloadGroup.getPayload(index);
+//            return getPayloadValue(payload);
 //        }
-
-        return null;
-    }
-
-    public Object getPayloadValue(PayloadGroup payloadGroup, int index) {
-        if (payloadGroup != null) {
-            Payload payload = payloadGroup.getPayload(index);
-            return getPayloadValue(payload);
-        }
-
-        return null;
-    }
+//
+//        return null;
+//    }
 
     @Deprecated
     public String getLabelText(Item item) {
-//        if (item != null) {
-//            PayloadGroup label = getLabel(item);
-//            if (label == null) {
-////                Structure structure = getStructure(item);
-//                PayloadGroup title = item.getPayloadGroup("title");
-//                if (title != null && title.getPayloads().size() > 0) {
-//                    Object titleObject = title.getPayload(0).getValue();
-//                    return titleObject != null
-//                            ? titleObject.toString() : null;
-//                }
-//                return null;
-//            }
-//            return (String) getPayloadValue(label, 0);
-//        }
+        if (item != null) {
+            PayloadGroup label = getLabel(item);
+            if (label == null) {
+//                Structure structure = getStructure(item);
+                PayloadGroup title = item.getPayloadGroup("title");
+                if (title != null && title.getPayloads().size() > 0) {
+                    return title.getPayload(0).getText();
+                }
+
+                return null;
+            }
+
+            return (String) label.getPayload(0).getText();
+        }
 
         return null;
     }
@@ -128,7 +128,7 @@ public class ItemService {
 
         Attribute attribute = structure.getAttribute(attributeName);
         if (!(attribute instanceof ItemAttribute)) {
-            int remaining = attribute.getRequired() - payloadGroup.length();
+            int remaining = attribute.getRequired() - payloadGroup.getPayloads().size();
             while (remaining-- > 0) {
                 Payload payload = attribute.createPayload();
                 payloadGroup.addPayload(payload);
@@ -143,15 +143,15 @@ public class ItemService {
         return applyPayloadGroup(item, structure, attributeName);
     }
 
-    @UsedInTemplates
-    public PayloadGroup getOrCreatePayloadGroup(Item item, String attributeName) {
-        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-        if (payloadGroup == null) {
-            payloadGroup = applyPayloadGroup(item, attributeName);
-        }
-
-        return payloadGroup;
-    }
+//    @UsedInTemplates
+//    public PayloadGroup getOrCreatePayloadGroup(Item item, String attributeName) {
+//        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+//        if (payloadGroup == null) {
+//            payloadGroup = applyPayloadGroup(item, attributeName);
+//        }
+//
+//        return payloadGroup;
+//    }
 
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
@@ -160,7 +160,7 @@ public class ItemService {
 
             Attribute attribute = structure.getAttribute(attributeName);
             if (!(attribute instanceof ItemAttribute)) {
-                int remaining = attribute.getRequired() - payloadGroup.length();
+                int remaining = attribute.getRequired() - payloadGroup.getPayloads().size();
                 while (remaining-- > 0) {
                     Payload payload = attribute.createPayload();
                     payloadGroup.addPayload(payload);
@@ -216,7 +216,7 @@ public class ItemService {
     }
 
     @UsedInTemplates
-    public String getPath2(Object object) {
+    public String getPath(Object object) {
         Item item = (Item) object;
         if (item != null) {
             String path = item.getPath();
@@ -234,35 +234,6 @@ public class ItemService {
 
         return null;
     }
-
-//    public String getHtml(PayloadGroup payloadGroup, int index) {
-////        int size = payloadGroup.getPayloads().size();
-////        if (index < size) {
-////            String html = (String) payloadGroup.getPayload(index).getValue();
-////            return htmlService.filterHtml(html);
-////        }
-//
-//        return null;
-//    }
-//
-//    public String getHtml(PayloadGroup payloadGroup) {
-//        return getHtml(payloadGroup, 0);
-//    }
-//
-//    public String getHtml(Item item, String attributeName, int index) {
-//        if (item != null) {
-//            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-//            if (payloadGroup != null) {
-//                return getHtml(payloadGroup, index);
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    public String getHtml(Item item, String attributeName) {
-//        return getHtml(item, attributeName, 0);
-//    }
 
     @Transactional
     public Item saveItem(Item item) {

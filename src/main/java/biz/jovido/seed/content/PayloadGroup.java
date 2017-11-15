@@ -75,8 +75,10 @@ public class PayloadGroup {
             payload.setGroup(this);
             payload.setOrdinal(payloads.size() - 1);
 
-            for (ItemChangeListener changeListener : item.getChangeListeners()) {
-                changeListener.payloadAdded(item, payload);
+            if (item != null) {
+                for (ItemChangeListener changeListener : item.getChangeListeners()) {
+                    changeListener.payloadAdded(item, payload);
+                }
             }
         }
 
@@ -86,8 +88,10 @@ public class PayloadGroup {
     public void removePayload(int index) {
         Payload removed = payloads.remove(index);
         if (removed != null) {
-            for (ItemChangeListener changeListener : item.getChangeListeners()) {
-                changeListener.payloadRemoved(item, removed);
+            if (item != null) {
+                for (ItemChangeListener changeListener : item.getChangeListeners()) {
+                    changeListener.payloadRemoved(item, removed);
+                }
             }
 
             removed.setGroup(null);
@@ -107,27 +111,6 @@ public class PayloadGroup {
             payload.setOrdinal(i);
         }
     }
-
-    @Deprecated
-    public int length() {
-        return payloads.size();
-    }
-
-//    public List<Object> getValues() {
-//        return getPayloads().stream()
-//                .sorted(Comparator.comparingInt(Payload::getOrdinal))
-//                .map(Payload::getValue)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public Object getValue() {
-//        Payload payload = getPayload(0);
-//        if (payload != null) {
-//            return payload.getValue();
-//        }
-//
-//        return null;
-//    }
 
     public PayloadGroup copy() {
         PayloadGroup copy = new PayloadGroup();

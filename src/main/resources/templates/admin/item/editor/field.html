@@ -39,6 +39,7 @@
 
 
 <th:block th:fragment="image" th:with="image=${payload.target}">
+<div style="padding-bottom:0px;margin-bottom:-35px;">
     <th:block th:if="${image != null}">
         <img th:src="${@assetService.getRelativeUrl(image)} ?: _" width="100%">
     </th:block>
@@ -48,25 +49,29 @@
 
     <div class="btn-group" th:with="token=${#ids.seq('imagetoken')}"
          style="position:relative; top:-45px;left:15px; min-height:35px;">
-                <span class="btn btn-default btn-file">
-                    <i class="fa fa-upload"></i>
-                    <input th:name="'file-__${token}__'" type="file"
-                           th:formaction="@{upload-image(
-                                            token=${token},
-                                            nested-path=${nestedPath},
-                                            attribute=${attribute.name},
-                                            index=${fieldItr.index})}">
-                </span>
-
+        <span class="btn btn-default btn-file">
+            <i class="fa fa-upload"></i>
+            <input th:name="'file-__${token}__'" type="file"
+                   th:formaction="@{upload-image(
+                                    token=${token},
+                                    nested-path=${nestedPath},
+                                    attribute=${attribute.name},
+                                    index=${fieldItr.index})}">
+        </span>
+        <!--<button class="btn btn-default" disabled="disabled">-->
+        <!--<span th:text="${image?.fileName}">File name</span>-->
+        <!--</button>-->
     </div>
+</div>
 </th:block>
 
 
 <th:block th:fragment="item">
     <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
         <div class="panel-body">
-            <th:block th:with="nestedPath='__${nestedPath}__.fieldGroups[__${attribute.name}__].fields[__${fieldItr.index}__]'">
-                <th:block th:replace="admin/item/editor::fields" />
+            <th:block
+                    th:with="nestedPath='__${nestedPath}__.fieldGroups[__${attribute.name}__].fields[__${fieldItr.index}__]'">
+                <th:block th:replace="admin/item/editor::fields"/>
             </th:block>
         </div>
     </div>
@@ -112,6 +117,7 @@
                 }
             });
         });
+
         </script>
     </th:block>
 </th:block>

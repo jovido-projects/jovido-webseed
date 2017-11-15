@@ -12,6 +12,14 @@ public class ImageRelation extends AssetRelation<Image> {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Image image;
 
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     @Override
     public Image getTarget() {
         return image;
