@@ -1,0 +1,51 @@
+<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
+<div class="form-group" th:each="payload,payloadItr : ${payloadGroup.payloads}">
+    <th:block>
+        <h5>
+            <span th:text="${attribute.name}">Attribute name</span>
+            <span th:if="${payloadGroup.payloads.size() > 1}">#[[${payloadGroupItr.index + 1}]]</span>
+            <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
+
+            <!--<small class="mute" th:text="${field.trailAsText}">xxx</small>-->
+
+            <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
+                <th:block th:replace="admin/item/editor/payload::actions" />
+            </div>
+        </h5>
+
+    </th:block>
+
+    <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+</div>
+
+
+<th:block th:if="${fieldGroup?.actions?.size() == 1}"
+          th:with="action=${fieldGroup.actions[0]}">
+    <button class="btn btn-default"
+            th:formaction="${action.url}">
+        <span th:text="${action.text?.value}">Append</span>
+    </button>
+</th:block>
+<!--<th:block th:if="${fieldGroup?.actions?.size() > 1}">-->
+    <!--<div class="btn-group dropup">-->
+        <!--<button type="button"-->
+                <!--class="btn btn-default dropdown-toggle"-->
+                <!--data-toggle="dropdown"-->
+                <!--aria-haspopup="true"-->
+                <!--aria-expanded="false">-->
+            <!--<span th:text="${fieldGroup.actions.text.value}">Append</span>-->
+            <!--<span class="caret"></span>-->
+        <!--</button>-->
+        <!--<ul class="dropdown-menu">-->
+            <!--<li th:each="action : ${fieldGroup.actions}">-->
+                <!--<a th:data-formaction="${action.url}">-->
+                    <!--<span th:text="${action.text.value}">Name</span>-->
+                <!--</a>-->
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</div>-->
+<!--</th:block>-->
+
+
+
+</html>

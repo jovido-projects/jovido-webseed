@@ -1,10 +1,14 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.AbstractUnique;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +17,7 @@ import java.util.List;
  * @author Stephan Grundner
  */
 @Entity
-public class Leaf {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Leaf extends AbstractUnique {
 
     @OneToOne
     private Item published;
@@ -31,14 +31,6 @@ public class Leaf {
 
     @OneToMany(mappedBy = "leaf", fetch = FetchType.LAZY)
     private final List<Item> items = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Item getPublished() {
         return published;
@@ -95,7 +87,7 @@ public class Leaf {
 
         Leaf leaf = (Leaf) o;
         return new EqualsBuilder()
-                .append(id, leaf.id)
+                .append(getId(), leaf.getId())
                 .isEquals();
     }
 }

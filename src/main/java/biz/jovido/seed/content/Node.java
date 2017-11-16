@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.AbstractUnique;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -14,11 +15,7 @@ import java.util.stream.Collectors;
  * @author Stephan Grundner
  */
 @Entity
-public class Node {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Node extends AbstractUnique {
 
     @ManyToOne(optional = false, cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private Hierarchy hierarchy;
@@ -36,14 +33,6 @@ public class Node {
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "leaf_id")
     private Leaf leaf;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Hierarchy getHierarchy() {
         return hierarchy;

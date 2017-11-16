@@ -1,72 +1,120 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.admin.NestedItemEditor;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import biz.jovido.seed.uimodel.Actions;
+import biz.jovido.seed.uimodel.InvalidationListener;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemEditor extends NestedItemEditor {
+public class ItemEditor {
 
-    public interface PayloadGroupTemplateProvider {
+    public static class PayloadFieldGroup implements ItemChangeListener {
 
-        String getTemplate(PayloadGroup payloadGroup);
+        private final ItemEditor editor;
+        private final String attributeName;
+        private Actions actions;
+        private String payloadTemplate;
+
+        private InvalidationListener<PayloadFieldGroup> invalidationListener;
+
+        private Item getItem() {
+            return editor.getItem();
+        }
+
+        public PayloadGroup getPayloadGroup() {
+            return getItem().getPayloadGroup(attributeName);
+        }
+
+        public Actions getActions() {
+            if (actions == null) {
+                actions = new Actions();
+            }
+
+            return actions;
+        }
+
+        public void setActions(Actions actions) {
+            this.actions = actions;
+        }
+
+        public String getPayloadTemplate() {
+            return payloadTemplate;
+        }
+
+        public void setPayloadTemplate(String payloadTemplate) {
+            this.payloadTemplate = payloadTemplate;
+        }
+
+        public InvalidationListener<PayloadFieldGroup> getInvalidationListener() {
+            return invalidationListener;
+        }
+
+        public void setInvalidationListener(InvalidationListener<PayloadFieldGroup> invalidationListener) {
+            this.invalidationListener = invalidationListener;
+        }
+
+        void invalidate() {
+            invalidationListener.invalidated(this);
+        }
+
+        @Override
+        public void payloadAdded(Item item, Payload payload) {
+            invalidate();
+        }
+
+        @Override
+        public void payloadRemoved(Item item, Payload payload) {
+            invalidate();
+        }
+
+        public PayloadFieldGroup(ItemEditor editor, String attributeName) {
+            this.editor = editor;
+            this.attributeName = attributeName;
+        }
     }
 
-    public interface PayloadTemplateProvider {
+    private Item item;
+    private InvalidationListener<ItemEditor> invalidationListener;
 
-        String getTemplate(Payload payload);
+    private final Map<UUID, PayloadFieldGroup> fieldGroups = new HashMap<>();
+
+    public Item getItem() {
+        return item;
     }
 
-    private final BeanWrapper wrapper = new BeanWrapperImpl(this);
+    public void setItem(Item item) {
+        this.item = item;
 
-//    private Item item;
+        fieldGroups.clear();
 
-    private PayloadGroupTemplateProvider payloadGroupTemplateProvider;
-    private PayloadTemplateProvider payloadTemplateProvider;
+        invalidationListener.invalidated(this);
 
-//    public Item getItem() {
-//        return item;
-//    }
-//
-//    public void setItem(Item item) {
-//        this.item = item;
-//    }
-
-    public PayloadGroupTemplateProvider getPayloadGroupTemplateProvider() {
-        return payloadGroupTemplateProvider;
+        fieldGroups.forEach((k, v) -> {
+            v.invalidate();
+        });
     }
 
-    public void setPayloadGroupTemplateProvider(PayloadGroupTemplateProvider payloadGroupTemplateProvider) {
-        this.payloadGroupTemplateProvider = payloadGroupTemplateProvider;
+    public InvalidationListener<ItemEditor> getInvalidationListener() {
+        return invalidationListener;
     }
 
-    public String getPayloadGroupTemplate(PayloadGroup payloadGroup) {
-        return getPayloadGroupTemplateProvider().getTemplate(payloadGroup);
+    public void setInvalidationListener(InvalidationListener<ItemEditor> invalidationListener) {
+        this.invalidationListener = invalidationListener;
     }
 
-    public PayloadTemplateProvider getPayloadTemplateProvider() {
-        return payloadTemplateProvider;
+    public void addFieldGroup(PayloadFieldGroup fieldGroup) {
+        fieldGroups.put(fieldGroup.getPayloadGroup().getUuid(), fieldGroup);
     }
 
-    public void setPayloadTemplateProvider(PayloadTemplateProvider payloadTemplateProvider) {
-        this.payloadTemplateProvider = payloadTemplateProvider;
+    public PayloadFieldGroup getFieldGroup(UUID uuid) {
+        return fieldGroups.get(uuid);
     }
 
-    public String getPayloadTemplate(Payload payload) {
-        return getPayloadTemplateProvider().getTemplate(payload);
-    }
-
-    public Object getPropertyValue(String propertyPath) {
-        return wrapper.getPropertyValue(propertyPath);
-    }
-
-    public ItemEditor getSelf() {
-        return this;
-    }
-
-    public ItemEditor(ItemService itemService) {
-        super(null, itemService);
+    public PayloadFieldGroup getFieldGroup(PayloadGroup payloadGroup) {
+        return getFieldGroup(payloadGroup.getUuid());
     }
 }

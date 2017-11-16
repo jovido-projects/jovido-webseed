@@ -1,8 +1,11 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.admin.PayloadFieldGroup;
 import biz.jovido.seed.ui.Breadcrumb;
 import biz.jovido.seed.ui.Text;
+import biz.jovido.seed.uimodel.Action;
+import biz.jovido.seed.uimodel.Actions;
+import biz.jovido.seed.uimodel.InvalidationListener;
+import biz.jovido.seed.uimodel.StaticText;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -68,47 +72,61 @@ public class ItemEditorController {
     @ModelAttribute
     protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
                                 @RequestParam(name = "new", required = false) String structureName) {
-        ItemEditor editor = new ItemEditor(itemService);
+        ItemEditor editor = new ItemEditor();
 
-        editor.setPayloadGroupTemplateProvider(new ItemEditor.PayloadGroupTemplateProvider() {
+        editor.setInvalidationListener(new InvalidationListener<ItemEditor>() {
             @Override
-            public String getTemplate(PayloadGroup payloadGroup) {
-                Attribute attribute = itemService.getAttribute(payloadGroup);
+            public void invalidated(ItemEditor editor) {
+                Item item = editor.getItem();
+                for (String attributeName : item.getAttributeNames()) {
+                    ItemEditor.PayloadFieldGroup fieldGroup = new ItemEditor.PayloadFieldGroup(editor, attributeName);
+                    fieldGroup.setInvalidationListener(new InvalidationListener<ItemEditor.PayloadFieldGroup>() {
+                        @Override
+                        public void invalidated(ItemEditor.PayloadFieldGroup fieldGroup) {
+                            Actions actions = fieldGroup.getActions();
+                            actions.clear();
 
-                if (attribute instanceof ItemAttribute) {
-                    return "admin/item/editor/item-payload-group";
-                } else if (attribute instanceof YesNoAttribute) {
-                    return "admin/item/editor/yesno-payload-group";
-                } else {
-                    return "admin/item/editor/payload-group";
-                }
-            }
-        });
+                            PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+                            Attribute attribute = itemService.getAttribute(payloadGroup);
+                            if (attribute.getCapacity() > 1) {
+                                if (attribute instanceof ItemAttribute) {
+                                    Action action1 = new Action();
+                                    action1.setText(new StaticText("Item"));
+                                    actions.add(action1);
+                                } else {
+                                    Action action1 = new Action();
+                                    action1.setText(new StaticText("Simple value"));
+                                    actions.add(action1);
+                                }
+                            }
 
-        editor.setPayloadTemplateProvider(new ItemEditor.PayloadTemplateProvider() {
-            @Override
-            public String getTemplate(Payload payload) {
-                Attribute attribute = itemService.getAttribute(payload);
+                            String payloadTemplate;
 
-                if (attribute instanceof TextAttribute) {
-                    boolean multiline = ((TextAttribute) attribute).isMultiline();
-                    if (multiline) {
-                        return "admin/item/editor/payload::multiline-text";
-                    } else {
-                        return "admin/item/editor/payload::text";
-                    }
-                } else if (attribute instanceof ItemAttribute) {
-                    return "admin/item/editor/payload::item";
-                } else if (attribute instanceof LinkAttribute) {
-                    return "admin/item/editor/payload::link";
-                } else if (attribute instanceof IconAttribute) {
-                    return "admin/item/editor/payload::icon";
-                } else if (attribute instanceof ImageAttribute) {
-                    return "admin/item/editor/payload::image";
-                } else if (attribute instanceof YesNoAttribute) {
-                    return "admin/item/editor/payload::yesno";
-                } else {
-                    throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
+                            if (attribute instanceof TextAttribute) {
+                                boolean multiline = ((TextAttribute) attribute).isMultiline();
+                                if (multiline) {
+                                    payloadTemplate = "admin/item/editor/payload::multiline-text";
+                                } else {
+                                    payloadTemplate = "admin/item/editor/payload::text";
+                                }
+                            } else if (attribute instanceof ItemAttribute) {
+                                payloadTemplate = "admin/item/editor/payload::item";
+                            } else if (attribute instanceof LinkAttribute) {
+                                payloadTemplate = "admin/item/editor/payload::link";
+                            } else if (attribute instanceof IconAttribute) {
+                                payloadTemplate = "admin/item/editor/payload::icon";
+                            } else if (attribute instanceof ImageAttribute) {
+                                payloadTemplate = "admin/item/editor/payload::image";
+                            } else if (attribute instanceof YesNoAttribute) {
+                                payloadTemplate = "admin/item/editor/payload::yesno";
+                            } else {
+                                throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
+                            }
+
+                            fieldGroup.setPayloadTemplate(payloadTemplate);
+                        }
+                    });
+                    editor.addFieldGroup(fieldGroup);
                 }
             }
         });
@@ -193,43 +211,42 @@ public class ItemEditorController {
         return "redirect:/admin/items";
     }
 
-    @Deprecated
+//    @Deprecated
+//    @RequestMapping(path = "append", params = {"structure"})
+//    protected String append(@ModelAttribute ItemEditor editor,
+//                            BindingResult editorBinding,
+//                            @RequestParam(name = "payload-group") UUID payloadGroupUuid,
+//                            @RequestParam(name = "structure") String structureName) {
+//
+////        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+////        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+////        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+////
+////        Item item = itemService.createEmbeddedItem(structureName);
+////        Attribute attribute = itemService.getAttribute(payloadGroup);
+////        ItemRelation payload = (ItemRelation) attribute.createPayload();
+////        payload.setTarget(item);
+////        payloadGroup.addPayload(payload);
+//
+//        return redirect(editor);
+//    }
+
     @RequestMapping(path = "append", params = {"structure"})
     protected String append(@ModelAttribute ItemEditor editor,
                             BindingResult editorBinding,
-                            @RequestParam(name = "nested-path") String nestedPath,
-                            @RequestParam(name = "attribute") String attributeName,
+                            @RequestParam(name = "payload-group") UUID payloadGroupUuid,
                             @RequestParam(name = "structure") String structureName) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        PayloadFieldGroup fieldGroup = editor.findFieldGroup(fieldGroupId);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//
+//        Item item = itemService.createEmbeddedItem(structureName);
+//        Attribute attribute = itemService.getAttribute(payloadGroup);
+//        ItemRelation payload = (ItemRelation) attribute.createPayload();
+//        payload.setTarget(item);
+//        payloadGroup.addPayload(payload);
 
-        Item item = itemService.createEmbeddedItem(structureName);
-        Attribute attribute = itemService.getAttribute(payloadGroup);
-        ItemRelation payload = (ItemRelation) attribute.createPayload();
-        payload.setTarget(item);
-        payloadGroup.addPayload(payload);
-
-        return redirect(item);
-    }
-
-    @RequestMapping(path = "create-and-append-item", params = {"structure"})
-    protected String createAndAppendItem(@ModelAttribute ItemEditor editor,
-                                         BindingResult editorBinding,
-                                         @RequestParam(name = "field-group") String fieldGroupId,
-                                         @RequestParam(name = "structure") String structureName) {
-
-        PayloadFieldGroup fieldGroup = editor.findFieldGroup(fieldGroupId);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-
-        Item item = itemService.createEmbeddedItem(structureName);
-        Attribute attribute = itemService.getAttribute(payloadGroup);
-        ItemRelation payload = (ItemRelation) attribute.createPayload();
-        payload.setTarget(item);
-        payloadGroup.addPayload(payload);
-
-        return redirect(item);
+        return redirect(editor);
     }
 
     @Deprecated
@@ -239,12 +256,12 @@ public class ItemEditorController {
                             @RequestParam(name = "nested-path") String nestedPath,
                             @RequestParam(name = "attribute") String attributeName) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        Attribute attribute = editor.getStructure().getAttribute(attributeName);
-        Payload payload = attribute.createPayload();
-        payloadGroup.addPayload(payload);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        Attribute attribute = editor.getStructure().getAttribute(attributeName);
+//        Payload payload = attribute.createPayload();
+//        payloadGroup.addPayload(payload);
 
         return redirect(editor);
     }
@@ -261,11 +278,11 @@ public class ItemEditorController {
 //        Payload payload = attribute.createPayload();
 //        payloadGroup.addPayload(payload);
 
-        PayloadFieldGroup fieldGroup = editor.findFieldGroup(fieldGroupId);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        Attribute attribute = fieldGroup.getAttribute();
-        Payload payload = attribute.createPayload();
-        payloadGroup.addPayload(payload);
+//        PayloadFieldGroup fieldGroup = editor.findFieldGroup(fieldGroupId);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        Attribute attribute = fieldGroup.getAttribute();
+//        Payload payload = attribute.createPayload();
+//        payloadGroup.addPayload(payload);
 
         return redirect(editor);
     }
@@ -273,14 +290,12 @@ public class ItemEditorController {
     @RequestMapping(path = "move-payload-up")
     protected String movePayloadUp(@ModelAttribute ItemEditor editor,
                                    BindingResult editorBinding,
-                                   @RequestParam(name = "nested-path") String nestedPath,
-                                   @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index) {
+                                   @RequestParam(name = "payload") UUID payloadUuid) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        payloadGroup.movePayload(index, index - 1);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        payloadGroup.movePayload(index, index - 1);
 
         return redirect(editor);
     }
@@ -288,14 +303,12 @@ public class ItemEditorController {
     @RequestMapping(path = "move-payload-down")
     protected String movePayloadDown(@ModelAttribute ItemEditor editor,
                                      BindingResult editorBinding,
-                                     @RequestParam(name = "nested-path") String nestedPath,
-                                     @RequestParam(name = "attribute") String attributeName,
-                                     @RequestParam(name = "index") int index) {
+                                     @RequestParam(name = "payload") UUID payloadUuid) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        payloadGroup.movePayload(index, index + 1);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        payloadGroup.movePayload(index, index + 1);
 
         return redirect(editor);
     }
@@ -303,45 +316,39 @@ public class ItemEditorController {
     @RequestMapping(path = "remove-payload")
     protected String removePayload(@ModelAttribute ItemEditor editor,
                                    BindingResult editorBinding,
-                                   @RequestParam(name = "nested-path") String nestedPath,
-                                   @RequestParam(name = "attribute") String attributeName,
-                                   @RequestParam(name = "index") int index) {
+                                   @RequestParam(name = "payload") UUID payloadUuid) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        payloadGroup.removePayload(index);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        payloadGroup.removePayload(index);
 
         return redirect(editor);
     }
 
-    @RequestMapping(path = "open-payload")
-    protected String openPayload(@ModelAttribute ItemEditor editor,
-                                 BindingResult editorBinding,
-                                 @RequestParam(name = "nested-path") String nestedPath,
-                                 @RequestParam(name = "attribute") String attributeName,
-                                 @RequestParam(name = "index") int index) {
+    @RequestMapping(path = "expand-payload")
+    protected String expandPayload(@ModelAttribute ItemEditor editor,
+                                   BindingResult editorBinding,
+                                   @RequestParam(name = "payload") UUID payloadUuid) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
 
         return redirect(editor);
     }
 
 
-    @RequestMapping(path = "close-payload")
-    protected String closePayload(@ModelAttribute ItemEditor editor,
-                                  BindingResult editorBinding,
-                                  @RequestParam(name = "nested-path") String nestedPath,
-                                  @RequestParam(name = "attribute") String attributeName,
-                                  @RequestParam(name = "index") int index) {
+    @RequestMapping(path = "compress-payload")
+    protected String compressPayload(@ModelAttribute ItemEditor editor,
+                                     BindingResult editorBinding,
+                                     @RequestParam(name = "payload") UUID payloadUuid) {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        ItemRelation payload = (ItemRelation) payloadGroup.getPayload(index);
 
         return redirect(editor);
     }
@@ -352,15 +359,13 @@ public class ItemEditorController {
     protected String uploadImage(@ModelAttribute ItemEditor editor,
                                  BindingResult editorBinding,
                                  @RequestParam(name = "token") String token,
-                                 @RequestParam(name = "nested-path") String nestedPath,
-                                 @RequestParam(name = "attribute") String attributeName,
-                                 @RequestParam(name = "index") int index,
+                                 @RequestParam(name = "payload") UUID payloadUuid,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+        ImageRelation relation = (ImageRelation) null;// payloadGroup.getPayload(index);
         Image image = relation.getTarget();
 
         if (image == null) {
@@ -391,18 +396,16 @@ public class ItemEditorController {
     @PostMapping(path = "remove-image")
     protected String removeImage(@ModelAttribute ItemEditor editor,
                                  BindingResult editorBinding,
-                                 @RequestParam(name = "nested-path") String nestedPath,
-                                 @RequestParam(name = "attribute") String attributeName,
-                                 @RequestParam(name = "index") int index,
+                                 @RequestParam(name = "payload") UUID payloadUuid,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
-        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
-        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
-        Image image = (Image) relation.getTarget();
-
-        relation.setTarget(null);
+//        String propertyPath = String.format("%s.fieldGroups[%s]", nestedPath, attributeName);
+//        PayloadFieldGroup fieldGroup = (PayloadFieldGroup) editor.getPropertyValue(propertyPath);
+//        PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
+//        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+//        Image image = (Image) relation.getTarget();
+//
+//        relation.setTarget(null);
 
         return redirect(editor);
     }

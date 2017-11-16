@@ -1,5 +1,7 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.AbstractUnique;
+
 import javax.persistence.*;
 
 /**
@@ -7,14 +9,10 @@ import javax.persistence.*;
  */
 @Entity
 @DiscriminatorColumn(name = "type")
-public abstract class Payload {
+public abstract class Payload extends AbstractUnique {
 
     @Column(insertable = false, updatable = false)
     private String type;
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     @ManyToOne(targetEntity = PayloadGroup.class)
     private PayloadGroup group;
@@ -30,14 +28,6 @@ public abstract class Payload {
 
     /*public*/ void setType(String type) {
         this.type = type;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    /*public*/ void setId(Long id) {
-        this.id = id;
     }
 
     public PayloadGroup getGroup() {

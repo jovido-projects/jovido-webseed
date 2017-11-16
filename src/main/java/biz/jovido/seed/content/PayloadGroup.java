@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.AbstractUnique;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,11 +14,7 @@ import java.util.List;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "attribute_name"}))
-public class PayloadGroup {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class PayloadGroup extends AbstractUnique {
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -33,14 +30,6 @@ public class PayloadGroup {
     @OrderBy("ordinal")
     @Fetch(FetchMode.SELECT)
     private final List<Payload> payloads = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    /*public*/ void setId(Long id) {
-        this.id = id;
-    }
 
     public Item getItem() {
         return item;
