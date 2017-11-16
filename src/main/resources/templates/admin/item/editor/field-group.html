@@ -51,7 +51,7 @@
         </button>
         <ul class="dropdown-menu">
             <li th:each="action : ${group.actions}">
-                <a th:href="${action.url}">
+                <a th:data-formaction="${action.url}">
                     <span th:replace="admin/text(text=${action})">Name</span>
                 </a>
             </li>

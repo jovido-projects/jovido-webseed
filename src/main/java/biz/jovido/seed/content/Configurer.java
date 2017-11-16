@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author Stephan Grundner
@@ -31,6 +32,12 @@ public class Configurer implements Configuration {
         for (Structure structure : structures) {
             structureService.saveStructure(structure);
         }
+    }
+
+    public Configurer configure(Consumer<Configurer> consumer) {
+        consumer.accept(this);
+
+        return this;
     }
 
     public Configurer(HierarchyService hierarchyService, StructureService structureService) {
