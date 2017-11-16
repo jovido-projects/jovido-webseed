@@ -2,17 +2,12 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.ui.Breadcrumb;
 import biz.jovido.seed.ui.Text;
-import biz.jovido.seed.uimodel.Action;
-import biz.jovido.seed.uimodel.Actions;
-import biz.jovido.seed.uimodel.InvalidationListener;
-import biz.jovido.seed.uimodel.StaticText;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -45,11 +40,6 @@ public class ItemEditorController {
     @Autowired
     private StructureService structureService;
 
-    @InitBinder("itemEditor")
-    protected void initDataBinderForEditor(WebDataBinder dataBinder) {
-//        dataBinder.addValidators(new ItemValidator(itemService));
-    }
-
     @ModelAttribute("breadcrumbs")
     protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
         List<Breadcrumb> breadcrumbs = new ArrayList<>();
@@ -69,79 +59,10 @@ public class ItemEditorController {
         return breadcrumbs;
     }
 
-    private void onPayloadAdded(ItemEditor editor, Payload payload) {
-
-    }
-
     @ModelAttribute
     protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
                                 @RequestParam(name = "new", required = false) String structureName) {
-        ItemEditor editor = new ItemEditor();
-
-        editor.setInvalidationListener(new InvalidationListener<ItemEditor>() {
-            @Override
-            public void invalidated(ItemEditor editor) {
-                Item item = editor.getItem();
-                for (String attributeName : item.getAttributeNames()) {
-                    ItemEditor.PayloadFieldGroup fieldGroup = new ItemEditor.PayloadFieldGroup(editor, attributeName);
-                    fieldGroup.setInvalidationListener(new InvalidationListener<ItemEditor.PayloadFieldGroup>() {
-                        @Override
-                        public void invalidated(ItemEditor.PayloadFieldGroup fieldGroup) {
-                            Actions actions = fieldGroup.getActions();
-                            actions.clear();
-
-                            PayloadGroup payloadGroup = fieldGroup.getPayloadGroup();
-                            Attribute attribute = itemService.getAttribute(payloadGroup);
-                            if (attribute.getCapacity() > 1) {
-                                if (attribute instanceof ItemAttribute) {
-                                    actions.setText(new StaticText("Append"));
-                                    for (String structureName : ((ItemAttribute) attribute).getAcceptedStructureNames()) {
-                                        Action action = new Action();
-                                        action.setText(new StaticText(structureName));
-                                        action.setUrl("/admin/item/append" +
-                                                "?payload-group=" + payloadGroup.getUuid() +
-                                                "&structure=" + structureName);
-                                        actions.add(action);
-                                    }
-                                } else {
-                                    Action action1 = new Action();
-                                    action1.setText(new StaticText("Simple value"));
-                                    action1.setUrl("/admin/item/append" +
-                                            "?payload-group=" + payloadGroup.getUuid());
-                                    actions.add(action1);
-                                }
-                            }
-
-                            String payloadTemplate;
-
-                            if (attribute instanceof TextAttribute) {
-                                boolean multiline = ((TextAttribute) attribute).isMultiline();
-                                if (multiline) {
-                                    payloadTemplate = "admin/item/editor/payload::multiline-text";
-                                } else {
-                                    payloadTemplate = "admin/item/editor/payload::text";
-                                }
-                            } else if (attribute instanceof ItemAttribute) {
-                                payloadTemplate = "admin/item/editor/payload::item";
-                            } else if (attribute instanceof LinkAttribute) {
-                                payloadTemplate = "admin/item/editor/payload::link";
-                            } else if (attribute instanceof IconAttribute) {
-                                payloadTemplate = "admin/item/editor/payload::icon";
-                            } else if (attribute instanceof ImageAttribute) {
-                                payloadTemplate = "admin/item/editor/payload::image";
-                            } else if (attribute instanceof YesNoAttribute) {
-                                payloadTemplate = "admin/item/editor/payload::yesno";
-                            } else {
-                                throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
-                            }
-
-                            fieldGroup.setPayloadTemplate(payloadTemplate);
-                        }
-                    });
-                    editor.addFieldGroup(fieldGroup);
-                }
-            }
-        });
+        ItemEditor editor = new ItemEditor(itemService);
 
         if (itemId != null) {
             Item item = itemService.getItem(itemId);

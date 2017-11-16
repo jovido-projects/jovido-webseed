@@ -20,6 +20,8 @@ public class ItemRelation extends Relation<Item> {
     @Override
     public void setTarget(Item target) {
         item = target;
+
+        notifyChanged();
     }
 
     @Override
