@@ -5,6 +5,8 @@ import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Stephan Grundner
@@ -48,14 +50,17 @@ public class ItemUtils {
     }
 
     public static ItemVisitResult walkPayloadGroup(PayloadGroup payloadGroup, ItemVisitor visitor) {
-        for (Payload payload : payloadGroup.getPayloads()) {
-            ItemVisitResult result = walkPayload(payload, visitor);
-            if (result != ItemVisitResult.CONTINUE) {
-                return result;
+        ItemVisitResult result = visitor.visitPayloadGroup(payloadGroup);
+        if (result != ItemVisitResult.TERMINATE) {
+            for (Payload payload : payloadGroup.getPayloads()) {
+                result = walkPayload(payload, visitor);
+                if (result != ItemVisitResult.CONTINUE) {
+                    return result;
+                }
             }
         }
 
-        return ItemVisitResult.CONTINUE;
+        return result;
     }
 
     public static ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
@@ -67,6 +72,40 @@ public class ItemUtils {
         }
 
         return ItemVisitResult.CONTINUE;
+    }
+
+    public static PayloadGroup findPayloadGroup(Item item, UUID payloadGroupUuid) {
+        final AtomicReference<PayloadGroup> found = new AtomicReference<>();
+        walkItem(item, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitPayloadGroup(PayloadGroup payloadGroup) {
+                if (payloadGroup.getUuid().equals(payloadGroupUuid)) {
+                    found.set(payloadGroup);
+                    return ItemVisitResult.TERMINATE;
+                }
+
+                return super.visitPayloadGroup(payloadGroup);
+            }
+        });
+
+        return found.get();
+    }
+
+    public static Payload findPayload(Item item, UUID payloadUuid) {
+        final AtomicReference<Payload> found = new AtomicReference<>();
+        walkItem(item, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitPayload(Payload payload) {
+                if (payload.getUuid().equals(payloadUuid)) {
+                    found.set(payload);
+                    return ItemVisitResult.TERMINATE;
+                }
+
+                return super.visitPayload(payload);
+            }
+        });
+
+        return found.get();
     }
 
     @Deprecated

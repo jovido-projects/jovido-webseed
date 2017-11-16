@@ -111,7 +111,11 @@ public class ItemEditor {
     }
 
     public PayloadFieldGroup getFieldGroup(UUID uuid) {
-        return fieldGroups.get(uuid);
+        PayloadFieldGroup fieldGroup = fieldGroups.get(uuid);
+        if (fieldGroup == null) {
+            throw new RuntimeException("Field group not found: " + uuid);
+        }
+        return fieldGroup;
     }
 
     public PayloadFieldGroup getFieldGroup(PayloadGroup payloadGroup) {
