@@ -1,23 +1,31 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="form-group" th:each="payload,payloadItr : ${payloadGroup.payloads}">
+<div class="form-group"
+     th:each="payload,payloadItr : ${payloadGroup.payloads}"
+     th:with="field=${fieldGroup.getField(payload)}" th:data-uuid="${payload.uuid}">
     <th:block>
         <h5>
             <span th:text="${attribute.name}">Attribute name</span>
             <span th:if="${payloadGroup.payloads.size() > 1}">#[[${payloadItr.index + 1}]]</span>
             <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
-            <!--<small class="mute" th:text="${field.trailAsText}">xxx</small>-->
-
             <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
-                <th:block th:replace="admin/item/editor/payload::actions" />
+                <th:block th:each="action : ${field.actions}">
+                    <button class="btn btn-default"
+                            th:disabled="${action.disabled} ? disabled : _"
+                            th:formaction="__${action.url}__">
+                        <span th:utext="${action.text?.value}">Text</span>
+                    </button>
+                </th:block>
             </div>
         </h5>
 
     </th:block>
 
-    <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+    <th:block th:if="${!field.compressed}">
+        <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+    </th:block>
+    <th:block th:if="${field.compressed}"></th:block>
 </div>
-
 
 <th:block th:if="${fieldGroup?.actions?.size() == 1}"
           th:with="action=${fieldGroup.actions[0]}">

@@ -11,6 +11,92 @@ import java.util.*;
  */
 public class ItemEditor implements ItemChangeListener {
 
+    public static class PayloadField {
+
+        private final PayloadFieldGroup group;
+        private final Payload payload;
+        private ItemEditor nestedEditor;
+
+        private Actions actions;
+        private boolean compressed;
+
+        public ItemEditor getNestedEditor() {
+            return nestedEditor;
+        }
+
+        public void setNestedEditor(ItemEditor nestedEditor) {
+            this.nestedEditor = nestedEditor;
+        }
+
+        public Actions getActions() {
+            if (actions == null) {
+                actions = new Actions();
+            }
+
+            return actions;
+        }
+
+        public void setActions(Actions actions) {
+            this.actions = actions;
+        }
+
+        public boolean isCompressed() {
+            return compressed;
+        }
+
+        public void setCompressed(boolean compressed) {
+            this.compressed = compressed;
+        }
+
+        void refresh() {
+            Attribute attribute = group.getAttribute();
+
+            Actions actions = getActions();
+            actions.clear();
+
+            if (payload instanceof ItemRelation) {
+                Action compressAction = new Action();
+                compressAction.setText(new StaticText("<i class=\"fa fa-compress\"></i>"));
+                compressAction.setUrl("@{compress-payload(payload=${payload.uuid})}");
+                compressAction.setDisabled(isCompressed());
+                actions.add(compressAction);
+
+                Action expandAction = new Action();
+                expandAction.setText(new StaticText("<i class=\"fa fa-expand\"></i>"));
+                expandAction.setUrl("@{expand-payload(payload=${payload.uuid})}");
+                expandAction.setDisabled(!isCompressed());
+                actions.add(expandAction);
+            }
+
+
+            Action moveUpAction = new Action();
+            moveUpAction.setText(new StaticText("<i class=\"fa fa-arrow-up\"></i>"));
+            moveUpAction.setUrl("@{move-payload-up(payload=${payload.uuid})}");
+            moveUpAction.setDisabled(payload.getOrdinal() <= 0);
+            actions.add(moveUpAction);
+
+            Action moveDownAction = new Action();
+            moveDownAction.setText(new StaticText("<i class=\"fa fa-arrow-down\"></i>"));
+            moveDownAction.setUrl("@{move-payload-down(payload=${payload.uuid})}");
+            moveDownAction.setDisabled(payload.getOrdinal() >= attribute.getCapacity() - 1);
+            actions.add(moveDownAction);
+
+            Action removeAction = new Action();
+            removeAction.setText(new StaticText("<i class=\"fa fa-remove\"></i>"));
+            removeAction.setUrl("@{remove-payload(payload=${payload.uuid})}");
+            actions.add(removeAction);
+
+            if (nestedEditor != null) {
+                nestedEditor.refresh();
+            }
+        }
+
+        public PayloadField(PayloadFieldGroup group, Payload payload) {
+            this.group = group;
+            this.payload = payload;
+        }
+    }
+
     public static class PayloadFieldGroup {
 
         private final ItemEditor editor;
@@ -18,7 +104,7 @@ public class ItemEditor implements ItemChangeListener {
         private Actions actions;
         private String payloadTemplate;
 
-        private final Map<UUID, ItemEditor> nestedEditors = new HashMap<>();
+        private final Set<PayloadField> fields = new HashSet<>();
 
         private Item getItem() {
             return editor.getItem();
@@ -26,6 +112,10 @@ public class ItemEditor implements ItemChangeListener {
 
         public PayloadGroup getPayloadGroup() {
             return getItem().getPayloadGroup(attributeName);
+        }
+
+        public Attribute getAttribute() {
+            return editor.itemService.getAttribute(getPayloadGroup());
         }
 
         public Actions getActions() {
@@ -48,12 +138,18 @@ public class ItemEditor implements ItemChangeListener {
             this.payloadTemplate = payloadTemplate;
         }
 
-        public Map<UUID, ItemEditor> getNestedEditors() {
-            return Collections.unmodifiableMap(nestedEditors);
+        public Set<PayloadField> getFields() {
+            return Collections.unmodifiableSet(fields);
         }
 
-        public void addNestedEditor(UUID uuid, ItemEditor nestedEditor) {
-            nestedEditors.put(uuid, nestedEditor);
+        public boolean addField(PayloadField field) {
+            return fields.add(field);
+        }
+
+        public PayloadField getField(Payload payload) {
+            return fields.stream()
+                    .filter(it -> it.payload.getUuid().equals(payload.getUuid()))
+                    .findFirst().orElse(null);
         }
 
         void refresh() {
@@ -80,6 +176,10 @@ public class ItemEditor implements ItemChangeListener {
                             "?payload-group=" + payloadGroup.getUuid());
                     actions.add(action1);
                 }
+            }
+
+            for (PayloadField field : fields) {
+                field.refresh();
             }
         }
 
@@ -162,14 +262,21 @@ public class ItemEditor implements ItemChangeListener {
             return;
 
         PayloadFieldGroup fieldGroup = getFieldGroup(payload.getGroup());
+        PayloadField field = new PayloadField(fieldGroup, payload);
+        field.setCompressed(false);
 
         if (payload instanceof ItemRelation) {
             Item nestedItem = ((ItemRelation) payload).getTarget();
             ItemEditor nestedEditor = new ItemEditor(itemService);
             nestedEditor.setItem(nestedItem);
-            fieldGroup.addNestedEditor(payload.getUuid(), nestedEditor);
+            field.setNestedEditor(nestedEditor);
+
+            if (nestedItem.getId() != null) {
+                field.setCompressed(true);
+            }
         }
 
+        fieldGroup.addField(field);
         fieldGroup.refresh();
     }
 
@@ -192,10 +299,13 @@ public class ItemEditor implements ItemChangeListener {
                 return fieldGroup;
             }
 
-            for (ItemEditor nestedEditor : fieldGroup.nestedEditors.values()) {
-                PayloadFieldGroup found = nestedEditor.getFieldGroup(payloadGroup);
-                if (found != null) {
-                    return found;
+            for (PayloadField field : fieldGroup.getFields()) {
+                ItemEditor nestedEditor = field.nestedEditor;
+                if (nestedEditor != null) {
+                    PayloadFieldGroup found = nestedEditor.getFieldGroup(payloadGroup);
+                    if (found != null) {
+                        return found;
+                    }
                 }
             }
         }
@@ -205,6 +315,32 @@ public class ItemEditor implements ItemChangeListener {
 
     public void removeAllFieldGroups() {
         fieldGroups.clear();
+    }
+
+    public PayloadField getField(Payload payload) {
+        for (PayloadFieldGroup fieldGroup : fieldGroups) {
+            for (PayloadField field : fieldGroup.getFields()) {
+                if (field.payload == payload) {
+                    return field;
+                }
+
+                ItemEditor nestedEditor = field.nestedEditor;
+                if (nestedEditor != null) {
+                    PayloadField found = nestedEditor.getField(payload);
+                    if (found != null) {
+                        return found;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void refresh() {
+        for (PayloadFieldGroup fieldGroup : getFieldGroups()) {
+            fieldGroup.refresh();
+        }
     }
 
     public ItemEditor(ItemService itemService) {
