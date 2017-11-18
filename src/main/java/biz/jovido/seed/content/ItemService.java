@@ -6,10 +6,13 @@ import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -45,6 +48,9 @@ public class ItemService {
     @Autowired
     private AuditingHandler auditingHandler;
 
+    @Autowired
+    private MessageSource messageSource;
+
     public Item getItem(Long id) {
         return itemRepository.findOne(id);
     }
@@ -72,22 +78,11 @@ public class ItemService {
 
     @Deprecated
     public String getLabelText(Item item) {
-//        if (item != null) {
-//            PayloadGroup label = getLabel(item);
-//            if (label == null) {
-////                Structure structure = getStructure(item);
-//                PayloadGroup title = item.getPayloadGroup("title");
-//                if (title != null && title.getPayloads().size() > 0) {
-//                    return title.getPayload(0).getText();
-//                }
-//
-//                return null;
-//            }
-//
-//            return (String) label.getPayload(0).getText();
-//        }
+        Structure structure = getStructure(item);
+        String attributeName = structure.getLabelAttributeName();
+        TextPayload label = (TextPayload) getPayload(item, attributeName, 0);
 
-        return null;
+        return label.getText();
     }
 
     public List<Payload> getPayloads(Item item, String attributeName) {
@@ -218,6 +213,26 @@ public class ItemService {
         return getAttribute(item, attributeName);
     }
 
+    public String getDescription(Attribute attribute, Object[] messageArgs, Locale locale) {
+        Structure structure = attribute.getStructure();
+        String messageCode = String.format("seed.structure.%s.%s.description",
+                structure.getName(),
+                attribute.getName());
+        try {
+            return messageSource.getMessage(messageCode, messageArgs, locale);
+        } catch (NoSuchMessageException e) {
+            return null;
+        }
+    }
+
+    public String getDescription(Payload payload, Object... messageArgs) {
+        Assert.notNull(payload, "[payload] must not be null");
+        Attribute attribute = getAttribute(payload);
+        Item item = payload.getOwningItem();
+
+        return getDescription(attribute, messageArgs, item.getLocale());
+    }
+
     public ItemVisitResult walkPayload(Payload payload, ItemVisitor visitor) {
         ItemVisitResult result = visitor.visitPayload(payload);
         if (result == ItemVisitResult.CONTINUE) {
@@ -291,7 +306,8 @@ public class ItemService {
                 ValueMap map = new ValueMap();
 
                 if (attribute instanceof ImageAttribute) {
-                    Image image = ((ImagePayload) payload).getImage();
+                    ImagePayload imagePayload = (ImagePayload) payload;
+                    Image image = imagePayload.getImage();
                     map.put("fileName", Optional.ofNullable(image).map(Image::getFileName));
                     map.put("alt", Optional.ofNullable(image).map(Image::getAlt));
                     map.put("id", Optional.ofNullable(image).map(Image::getId));
@@ -299,9 +315,23 @@ public class ItemService {
                             image.getUuid(),
                             image.getFileName()) : null;
                     map.put("url", url);
+                } else if (attribute instanceof IconAttribute) {
+                    IconPayload iconPayload = ((IconPayload) payload);
+                    map.put("code", iconPayload.getCode());
+                } else if (attribute instanceof LinkAttribute) {
+                    LinkPayload linkPayload = ((LinkPayload) payload);
+                    map.put("url", linkPayload.getUrl());
+                    map.put("value", linkPayload.getText());
+                } else if (attribute instanceof TextAttribute) {
+                    TextPayload textPayload = ((TextPayload) payload);
+                    map.put("value", textPayload.getText());
+                } else if (attribute instanceof YesNoAttribute) {
+                    YesNoPayload yesNo = ((YesNoPayload) payload);
+                    map.put("value", yesNo.isYes());
+                    map.put("yes", yesNo.isYes());
+                    map.put("no", !yesNo.isYes());
                 } else {
-//                    map.put("value", payload.getValue());
-                    throw new UnsupportedOperationException();
+//                    throw new UnsupportedOperationException();
                 }
 
                 list.add(map);

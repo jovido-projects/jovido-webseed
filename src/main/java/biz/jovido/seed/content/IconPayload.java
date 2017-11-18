@@ -20,6 +20,15 @@ public class IconPayload extends Payload {
         this.code = code;
     }
 
+    @Override
+    public Payload copy() {
+        IconPayload copy = new IconPayload();
+        copy.setAttributeName(getAttributeName());
+        copy.setCode(getCode());
+
+        return copy;
+    }
+
     public IconPayload() {
         super(PayloadType.ICON);
     }

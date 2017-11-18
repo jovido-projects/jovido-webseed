@@ -5,6 +5,7 @@ import biz.jovido.seed.uimodel.Action;
 import biz.jovido.seed.uimodel.Actions;
 import biz.jovido.seed.uimodel.StaticText;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,9 +83,8 @@ public class NestedItemEditor implements ItemChangeListener {
 
             PayloadField field = this;
             while (field != null) {
-                track.addFirst(field);
-
                 field = field.getEditor().field;
+                track.addFirst(field);
             }
 
 
@@ -92,9 +92,16 @@ public class NestedItemEditor implements ItemChangeListener {
         }
 
         public String getFoobar() {
-            return getTrack().stream()
+            String foobar = getTrack().stream()
+                    .filter(Objects::nonNull)
                     .map(PayloadField::getCaption)
                     .collect(Collectors.joining(" / "));
+
+//            if (StringUtils.hasText(foobar)) {
+//                foobar = String.format("%s /", foobar);
+//            }
+
+            return foobar;
         }
 
         void refresh() {
@@ -263,7 +270,6 @@ public class NestedItemEditor implements ItemChangeListener {
         }
     }
 
-//    private final NestedItemEditor parent;
     private final PayloadField field;
     private Item item;
 
@@ -356,23 +362,25 @@ public class NestedItemEditor implements ItemChangeListener {
             return;
 
         PayloadFieldGroup fieldGroup = findFieldGroup(payload.getAttributeName());
-        PayloadField field = new PayloadField(fieldGroup, payload);
-        field.setCompressed(false);
+        if (fieldGroup != null) {
+            PayloadField field = new PayloadField(fieldGroup, payload);
+            field.setCompressed(false);
 
-        Attribute attribute = getItemService().getAttribute(payload);
-        if (attribute instanceof ItemAttribute) {
-            Item nestedItem = ((ItemPayload) payload).getItem();
-            NestedItemEditor nestedEditor = new NestedItemEditor(field);
-            nestedEditor.setItem(nestedItem);
-            field.setNestedEditor(nestedEditor);
+            Attribute attribute = getItemService().getAttribute(payload);
+            if (attribute instanceof ItemAttribute) {
+                Item nestedItem = ((ItemPayload) payload).getItem();
+                NestedItemEditor nestedEditor = new NestedItemEditor(field);
+                nestedEditor.setItem(nestedItem);
+                field.setNestedEditor(nestedEditor);
 
-            if (nestedItem.getId() != null) {
-                field.setCompressed(true);
+                if (nestedItem.getId() != null) {
+                    field.setCompressed(true);
+                }
             }
-        }
 
-        fieldGroup.addField(field);
-        fieldGroup.refresh();
+            fieldGroup.addField(field);
+            fieldGroup.refresh();
+        }
     }
 
     @Override
@@ -441,9 +449,6 @@ public class NestedItemEditor implements ItemChangeListener {
         }
     }
 
-//    public NestedItemEditor(NestedItemEditor parent) {
-//        this.parent = parent;
-//    }
     public NestedItemEditor(PayloadField field) {
         this.field = field;
     }

@@ -28,4 +28,18 @@ public class LinkPayload extends Payload {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public Payload copy() {
+        LinkPayload copy = new LinkPayload();
+        copy.setAttributeName(getAttributeName());
+        copy.setText(getText());
+        copy.setUrl(getUrl());
+
+        return copy;
+    }
+
+    public LinkPayload() {
+        super(PayloadType.LINK);
+    }
 }

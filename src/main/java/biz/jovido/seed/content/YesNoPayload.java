@@ -21,6 +21,15 @@ public class YesNoPayload extends Payload {
         this.yes = yes;
     }
 
+    @Override
+    public Payload copy() {
+        YesNoPayload copy = new YesNoPayload();
+        copy.setAttributeName(getAttributeName());
+        copy.setYes(isYes());
+
+        return copy;
+    }
+
     public YesNoPayload() {
         super(PayloadType.YES_NO);
     }

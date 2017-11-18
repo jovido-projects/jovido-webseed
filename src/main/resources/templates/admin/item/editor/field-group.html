@@ -2,30 +2,27 @@
 <div class="form-group"
      th:each="field,fieldItr : ${fieldGroup.fields}"
      th:with="attribute=${fieldGroup.attribute}">
-    <th:block>
-        <h5>
-            <!--<span th:text="${attribute.name}">Attribute name</span>-->
-            <strong th:text="${field.caption}">Attribute name</strong> <br />
-            <small th:text="${field.foobar}">Track</small>
-            <!--<span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>-->
-            <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
-            <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
-                <th:block th:each="action : ${field.actions}">
-                    <button class="btn btn-default"
-                            th:disabled="${action.disabled} ? disabled : _"
-                            th:formaction="__${action.url}__">
-                        <span th:utext="${action.text?.value}">Text</span>
-                    </button>
-                </th:block>
-            </div>
-        </h5>
+    <h5>
+        <small th:text="${field.foobar}">Track</small> <br/>
+        <strong th:text="${field.caption}">Attribute name</strong>
+        <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
-    </th:block>
+        <span class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
+            <th:block th:each="action : ${field.actions}">
+                <button class="btn btn-default"
+                        th:disabled="${action.disabled} ? disabled : _"
+                        th:formaction="__${action.url}__">
+                    <span th:utext="${action.text?.value}">Text</span>
+                </button>
+            </th:block>
+        </span>
+    </h5>
 
     <th:block>
         <th:block th:if="${!field.compressed}">
             <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+            <small th:text="${@itemService.getDescription(field.payload)}?: _"></small>
         </th:block>
         <th:block th:if="${field.compressed}"></th:block>
     </th:block>
@@ -40,8 +37,8 @@
     </button>
 </th:block>
 <th:block th:if="${fieldGroup?.actions?.size() > 1}">
-    <div class="btn-group dropup">
-        <button type="button"
+    <div class="btn-group dropup" >
+            <button type="button"
                 class="btn btn-default dropdown-toggle"
                 data-toggle="dropdown"
                 aria-haspopup="true"
@@ -51,8 +48,8 @@
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li th:each="action : ${fieldGroup.actions}">
-                <a th:data-formaction="${action.url}">
+            <li th:each="action : ${fieldGroup.actions}" >
+                <a th:data-formaction="${action.url}" >
                     <span th:text="${action.text.value}">Name</span>
                 </a>
             </li>

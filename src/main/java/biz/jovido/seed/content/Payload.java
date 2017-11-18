@@ -58,9 +58,7 @@ public abstract class Payload extends AbstractUnique {
         owningItem.removePayload(this);
     }
 
-    public Payload copy() {
-        throw new UnsupportedOperationException();
-    }
+    public abstract Payload copy();
 
     protected Payload(PayloadType type) {
         this.type = type;

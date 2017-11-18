@@ -93,7 +93,7 @@ public class Item extends AbstractUnique {
         return path;
     }
 
-    /*public*/ void setPath(String path) {
+    public void setPath(String path) {
         this.path = path;
     }
 
@@ -221,6 +221,15 @@ public class Item extends AbstractUnique {
 
     public boolean removeChangeListener(ItemChangeListener changeListener) {
         return changeListeners.remove(changeListener);
+    }
+
+    public boolean isPublished() {
+        Leaf leaf = getLeaf();
+        if (leaf != null) {
+            return leaf.getPublished() != null;
+        }
+
+        return false;
     }
 
     public Item copy() {

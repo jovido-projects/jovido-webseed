@@ -3,6 +3,7 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.security.User;
 import biz.jovido.seed.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,6 +29,9 @@ public class ItemListingController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @InitBinder
     protected void init(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("**");
@@ -47,10 +51,6 @@ public class ItemListingController {
 //        listing.addColumn("id", "seed.item.id");
 
         HasColumns.Column labelColumn = listing.addColumn("label", "seed.item.label");
-        labelColumn.setValueResolver((HasColumns.Column column, Object source) -> {
-            Item item = (Item) source;
-            return "juhu";
-        });
         labelColumn.setValueTemplate("admin/item/listing/label-value");
 
         listing.addColumn("structure", "seed.item.structure").setValueResolver(new HasColumns.ValueResolver() {
@@ -61,7 +61,13 @@ public class ItemListingController {
                 return structure.getName();
             }
         });
-        listing.addColumn("locale", "seed.item.locale");
+        listing.addColumn("locale", "seed.item.locale").setValueResolver(new HasColumns.ValueResolver() {
+            @Override
+            public Object resolveValue(HasColumns.Column column, Object source) {
+                Item item = (Item) source;
+                return item.getLocale().getDisplayName();
+            }
+        });
         listing.addColumn("createdBy", "seed.item.createdBy").setValueResolver(new HasColumns.ValueResolver() {
             @Override
             public Object resolveValue(HasColumns.Column column, Object source) {
@@ -78,6 +84,15 @@ public class ItemListingController {
             action.setDefaultMessage(structure.getName());
             action.setUrl("/admin/item/create?structure=" + structure.getName());
             actionGroup.addAction(action);
+        });
+        listing.addColumn("published", "seed.item.published").setValueResolver(new HasColumns.ValueResolver() {
+            @Override
+            public Object resolveValue(HasColumns.Column column, Object source) {
+                Item item = (Item) source;
+                boolean published = item.isPublished();
+                String messageCode = String.format("seed.%s", Boolean.toString(published));
+                return messageSource.getMessage(messageCode, null, Boolean.toString(published), item.getLocale());
+            }
         });
 
         listing.setEntryFactory(new Listing.EntryFactory() {

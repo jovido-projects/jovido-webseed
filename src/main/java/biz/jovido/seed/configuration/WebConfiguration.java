@@ -2,6 +2,7 @@ package biz.jovido.seed.configuration;
 
 import biz.jovido.seed.TemplateResolver;
 import biz.jovido.seed.component.ClassNameTemplateResolver;
+import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.thymeleaf.ComponentDialect;
 import biz.jovido.seed.thymeleaf.ContentDialect;
 import org.springframework.context.ApplicationContext;
@@ -49,8 +50,9 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
     }
 
     @Bean
-    public ContentDialect contentDialect() {
+    public ContentDialect contentDialect(ItemService itemService) {
         ContentDialect dialect = new ContentDialect();
+        dialect.setItemService(itemService);
 
         return dialect;
     }

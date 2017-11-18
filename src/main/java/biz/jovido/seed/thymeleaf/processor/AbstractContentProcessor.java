@@ -1,6 +1,7 @@
 package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.content.Item;
+import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.content.frontend.ItemValues;
 import biz.jovido.seed.content.ItemUtils;
 import biz.jovido.seed.content.frontend.ValuesList;
@@ -27,7 +28,16 @@ import java.util.Objects;
  */
 public abstract class AbstractContentProcessor extends AbstractAttributeTagProcessor {
 
+    private ItemService itemService;
     private List<TemplateNameResolver> templateNameResolvers;
+
+    public ItemService getItemService() {
+        return itemService;
+    }
+
+    public void setItemService(ItemService itemService) {
+        this.itemService = itemService;
+    }
 
     public List<TemplateNameResolver> getTemplateNameResolvers() {
         if (templateNameResolvers == null) {
@@ -72,10 +82,10 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
                 templateName = item.getStructureName();
             }
 
-//            ItemValues model = ItemUtils.toModel(item);
-//            for (Map.Entry<String, ValuesList> entry : model.entrySet()) {
-//                structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
-//            }
+            ItemValues model = itemService.toModel(item);
+            for (Map.Entry<String, ValuesList> entry : model.entrySet()) {
+                structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
+            }
 
             String newAttributeName = "th:" + currentAttributeName.getAttributeName();
             structureHandler.replaceAttribute(currentAttributeName, newAttributeName, templateName);

@@ -23,6 +23,15 @@ public class ImagePayload extends AssetPayload {
         this.image = image;
     }
 
+    @Override
+    public Payload copy() {
+        ImagePayload copy = new ImagePayload();
+        copy.setAttributeName(getAttributeName());
+        copy.setImage(getImage());
+
+        return copy;
+    }
+
     public ImagePayload() {
         super(PayloadType.IMAGE);
     }
