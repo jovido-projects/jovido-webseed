@@ -5,10 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +21,10 @@ public class Leaf extends AbstractUnique {
 
     @OneToOne(optional = false)
     private Item current;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "leaf_host")
+    private final List<Host> hosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "leaf", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -46,6 +47,10 @@ public class Leaf extends AbstractUnique {
 
     public void setCurrent(Item current) {
         this.current = current;
+    }
+
+    public List<Host> getHosts() {
+        return Collections.unmodifiableList(hosts);
     }
 
     public List<Node> getNodes() {

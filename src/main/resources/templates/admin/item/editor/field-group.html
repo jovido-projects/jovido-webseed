@@ -5,7 +5,8 @@
     <th:block>
         <h5>
             <!--<span th:text="${attribute.name}">Attribute name</span>-->
-            <span th:text="${field.foobar}">Attribute name</span>
+            <strong th:text="${field.caption}">Attribute name</strong> <br />
+            <small th:text="${field.foobar}">Track</small>
             <!--<span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>-->
             <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
@@ -34,6 +35,7 @@
           th:with="action=${fieldGroup.actions[0]}">
     <button class="btn btn-default"
             th:formaction="${action.url}">
+        <i class="fa fa-plus"></i>
         <span th:text="${action.text?.value}">Append</span>
     </button>
 </th:block>
@@ -44,6 +46,7 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false">
+            <i class="fa fa-plus"></i>
             <span th:text="${fieldGroup.actions.text.value}">Append</span>
             <span class="caret"></span>
         </button>

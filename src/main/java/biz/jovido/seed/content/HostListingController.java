@@ -1,4 +1,4 @@
-package biz.jovido.seed.net;
+package biz.jovido.seed.content;
 
 import biz.jovido.seed.ui.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;

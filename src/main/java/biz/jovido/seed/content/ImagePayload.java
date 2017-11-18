@@ -22,4 +22,8 @@ public class ImagePayload extends AssetPayload {
     public void setImage(Image image) {
         this.image = image;
     }
+
+    public ImagePayload() {
+        super(PayloadType.IMAGE);
+    }
 }

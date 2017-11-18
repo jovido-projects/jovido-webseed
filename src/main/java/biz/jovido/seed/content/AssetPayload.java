@@ -5,4 +5,7 @@ package biz.jovido.seed.content;
  */
 public abstract class AssetPayload extends Payload {
 
+    public AssetPayload(PayloadType type) {
+        super(type);
+    }
 }

@@ -1,7 +1,7 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 
 <th:block th:fragment="item">
-    <div class="panel panel-default" th_classappend="'nesting-level-__${nestingLevel}__'">
+    <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
         <div class="panel-body">
             <th:block th:with="editor=${field.nestedEditor}">
                 <th:block th:replace="admin/item/editor"/>

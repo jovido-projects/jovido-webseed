@@ -12,7 +12,8 @@
     <!--</th:block>-->
 <!--</th:block>-->
 
-<th:block th:each="fieldGroup : ${editor.fieldGroups}">
+<th:block th:each="fieldGroup : ${editor.fieldGroups}"
+          th:with="nestingLevel=${nestingLevel+1}">
     <th:block th:replace="admin/item/editor/field-group" />
 </th:block>
 </html>

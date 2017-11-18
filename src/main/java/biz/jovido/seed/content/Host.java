@@ -1,29 +1,21 @@
-package biz.jovido.seed.net;
+package biz.jovido.seed.content;
 
-import javax.persistence.*;
+import biz.jovido.seed.AbstractUnique;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
-public class Host {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+//@Table(name = "")
+public class Host extends AbstractUnique {
 
     @Column(unique = true)
     private String name;
 
     private String path;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

@@ -20,4 +20,8 @@ public class YesNoPayload extends Payload {
     public void setYes(boolean yes) {
         this.yes = yes;
     }
+
+    public YesNoPayload() {
+        super(PayloadType.YES_NO);
+    }
 }

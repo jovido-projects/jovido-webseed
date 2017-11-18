@@ -22,4 +22,8 @@ public class ItemPayload extends Payload {
     public void setItem(Item item) {
         this.item = item;
     }
+
+    public ItemPayload() {
+        super(PayloadType.ITEM);
+    }
 }

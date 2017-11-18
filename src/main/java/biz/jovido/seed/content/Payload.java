@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Payload extends AbstractUnique {
 
-    @Column(insertable = false, updatable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private PayloadType type;
 
     @ManyToOne
     private Item owningItem;
@@ -21,11 +21,11 @@ public abstract class Payload extends AbstractUnique {
 
     private int ordinal = -1;
 
-    public String getType() {
+    public PayloadType getType() {
         return type;
     }
 
-    /*public*/ void setType(String type) {
+    /*public*/ void setType(PayloadType type) {
         this.type = type;
     }
 
@@ -61,4 +61,10 @@ public abstract class Payload extends AbstractUnique {
     public Payload copy() {
         throw new UnsupportedOperationException();
     }
+
+    protected Payload(PayloadType type) {
+        this.type = type;
+    }
+
+    public Payload() {}
 }

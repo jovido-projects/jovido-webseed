@@ -21,4 +21,8 @@ public class TextPayload extends Payload {
     public void setText(String text) {
         this.text = text;
     }
+
+    public TextPayload() {
+        super(PayloadType.TEXT);
+    }
 }

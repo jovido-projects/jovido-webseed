@@ -19,4 +19,8 @@ public class IconPayload extends Payload {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public IconPayload() {
+        super(PayloadType.ICON);
+    }
 }
