@@ -1,16 +1,18 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<th:block th:with="nestedPath='item',nestingLevel=0">
-    <th:block th:fragment="payloads" th:with="nestingLevel=${nestingLevel+1}">
-        <th:block th:with="item=*{__${nestedPath}__},structure=${@itemService.getStructure(item)}">
-            <th:block th:each="attribute,attributeItr : ${structure.attributes}">
-                <th:block
-                        th:with="payloadGroup=${item.payloadGroups[attribute.name]},
-                                 fieldGroup=${editor.getFieldGroup(payloadGroup)}">
-                    <p th:if="${attributeItr.index > 0}"></p>
-                    <th:block th:replace="admin/item/editor/payload-group" />
-                </th:block>
-            </th:block>
-        </th:block>
-    </th:block>
+<!--<th:block th:with="nestedPath='self',nestingLevel=0">-->
+    <!--<th:block th:fragment="payloads" th:with="nestingLevel=${nestingLevel+1}">-->
+        <!--<th:block th:with="item=*{__${nestedPath}__.item},structure=${@itemService.getStructure(item)}">-->
+            <!--<th:block th:each="attribute,attributeItr : ${structure.attributes}">-->
+                <!--<th:block th:with="fieldGroup=${editor.getFieldGroup(attribute.name)}">-->
+                    <!--<p th:if="${attributeItr.index > 0}"></p>-->
+                    <!--<th:block th:replace="admin/item/editor/payload-group" />-->
+                <!--</th:block>-->
+            <!--</th:block>-->
+        <!--</th:block>-->
+    <!--</th:block>-->
+<!--</th:block>-->
+
+<th:block th:each="fieldGroup : ${editor.fieldGroups}">
+    <th:block th:replace="admin/item/editor/field-group" />
 </th:block>
 </html>

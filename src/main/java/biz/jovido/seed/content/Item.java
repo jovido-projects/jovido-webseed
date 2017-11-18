@@ -8,9 +8,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -35,9 +37,8 @@ public class Item extends AbstractUnique {
     @Column(length = 255 * 4)
     private String path;
 
-    @OneToMany(mappedBy = "item", targetEntity = PayloadGroup.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @MapKey(name = "attributeName")
-    private final Map<String, PayloadGroup> payloadGroups = new HashMap<>();
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private final Set<Payload> payloads = new LinkedHashSet<>();
 
     @CreatedDate
     private Date createdAt;
@@ -96,30 +97,63 @@ public class Item extends AbstractUnique {
         this.path = path;
     }
 
-    public Map<String, PayloadGroup> getPayloadGroups() {
-        return Collections.unmodifiableMap(payloadGroups);
+    public Set<Payload> getPayloads() {
+        return Collections.unmodifiableSet(payloads);
     }
 
+    @Deprecated
     public Set<String> getAttributeNames() {
-        return Collections.unmodifiableSet(payloadGroups.keySet());
+        return payloads.stream()
+                .map(Payload::getAttributeName)
+                .distinct()
+                .collect(Collectors.toSet());
     }
 
-    public PayloadGroup getPayloadGroup(String attributeName) {
-        return payloadGroups.get(attributeName);
-    }
+    public boolean addPayload(Payload payload) {
+        Assert.hasText(payload.getAttributeName(), "[payload.attributeName] must not be empty");
+        if (payloads.add(payload)) {
+            payload.setItem(this);
+            long size = payloads.stream()
+                    .filter(it -> it.getAttributeName().equals(payload.getAttributeName()))
+                    .count();
+            payload.setOrdinal((int) size - 1);
 
-    /*public*/ void setPayloadGroup(String attributeName, PayloadGroup payloadGroup) {
-        PayloadGroup replacedPayloadGroup = payloadGroups.put(attributeName, payloadGroup);
-        if (replacedPayloadGroup != null) {
-            replacedPayloadGroup.setItem(null);
-            replacedPayloadGroup.setAttributeName(null);
+            for (ItemChangeListener changeListener : getChangeListeners()) {
+                changeListener.payloadAdded(this, payload);
+            }
+
+            return true;
         }
 
-        if (payloadGroup != null) {
-            payloadGroup.setItem(this);
-            payloadGroup.setAttributeName(attributeName);
-        }
+        return false;
     }
+
+    public boolean removePayload(Payload payload) {
+        if (payloads.remove(payload)) {
+            for (ItemChangeListener changeListener : getChangeListeners()) {
+                changeListener.payloadRemoved(this, payload);
+            }
+
+            payload.setItem(null);
+            payload.setOrdinal(-1);
+
+            ListIterator<Payload> listIterator = ItemUtils
+                    .getPayloads(this, payload.getAttributeName()).listIterator();
+            while (listIterator.hasNext()) {
+                Payload next = listIterator.next();
+                next.setOrdinal(listIterator.previousIndex());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+//    public void movePayload(String attributeName, int fromIndex, int toIndex) {
+//        List<Payload> payloads = ItemUtils.getPayloads(this, attributeName);
+//        Payload
+//    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -165,6 +199,7 @@ public class Item extends AbstractUnique {
         return false;
     }
 
+    @Deprecated
     public boolean belongsTo(Leaf leaf) {
         if (leaf != null) {
 
@@ -200,9 +235,8 @@ public class Item extends AbstractUnique {
         copy.setCreatedBy(getCreatedBy());
         copy.setLastModifiedBy(getLastModifiedBy());
 
-        for (String attributeName : getAttributeNames()) {
-            PayloadGroup payloadGroup = getPayloadGroup(attributeName);
-            copy.setPayloadGroup(attributeName, payloadGroup.copy());
+        for (Payload payload : payloads) {
+            copy.addPayload(payload.copy());
         }
 
         return copy;

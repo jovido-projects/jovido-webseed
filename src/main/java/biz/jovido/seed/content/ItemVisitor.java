@@ -6,6 +6,5 @@ package biz.jovido.seed.content;
 public interface ItemVisitor {
 
     ItemVisitResult visitItem(Item item);
-    ItemVisitResult visitPayloadGroup(PayloadGroup payloadGroup);
     ItemVisitResult visitPayload(Payload payload);
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -69,101 +70,50 @@ public class ItemService {
     }
 
     @Deprecated
-    public PayloadGroup getLabel(Item item) {
-        if (item != null) {
-            Structure structure = getStructure(item);
-            String attributeName = structure.getLabelAttributeName();
-            return item.getPayloadGroup(attributeName);
-        }
-
-        return null;
-    }
-
-//    public Object getPayloadValue(Payload payload) {
-////        if (payload != null) {
-////            Object value = payload.getValue();
-////            if (value != null) {
-////                return value;
-////            }
-////        }
-//
-//        return null;
-//    }
-//
-//    public Object getPayloadValue(PayloadGroup payloadGroup, int index) {
-//        if (payloadGroup != null) {
-//            Payload payload = payloadGroup.getPayload(index);
-//            return getPayloadValue(payload);
-//        }
-//
-//        return null;
-//    }
-
-    @Deprecated
     public String getLabelText(Item item) {
-        if (item != null) {
-            PayloadGroup label = getLabel(item);
-            if (label == null) {
-//                Structure structure = getStructure(item);
-                PayloadGroup title = item.getPayloadGroup("title");
-                if (title != null && title.getPayloads().size() > 0) {
-                    return title.getPayload(0).getText();
-                }
-
-                return null;
-            }
-
-            return (String) label.getPayload(0).getText();
-        }
+//        if (item != null) {
+//            PayloadGroup label = getLabel(item);
+//            if (label == null) {
+////                Structure structure = getStructure(item);
+//                PayloadGroup title = item.getPayloadGroup("title");
+//                if (title != null && title.getPayloads().size() > 0) {
+//                    return title.getPayload(0).getText();
+//                }
+//
+//                return null;
+//            }
+//
+//            return (String) label.getPayload(0).getText();
+//        }
 
         return null;
     }
 
-    private PayloadGroup applyPayloadGroup(Item item, Structure structure, String attributeName) {
-        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-        if (payloadGroup == null) {
-            payloadGroup = new PayloadGroup();
-            item.setPayloadGroup(attributeName, payloadGroup);
-        }
-
-        Attribute attribute = structure.getAttribute(attributeName);
-        if (!(attribute instanceof ItemAttribute)) {
-            int remaining = attribute.getRequired() - payloadGroup.getPayloads().size();
-            while (remaining-- > 0) {
-                Payload payload = attribute.createPayload();
-                payloadGroup.addPayload(payload);
-            }
-        }
-
-        return payloadGroup;
+    public List<Payload> getPayloads(Item item, String attributeName) {
+        return item.getPayloads().stream()
+                .filter(it -> it.getAttributeName().equals(attributeName))
+                .sorted(Comparator.comparingInt(Payload::getOrdinal))
+                .collect(Collectors.toList());
     }
 
-    private PayloadGroup applyPayloadGroup(Item item, String attributeName) {
-        Structure structure = getStructure(item);
-        return applyPayloadGroup(item, structure, attributeName);
+    public Payload getPayload(Item item, String attributeName, int index) {
+        return item.getPayloads().stream()
+                .filter(it -> it.getAttributeName().equals(attributeName) && it.getOrdinal() == index)
+                .findFirst().orElse(null);
     }
-
-//    @UsedInTemplates
-//    public PayloadGroup getOrCreatePayloadGroup(Item item, String attributeName) {
-//        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-//        if (payloadGroup == null) {
-//            payloadGroup = applyPayloadGroup(item, attributeName);
-//        }
-//
-//        return payloadGroup;
-//    }
 
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
-            PayloadGroup payloadGroup = applyPayloadGroup(item, structure, attributeName);
+            List<Payload> payloads = getPayloads(item, attributeName);
 
             Attribute attribute = structure.getAttribute(attributeName);
             if (!(attribute instanceof ItemAttribute)) {
-                int remaining = attribute.getRequired() - payloadGroup.getPayloads().size();
+                int remaining = attribute.getRequired() - payloads.size();
                 while (remaining-- > 0) {
                     Payload payload = attribute.createPayload();
-                    payloadGroup.addPayload(payload);
+                    payload.setAttributeName(attributeName);
+                    item.addPayload(payload);
                 }
             }
         }
@@ -256,15 +206,15 @@ public class ItemService {
         return current;
     }
 
-    public Attribute getAttribute(PayloadGroup payloadGroup) {
-        Item item = payloadGroup.getItem();
+    public Attribute getAttribute(Item item, String attributeName) {
         Structure structure = getStructure(item);
-        String attributeName = payloadGroup.getAttributeName();
         return structure.getAttribute(attributeName);
     }
 
     public Attribute getAttribute(Payload payload) {
-        return getAttribute(payload.getGroup());
+        Item item = payload.getItem();
+        String attributeName = payload.getAttributeName();
+        return getAttribute(item, attributeName);
     }
 
     public List<Locale> getAllSupportedLocales() {

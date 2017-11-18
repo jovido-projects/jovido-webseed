@@ -1,6 +1,5 @@
 package biz.jovido.seed.content.frontend;
 
-import biz.jovido.seed.content.PayloadGroup;
 import org.apache.commons.collections4.list.AbstractListDecorator;
 
 import java.util.ArrayList;
@@ -10,20 +9,15 @@ import java.util.ArrayList;
  */
 public final class ValuesList extends AbstractListDecorator<Values> implements Values {
 
-    private final PayloadGroup payloadGroup;
+    private final String attributeName;
 
-    public PayloadGroup getPayloadGroup() {
-        return payloadGroup;
+    public String getAttributeName() {
+        return attributeName;
     }
 
-//    @Override
-//    public int size() {
-//        return Integer.MAX_VALUE;
-//    }
-
-    public ValuesList(PayloadGroup payloadGroup) {
+    public ValuesList(String attributeName) {
 //        super(LazyList.lazyList(new ArrayList<>(), () -> null));
         super(new ArrayList<>());
-        this.payloadGroup = payloadGroup;
+        this.attributeName = attributeName;
     }
 }

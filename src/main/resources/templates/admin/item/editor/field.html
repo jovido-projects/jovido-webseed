@@ -1,15 +1,24 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 
+<th:block th:fragment="item">
+    <div class="panel panel-default" th_classappend="'nesting-level-__${nestingLevel}__'">
+        <div class="panel-body">
+            <th:block th:with="editor=${field.nestedEditor}">
+                <th:block th:replace="admin/item/editor"/>
+            </th:block>
+        </div>
+    </div>
+</th:block>
+
 <th:block th:fragment="icon">
     <div class="input-group input-group-sm">
         <span class="input-group-addon"></span>
         <input class="form-control input-sm icp icp-auto" data-input-search="true" type="text"
-               th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
+               th:field="*{fields[__${field.id}__].payload.value}">
     </div>
 </th:block>
 
-
-<th:block th:fragment="image" th:with="image=${payload.target}">
+<th:block th:fragment="image" th:with="image=${field.payload.target}">
 <div style="padding-bottom:0px;margin-bottom:-35px;">
     <th:block th:if="${image != null}">
         <img th:src="${@assetService.getRelativeUrl(image)} ?: _" width="100%">
@@ -23,7 +32,7 @@
         <span class="btn btn-default btn-file">
             <i class="fa fa-upload"></i>
             <input th:name="'file-__${token}__'" type="file"
-                   th:formaction="@{upload-image(token=${token},payload=${payload.uuid})}">
+                   th:formaction="@{upload-image(token=${token},payload=${field.payload.uuid})}">
         </span>
         <!--<button class="btn btn-default" disabled="disabled">-->
         <!--<span th:text="${image?.fileName}">File name</span>-->
@@ -32,40 +41,26 @@
 </div>
 </th:block>
 
-
-<th:block th:fragment="item">
-    <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
-        <div class="panel-body">
-            <th:block
-                    th:with="nestedPath='__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].target'">
-                <th:block th:replace="admin/item/editor::payloads"/>
-            </th:block>
-        </div>
-    </div>
-</th:block>
-
-
 <th:block th:fragment="link">
     <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
         <div class="panel-body" style="margin-bottom:5px;">
-            <label th:text="__${attribute.name}__.text">Text</label>
+            <label th:text="__${attribute.name}__.payload.text">Text</label>
             <input type="url" class="form-control input-sm"
-                   th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].text}">
+                   th:field="*{fields[__${field.id}__].payload.text}">
 
 
-            <label th:text="__${attribute.name}__.uri">URI</label>
+            <label th:text="__${attribute.name}__.payload.uri">URI</label>
             <input type="url" class="form-control input-sm"
-                   th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].uri}">
+                   th:field="*{fields[__${field.id}__].payload.uri}">
 
         </div>
     </div>
 </th:block>
-
 
 <th:block th:fragment="multiline-text">
     <th:block th:with="id=${#ids.seq('foobar')}">
     <textarea th:id="${id}" class="form-control"
-              th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}"></textarea>
+              th:field="*{fields[__${field.id}__].payload.value}"></textarea>
 
         <script type="text/javascript">
         $(document).ready(function() {
@@ -89,20 +84,18 @@
     </th:block>
 </th:block>
 
-
 <th:block th:fragment="text">
     <input type="text" class="form-control input-sm"
-           th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
+           th:field="*{fields[__${field.id}__].payload.value}">
 </th:block>
-
 
 <th:block th:fragment="yesno">
     <div class="checkbox form-control">
         <label>
             <input type="checkbox" class=""
-                   th:field="*{__${nestedPath}__.payloadGroups[__${attribute.name}__].payloads[__${payloadItr.index}__].value}">
+                   th:field="*{fields[__${field.id}__].payload.value}">
             <span th:text="${attribute.name}">Field name</span>
-            <span th:if="${fieldGroup.fields.size() > 1}">#[[${payloadItr.index + 1}]]</span>
+            <span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
         </label>
     </div>
 </th:block>

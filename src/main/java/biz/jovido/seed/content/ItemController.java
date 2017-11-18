@@ -18,8 +18,8 @@ public class ItemController {
 
     private String respond(Item item, Model model) {
         model.addAttribute("this", item);
-        PayloadGroup label = itemService.getLabel(item);
-        model.addAttribute("label", label);
+//        PayloadGroup label = itemService.getLabel(item);
+//        model.addAttribute("label", label);
         model.addAttribute("mode", itemService.getMode(item));
         model.addAllAttributes(ItemUtils.toModel(item));
         Structure structure = itemService.getStructure(item);

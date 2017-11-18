@@ -4,25 +4,17 @@ import biz.jovido.seed.content.frontend.ItemValues;
 import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
  */
 public class ItemUtils {
-
-    public static Item getCurrent(Item item) {
-        if (item != null) {
-            Leaf history = item.getLeaf();
-            if (history != null) {
-                return history.getCurrent();
-            }
-        }
-
-        return null;
-    }
 
     @Deprecated
     public static boolean areTheSame(Item one, Item other) {
@@ -49,10 +41,10 @@ public class ItemUtils {
         return result;
     }
 
-    public static ItemVisitResult walkPayloadGroup(PayloadGroup payloadGroup, ItemVisitor visitor) {
-        ItemVisitResult result = visitor.visitPayloadGroup(payloadGroup);
-        if (result != ItemVisitResult.TERMINATE) {
-            for (Payload payload : payloadGroup.getPayloads()) {
+    public static ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
+        ItemVisitResult result = visitor.visitItem(item);
+        if (result == ItemVisitResult.CONTINUE) {
+            for (Payload payload : item.getPayloads()) {
                 result = walkPayload(payload, visitor);
                 if (result != ItemVisitResult.CONTINUE) {
                     return result;
@@ -60,35 +52,7 @@ public class ItemUtils {
             }
         }
 
-        return result;
-    }
-
-    public static ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
-        for (PayloadGroup payloadGroup : item.getPayloadGroups().values()) {
-            ItemVisitResult result = walkPayloadGroup(payloadGroup, visitor);
-            if (result != ItemVisitResult.CONTINUE) {
-                return result;
-            }
-        }
-
         return ItemVisitResult.CONTINUE;
-    }
-
-    public static PayloadGroup findPayloadGroup(Item item, UUID payloadGroupUuid) {
-        final AtomicReference<PayloadGroup> found = new AtomicReference<>();
-        walkItem(item, new SimpleItemVisitor() {
-            @Override
-            public ItemVisitResult visitPayloadGroup(PayloadGroup payloadGroup) {
-                if (payloadGroup.getUuid().equals(payloadGroupUuid)) {
-                    found.set(payloadGroup);
-                    return ItemVisitResult.TERMINATE;
-                }
-
-                return super.visitPayloadGroup(payloadGroup);
-            }
-        });
-
-        return found.get();
     }
 
     public static Payload findPayload(Item item, UUID payloadUuid) {
@@ -101,20 +65,43 @@ public class ItemUtils {
                     return ItemVisitResult.TERMINATE;
                 }
 
-                return super.visitPayload(payload);
+                return ItemVisitResult.CONTINUE;
             }
         });
 
         return found.get();
     }
 
-    @Deprecated
-    private static ValuesList toList(PayloadGroup payloadGroup) {
-        ValuesList list = new ValuesList(payloadGroup);
-        for (Payload payload : payloadGroup.getPayloads()) {
+    public static Item findItem(Item item, UUID itemUuid) {
+        final AtomicReference<Item> found = new AtomicReference<>();
+        walkItem(item, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitItem(Item item) {
+                if (item.getUuid().equals(itemUuid)) {
+                    found.set(item);
+                    return ItemVisitResult.TERMINATE;
+                }
+
+                return ItemVisitResult.CONTINUE;
+            }
+        });
+
+        return found.get();
+    }
+
+    public static List<Payload> getPayloads(Item item, String attributeName) {
+        return item.getPayloads().stream()
+                .filter(it -> it.getAttributeName().equals(attributeName))
+                .sorted(Comparator.comparingInt(Payload::getOrdinal))
+                .collect(Collectors.toList());
+    }
+
+    private static ValuesList toList(Item item, String attributeName) {
+        ValuesList list = new ValuesList(attributeName);
+        for (Payload payload : getPayloads(item, attributeName)) {
             if (payload instanceof ItemRelation) {
-                Item item = ((ItemRelation) payload).getTarget();
-                list.add(toModel(item));
+                Item relatedItem = ((ItemRelation) payload).getTarget();
+                list.add(toModel(relatedItem));
             } else {
 
                 ValueMap map = new ValueMap();
@@ -152,12 +139,10 @@ public class ItemUtils {
         return list;
     }
 
-    @Deprecated
     public static ItemValues toModel(Item item) {
         ItemValues values = new ItemValues(item);
         for (String attributeName : item.getAttributeNames()) {
-            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
-            values.put(attributeName, toList(payloadGroup));
+            values.put(attributeName, toList(item, attributeName));
         }
 
         return values;

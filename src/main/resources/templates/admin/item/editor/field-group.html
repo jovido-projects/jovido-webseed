@@ -1,11 +1,11 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 <div class="form-group"
-     th:each="payload,payloadItr : ${payloadGroup.payloads}"
-     th:with="field=${fieldGroup.getField(payload)}" th:data-uuid="${payload.uuid}">
+     th:each="field,fieldItr : ${fieldGroup.fields}"
+     th:with="attribute=${fieldGroup.attribute}">
     <th:block>
         <h5>
             <span th:text="${attribute.name}">Attribute name</span>
-            <span th:if="${payloadGroup.payloads.size() > 1}">#[[${payloadItr.index + 1}]]</span>
+            <span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
             <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
             <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
@@ -21,10 +21,12 @@
 
     </th:block>
 
-    <th:block th:if="${!field.compressed}">
-        <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+    <th:block>
+        <th:block th:if="${!field.compressed}">
+            <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+        </th:block>
+        <th:block th:if="${field.compressed}"></th:block>
     </th:block>
-    <th:block th:if="${field.compressed}"></th:block>
 </div>
 
 <th:block th:if="${fieldGroup?.actions?.size() == 1}"

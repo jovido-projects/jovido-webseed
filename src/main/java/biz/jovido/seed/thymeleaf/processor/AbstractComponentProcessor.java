@@ -2,9 +2,6 @@ package biz.jovido.seed.thymeleaf.processor;
 
 import biz.jovido.seed.TemplateResolver;
 import biz.jovido.seed.component.HasTemplate;
-import biz.jovido.seed.content.Item;
-import biz.jovido.seed.content.PayloadGroup;
-import biz.jovido.seed.thymeleaf.TemplateNameResolver;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
@@ -17,7 +14,8 @@ import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Set;
 
 /**
  * @author Stephan Grundner

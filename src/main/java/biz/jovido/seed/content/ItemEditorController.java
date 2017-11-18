@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -57,18 +57,30 @@ public class ItemEditorController {
         return breadcrumbs;
     }
 
-    @ModelAttribute
-    protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
-                                @RequestParam(name = "new", required = false) String structureName) {
-        ItemEditor editor = new ItemEditor(itemService);
+    @InitBinder("itemEditor")
+    protected void initBinder(WebDataBinder dataBinder) {
+        dataBinder.setDisallowedFields("item*");
+    }
 
-        if (itemId != null) {
-            Item item = itemService.getItem(itemId);
-            editor.setItem(item);
-        } else if (StringUtils.hasText(structureName)) {
-            Item item = itemService.createItem(structureName);
-            editor.setItem(item);
-        }
+//    @ModelAttribute
+//    protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
+//                                @RequestParam(name = "new", required = false) String structureName) {
+//        ItemEditor editor = new ItemEditor(itemService);
+//
+//        if (itemId != null) {
+//            Item item = itemService.getItem(itemId);
+//            editor.setItem(item);
+//        } else if (StringUtils.hasText(structureName)) {
+//            Item item = itemService.createItem(structureName);
+//            editor.setItem(item);
+//        }
+//
+//        return editor;
+//    }
+
+    @ModelAttribute
+    protected ItemEditor editor() {
+        ItemEditor editor = new ItemEditor(itemService);
 
         return editor;
     }
@@ -144,16 +156,17 @@ public class ItemEditorController {
     @RequestMapping(path = "append", params = {"structure"})
     protected String append(@ModelAttribute ItemEditor editor,
                             BindingResult editorBinding,
-                            @RequestParam(name = "payload-group") UUID payloadGroupUuid,
+                            @RequestParam(name = "item") UUID itemUuid,
+                            @RequestParam(name = "attribute") String attributeName,
                             @RequestParam(name = "structure") String structureName) {
 
-        Item item = editor.getItem();
-        PayloadGroup payloadGroup = ItemUtils.findPayloadGroup(item, payloadGroupUuid);
-        Attribute attribute = itemService.getAttribute(payloadGroup);
+        Item item = ItemUtils.findItem(editor.getItem(), itemUuid);
+        Attribute attribute = itemService.getAttribute(item, attributeName);
         Item embeddedItem = itemService.createEmbeddedItem(structureName);
         ItemRelation payload = (ItemRelation) attribute.createPayload();
+        payload.setAttributeName(attributeName);
         payload.setTarget(embeddedItem);
-        payloadGroup.addPayload(payload);
+        item.addPayload(payload);
 
         return redirect(editor);
     }
@@ -162,13 +175,14 @@ public class ItemEditorController {
     @RequestMapping(path = "append", params = {"!structure"})
     protected String append(@ModelAttribute ItemEditor editor,
                             BindingResult editorBinding,
-                            @RequestParam(name = "payload-group") UUID payloadGroupUuid) {
+                            @RequestParam(name = "item") UUID itemUuid,
+                            @RequestParam(name = "attribute") String attributeName) {
 
-        Item item = editor.getItem();
-        PayloadGroup payloadGroup = ItemUtils.findPayloadGroup(item, payloadGroupUuid);
-        Attribute attribute = itemService.getAttribute(payloadGroup);
+        Item item = ItemUtils.findItem(editor.getItem(), itemUuid);
+        Attribute attribute = itemService.getAttribute(item, attributeName);
         Payload payload = attribute.createPayload();
-        payloadGroup.addPayload(payload);
+        payload.setAttributeName(attributeName);
+        item.addPayload(payload);
 
         return redirect(editor);
     }
@@ -178,11 +192,13 @@ public class ItemEditorController {
                                    BindingResult editorBinding,
                                    @RequestParam(name = "payload") UUID payloadUuid) {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        PayloadGroup payloadGroup = payload.getGroup();
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        Item item = payload.getItem();
         int index = payload.getOrdinal();
-        payloadGroup.movePayload(index, index - 1);
+        String attributeName = payload.getAttributeName();
+        Payload previous = itemService.getPayload(item, attributeName, index - 1);
+        payload.setOrdinal(previous.getOrdinal());
+        previous.setOrdinal(index);
 
         return redirect(editor);
     }
@@ -192,11 +208,13 @@ public class ItemEditorController {
                                      BindingResult editorBinding,
                                      @RequestParam(name = "payload") UUID payloadUuid) {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        PayloadGroup payloadGroup = payload.getGroup();
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        Item item = payload.getItem();
         int index = payload.getOrdinal();
-        payloadGroup.movePayload(index, index + 1);
+        String attributeName = payload.getAttributeName();
+        Payload next = itemService.getPayload(item, attributeName, index + 1);
+        payload.setOrdinal(next.getOrdinal());
+        next.setOrdinal(index);
 
         return redirect(editor);
     }
@@ -206,10 +224,8 @@ public class ItemEditorController {
                                    BindingResult editorBinding,
                                    @RequestParam(name = "payload") UUID payloadUuid) {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        PayloadGroup payloadGroup = payload.getGroup();
-        payloadGroup.removePayload(payload.getOrdinal());
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        payload.remove();
 
         return redirect(editor);
     }
@@ -219,9 +235,8 @@ public class ItemEditorController {
                                    BindingResult editorBinding,
                                    @RequestParam(name = "payload") UUID payloadUuid) {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        ItemEditor.PayloadField field = editor.getField(payload);
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        ItemEditor.PayloadField field = editor.findField(payload);
         field.setCompressed(false);
 
         return redirect(editor);
@@ -233,9 +248,8 @@ public class ItemEditorController {
                                      BindingResult editorBinding,
                                      @RequestParam(name = "payload") UUID payloadUuid) {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        ItemEditor.PayloadField field = editor.getField(payload);
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        ItemEditor.PayloadField field = editor.findField(payload);
         field.setCompressed(true);
 
         return redirect(editor);
@@ -250,11 +264,8 @@ public class ItemEditorController {
                                  @RequestParam(name = "payload") UUID payloadUuid,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        int index = payload.getOrdinal();
-        PayloadGroup payloadGroup = payload.getGroup();
-        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        ImageRelation relation = (ImageRelation) payload;
         Image image = relation.getTarget();
 
         if (image == null) {
@@ -287,11 +298,8 @@ public class ItemEditorController {
                                  @RequestParam(name = "payload") UUID payloadUuid,
                                  HttpServletRequest request) throws IOException, ServletException {
 
-        Item item = editor.getItem();
-        Payload payload = ItemUtils.findPayload(item, payloadUuid);
-        int index = payload.getOrdinal();
-        PayloadGroup payloadGroup = payload.getGroup();
-        ImageRelation relation = (ImageRelation) payloadGroup.getPayload(index);
+        Payload payload = ItemUtils.findPayload(editor.getItem(), payloadUuid);
+        ImageRelation relation = (ImageRelation) payload;
         relation.setTarget(null);
 
         return redirect(editor);

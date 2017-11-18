@@ -3,8 +3,6 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.AbstractUnique;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * @author Stephan Grundner
@@ -16,16 +14,15 @@ public abstract class Payload extends AbstractUnique {
     @Column(insertable = false, updatable = false)
     private String type;
 
-    @ManyToOne(targetEntity = PayloadGroup.class)
-    private PayloadGroup group;
+    @ManyToOne
+    private Item item;
+
+    private String attributeName;
 
     private int ordinal = -1;
 
     @Lob
     private String text;
-
-    @Transient
-    private Set<PayloadChangeListener> changeListeners = new LinkedHashSet<>();
 
     public String getType() {
         return type;
@@ -35,12 +32,20 @@ public abstract class Payload extends AbstractUnique {
         this.type = type;
     }
 
-    public PayloadGroup getGroup() {
-        return group;
+    public Item getItem() {
+        return item;
     }
 
-    /*public*/ void setGroup(PayloadGroup group) {
-        this.group = group;
+    /*public*/ void setItem(Item item) {
+        this.item = item;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
     }
 
     public int getOrdinal() {
@@ -59,22 +64,9 @@ public abstract class Payload extends AbstractUnique {
         this.text = text;
     }
 
-    public boolean addChangeListener(PayloadChangeListener changeListener) {
-        return changeListeners.add(changeListener);
-    }
-
-    public boolean removeChangeListener(PayloadChangeListener changeListener) {
-        return changeListeners.remove(changeListener);
-    }
-
-    protected void notifyChanged() {
-        for (PayloadChangeListener changeListener : changeListeners) {
-            changeListener.payloadChanged(this);
-        }
-    }
-
+    @Deprecated
     public void remove() {
-        group.removePayload(getOrdinal());
+        item.removePayload(this);
     }
 
     public boolean differsFrom(Payload other) {

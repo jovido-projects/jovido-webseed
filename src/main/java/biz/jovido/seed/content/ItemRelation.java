@@ -10,18 +10,17 @@ import javax.persistence.*;
 public class ItemRelation extends Relation<Item> {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Item item;
+    @JoinColumn(name = "target_item_id")
+    private Item targetItem;
 
     @Override
     public Item getTarget() {
-        return item;
+        return targetItem;
     }
 
     @Override
     public void setTarget(Item target) {
-        item = target;
-
-        notifyChanged();
+        targetItem = target;
     }
 
     @Override
