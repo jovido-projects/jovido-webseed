@@ -37,7 +37,7 @@ public class Item extends AbstractUnique {
     @Column(length = 255 * 4)
     private String path;
 
-    @OneToMany(mappedBy = "owningItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owningItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private final Set<Payload> payloads = new LinkedHashSet<>();
 
     @CreatedDate
