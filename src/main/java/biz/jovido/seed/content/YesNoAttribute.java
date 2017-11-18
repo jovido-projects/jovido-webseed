@@ -7,6 +7,6 @@ public class YesNoAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new YesNo();
+        return new YesNoPayload();
     }
 }

@@ -72,10 +72,10 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
                 templateName = item.getStructureName();
             }
 
-            ItemValues model = ItemUtils.toModel(item);
-            for (Map.Entry<String, ValuesList> entry : model.entrySet()) {
-                structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
-            }
+//            ItemValues model = ItemUtils.toModel(item);
+//            for (Map.Entry<String, ValuesList> entry : model.entrySet()) {
+//                structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
+//            }
 
             String newAttributeName = "th:" + currentAttributeName.getAttributeName();
             structureHandler.replaceAttribute(currentAttributeName, newAttributeName, templateName);

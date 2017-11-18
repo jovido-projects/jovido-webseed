@@ -4,8 +4,9 @@
      th:with="attribute=${fieldGroup.attribute}">
     <th:block>
         <h5>
-            <span th:text="${attribute.name}">Attribute name</span>
-            <span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
+            <!--<span th:text="${attribute.name}">Attribute name</span>-->
+            <span th:text="${field.foobar}">Attribute name</span>
+            <!--<span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>-->
             <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
             <div class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">

@@ -1,6 +1,9 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UsedInTemplates;
+import biz.jovido.seed.content.frontend.ItemValues;
+import biz.jovido.seed.content.frontend.ValueMap;
+import biz.jovido.seed.content.frontend.ValuesList;
 import biz.jovido.seed.net.HostService;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -212,9 +214,110 @@ public class ItemService {
     }
 
     public Attribute getAttribute(Payload payload) {
-        Item item = payload.getItem();
+        Item item = payload.getOwningItem();
         String attributeName = payload.getAttributeName();
         return getAttribute(item, attributeName);
+    }
+
+    public ItemVisitResult walkPayload(Payload payload, ItemVisitor visitor) {
+        ItemVisitResult result = visitor.visitPayload(payload);
+        if (result == ItemVisitResult.CONTINUE) {
+            Attribute attribute = getAttribute(payload);
+            if (attribute instanceof ItemAttribute) {
+                Item item = ((ItemPayload) payload).getItem();
+                result = walkItem(item, visitor);
+            }
+        }
+
+        return result;
+    }
+
+    public ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
+        ItemVisitResult result = visitor.visitItem(item);
+        if (result == ItemVisitResult.CONTINUE) {
+            for (Payload payload : item.getPayloads()) {
+                result = walkPayload(payload, visitor);
+                if (result != ItemVisitResult.CONTINUE) {
+                    return result;
+                }
+            }
+        }
+
+        return ItemVisitResult.CONTINUE;
+    }
+
+    public Payload findPayload(Item item, UUID payloadUuid) {
+        final AtomicReference<Payload> found = new AtomicReference<>();
+        walkItem(item, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitPayload(Payload payload) {
+                if (payload.getUuid().equals(payloadUuid)) {
+                    found.set(payload);
+                    return ItemVisitResult.TERMINATE;
+                }
+
+                return ItemVisitResult.CONTINUE;
+            }
+        });
+
+        return found.get();
+    }
+
+    public Item findItem(Item item, UUID itemUuid) {
+        final AtomicReference<Item> found = new AtomicReference<>();
+        walkItem(item, new SimpleItemVisitor() {
+            @Override
+            public ItemVisitResult visitItem(Item item) {
+                if (item.getUuid().equals(itemUuid)) {
+                    found.set(item);
+                    return ItemVisitResult.TERMINATE;
+                }
+
+                return ItemVisitResult.CONTINUE;
+            }
+        });
+
+        return found.get();
+    }
+
+    private ValuesList toList(Item item, String attributeName) {
+        ValuesList list = new ValuesList(attributeName);
+        for (Payload payload : getPayloads(item, attributeName)) {
+            Attribute attribute = getAttribute(payload);
+            if (attribute instanceof ItemAttribute) {
+                Item relatedItem = ((ItemPayload) payload).getItem();
+                list.add(toModel(relatedItem));
+            } else {
+
+                ValueMap map = new ValueMap();
+
+                if (attribute instanceof ImageAttribute) {
+                    Image image = ((ImagePayload) payload).getImage();
+                    map.put("fileName", Optional.ofNullable(image).map(Image::getFileName));
+                    map.put("alt", Optional.ofNullable(image).map(Image::getAlt));
+                    map.put("id", Optional.ofNullable(image).map(Image::getId));
+                    String url = image != null ? String.format("/asset/files/%s/%s",
+                            image.getUuid(),
+                            image.getFileName()) : null;
+                    map.put("url", url);
+                } else {
+//                    map.put("value", payload.getValue());
+                    throw new UnsupportedOperationException();
+                }
+
+                list.add(map);
+            }
+        }
+        return list;
+    }
+
+    public ItemValues toModel(Item item) {
+        ItemValues values = new ItemValues(item);
+        for (String attributeName : item.getAttributeNames()) {
+            values.put(attributeName, toList(item, attributeName));
+        }
+
+        return values;
     }
 
     public List<Locale> getAllSupportedLocales() {

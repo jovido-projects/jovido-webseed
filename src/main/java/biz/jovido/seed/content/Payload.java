@@ -8,21 +8,18 @@ import javax.persistence.*;
  * @author Stephan Grundner
  */
 @Entity
-@DiscriminatorColumn(name = "type")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Payload extends AbstractUnique {
 
     @Column(insertable = false, updatable = false)
     private String type;
 
     @ManyToOne
-    private Item item;
+    private Item owningItem;
 
     private String attributeName;
 
     private int ordinal = -1;
-
-    @Lob
-    private String text;
 
     public String getType() {
         return type;
@@ -32,12 +29,12 @@ public abstract class Payload extends AbstractUnique {
         this.type = type;
     }
 
-    public Item getItem() {
-        return item;
+    public Item getOwningItem() {
+        return owningItem;
     }
 
-    /*public*/ void setItem(Item item) {
-        this.item = item;
+    /*public*/ void setOwningItem(Item owningItem) {
+        this.owningItem = owningItem;
     }
 
     public String getAttributeName() {
@@ -56,22 +53,12 @@ public abstract class Payload extends AbstractUnique {
         this.ordinal = ordinal;
     }
 
-    protected String getText() {
-        return text;
-    }
-
-    protected void setText(String text) {
-        this.text = text;
-    }
-
     @Deprecated
     public void remove() {
-        item.removePayload(this);
+        owningItem.removePayload(this);
     }
 
-    public boolean differsFrom(Payload other) {
-        return true;
+    public Payload copy() {
+        throw new UnsupportedOperationException();
     }
-
-    public abstract Payload copy();
 }

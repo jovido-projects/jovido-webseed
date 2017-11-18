@@ -3,7 +3,6 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-//@Entity
 public class TextAttribute extends Attribute {
 
     private boolean multiline;
@@ -18,6 +17,6 @@ public class TextAttribute extends Attribute {
 
     @Override
     public Payload createPayload() {
-        return new Text();
+        return new TextPayload();
     }
 }

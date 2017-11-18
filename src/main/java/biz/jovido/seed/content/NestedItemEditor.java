@@ -59,6 +59,44 @@ public class NestedItemEditor implements ItemChangeListener {
             this.compressed = compressed;
         }
 
+        private NestedItemEditor getEditor() {
+            return group.editor;
+        }
+
+        public String getCaption() {
+            Payload payload = getPayload();
+            String caption;
+            Attribute attribute = group.getAttribute();
+            if (attribute instanceof ItemAttribute) {
+                Item item = ((ItemPayload) payload).getItem();
+                caption = item.getStructureName();
+            } else {
+                caption = payload.getAttributeName();
+            }
+
+            return String.format("%s #%d", caption, payload.getOrdinal() + 1);
+        }
+
+        public List<PayloadField> getTrack() {
+            LinkedList<PayloadField> track = new LinkedList<>();
+
+            PayloadField field = this;
+            while (field != null) {
+                track.addFirst(field);
+
+                field = field.getEditor().field;
+            }
+
+
+            return track;
+        }
+
+        public String getFoobar() {
+            return getTrack().stream()
+                    .map(PayloadField::getCaption)
+                    .collect(Collectors.joining(" / "));
+        }
+
         void refresh() {
             Attribute attribute = group.getAttribute();
             Set<PayloadField> fields = group.fields;
@@ -66,7 +104,7 @@ public class NestedItemEditor implements ItemChangeListener {
             Actions actions = getActions();
             actions.clear();
 
-            if (payload instanceof ItemRelation) {
+            if (attribute instanceof ItemAttribute) {
                 Action compressAction = new Action();
                 compressAction.setText(new StaticText("<i class=\"fa fa-compress\"></i>"));
                 compressAction.setUrl("@{compress-payload(payload=${field.payload.uuid})}");
@@ -225,12 +263,22 @@ public class NestedItemEditor implements ItemChangeListener {
         }
     }
 
-    private final NestedItemEditor parent;
+//    private final NestedItemEditor parent;
+    private final PayloadField field;
     private Item item;
 
     private final Set<PayloadFieldGroup> fieldGroups = new LinkedHashSet<>();
 
+    protected NestedItemEditor getParent() {
+        if (field != null) {
+            return field.getEditor();
+        }
+
+        return null;
+    }
+
     protected ItemEditor getRootEditor() {
+        NestedItemEditor parent = getParent();
         if (parent == null) {
             return (ItemEditor) this;
         }
@@ -311,9 +359,10 @@ public class NestedItemEditor implements ItemChangeListener {
         PayloadField field = new PayloadField(fieldGroup, payload);
         field.setCompressed(false);
 
-        if (payload instanceof ItemRelation) {
-            Item nestedItem = ((ItemRelation) payload).getTarget();
-            NestedItemEditor nestedEditor = new NestedItemEditor(this);
+        Attribute attribute = getItemService().getAttribute(payload);
+        if (attribute instanceof ItemAttribute) {
+            Item nestedItem = ((ItemPayload) payload).getItem();
+            NestedItemEditor nestedEditor = new NestedItemEditor(field);
             nestedEditor.setItem(nestedItem);
             field.setNestedEditor(nestedEditor);
 
@@ -392,7 +441,10 @@ public class NestedItemEditor implements ItemChangeListener {
         }
     }
 
-    public NestedItemEditor(NestedItemEditor parent) {
-        this.parent = parent;
+//    public NestedItemEditor(NestedItemEditor parent) {
+//        this.parent = parent;
+//    }
+    public NestedItemEditor(PayloadField field) {
+        this.field = field;
     }
 }

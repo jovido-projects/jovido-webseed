@@ -37,7 +37,7 @@ public class Item extends AbstractUnique {
     @Column(length = 255 * 4)
     private String path;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owningItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final Set<Payload> payloads = new LinkedHashSet<>();
 
     @CreatedDate
@@ -112,7 +112,7 @@ public class Item extends AbstractUnique {
     public boolean addPayload(Payload payload) {
         Assert.hasText(payload.getAttributeName(), "[payload.attributeName] must not be empty");
         if (payloads.add(payload)) {
-            payload.setItem(this);
+            payload.setOwningItem(this);
             long size = payloads.stream()
                     .filter(it -> it.getAttributeName().equals(payload.getAttributeName()))
                     .count();
@@ -134,7 +134,7 @@ public class Item extends AbstractUnique {
                 changeListener.payloadRemoved(this, payload);
             }
 
-            payload.setItem(null);
+            payload.setOwningItem(null);
             payload.setOrdinal(-1);
 
             ListIterator<Payload> listIterator = ItemUtils

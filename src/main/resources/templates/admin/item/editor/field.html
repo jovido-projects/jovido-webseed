@@ -14,11 +14,11 @@
     <div class="input-group input-group-sm">
         <span class="input-group-addon"></span>
         <input class="form-control input-sm icp icp-auto" data-input-search="true" type="text"
-               th:field="*{fields[__${field.id}__].payload.value}">
+               th:field="*{fields[__${field.id}__].payload.code}">
     </div>
 </th:block>
 
-<th:block th:fragment="image" th:with="image=${field.payload.target}">
+<th:block th:fragment="image" th:with="image=${field.payload.image}">
 <div style="padding-bottom:0px;margin-bottom:-35px;">
     <th:block th:if="${image != null}">
         <img th:src="${@assetService.getRelativeUrl(image)} ?: _" width="100%">
@@ -44,14 +44,14 @@
 <th:block th:fragment="link">
     <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
         <div class="panel-body" style="margin-bottom:5px;">
-            <label th:text="__${attribute.name}__.payload.text">Text</label>
+            <label th:text="__${attribute.name}__.payload.value">Text</label>
             <input type="url" class="form-control input-sm"
                    th:field="*{fields[__${field.id}__].payload.text}">
 
 
             <label th:text="__${attribute.name}__.payload.uri">URI</label>
             <input type="url" class="form-control input-sm"
-                   th:field="*{fields[__${field.id}__].payload.uri}">
+                   th:field="*{fields[__${field.id}__].payload.url}">
 
         </div>
     </div>
@@ -60,7 +60,7 @@
 <th:block th:fragment="multiline-text">
     <th:block th:with="id=${#ids.seq('foobar')}">
     <textarea th:id="${id}" class="form-control"
-              th:field="*{fields[__${field.id}__].payload.value}"></textarea>
+              th:field="*{fields[__${field.id}__].payload.text}"></textarea>
 
         <script type="text/javascript">
         $(document).ready(function() {
@@ -86,14 +86,14 @@
 
 <th:block th:fragment="text">
     <input type="text" class="form-control input-sm"
-           th:field="*{fields[__${field.id}__].payload.value}">
+           th:field="*{fields[__${field.id}__].payload.text}">
 </th:block>
 
 <th:block th:fragment="yesno">
     <div class="checkbox form-control">
         <label>
             <input type="checkbox" class=""
-                   th:field="*{fields[__${field.id}__].payload.value}">
+                   th:field="*{fields[__${field.id}__].payload.yes}">
             <span th:text="${attribute.name}">Field name</span>
             <span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
         </label>
