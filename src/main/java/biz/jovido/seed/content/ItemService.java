@@ -321,10 +321,18 @@ public class ItemService {
                 } else if (attribute instanceof LinkAttribute) {
                     LinkPayload linkPayload = ((LinkPayload) payload);
                     map.put("url", linkPayload.getUrl());
-                    map.put("value", linkPayload.getText());
+                    String value = linkPayload.getText();
+                    map.put("value", value);
                 } else if (attribute instanceof TextAttribute) {
                     TextPayload textPayload = ((TextPayload) payload);
-                    map.put("value", textPayload.getText());
+                    String value = textPayload.getText();
+                    value = value.trim();
+                    if (StringUtils.startsWithIgnoreCase(value, "<p>")
+                            && StringUtils.endsWithIgnoreCase(value, "</p>")) {
+                        value = org.apache.commons.lang3.StringUtils.removeStart(value, "<p>");
+                        value = org.apache.commons.lang3.StringUtils.removeEnd(value, "</p>");
+                    }
+                    map.put("value", value);
                 } else if (attribute instanceof YesNoAttribute) {
                     YesNoPayload yesNo = ((YesNoPayload) payload);
                     map.put("value", yesNo.isYes());

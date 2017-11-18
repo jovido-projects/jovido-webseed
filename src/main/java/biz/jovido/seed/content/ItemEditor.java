@@ -29,6 +29,14 @@ public class ItemEditor extends NestedItemEditor {
         fields.remove(field.getId(), field);
     }
 
+    public String getPath() {
+        return getItem().getPath();
+    }
+
+    public void setPath(String path) {
+        getItem().setPath(path);
+    }
+
     public ItemEditor(ItemService itemService) {
         super(null);
         this.itemService = itemService;

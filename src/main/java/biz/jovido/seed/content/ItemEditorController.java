@@ -59,7 +59,7 @@ public class ItemEditorController {
 
     @InitBinder("itemEditor")
     protected void initBinder(WebDataBinder dataBinder) {
-//        dataBinder.setDisallowedFields("item.payloads*");
+        dataBinder.setDisallowedFields("item*");
     }
 
 //    @ModelAttribute
