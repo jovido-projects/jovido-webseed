@@ -50,7 +50,8 @@
         <ul class="dropdown-menu">
             <li th:each="action : ${fieldGroup.actions}" >
                 <a th:data-formaction="${action.url}" >
-                    <span th:text="${action.text.value}">Name</span>
+                    <span th:text="${action.text.value}">Action</span><br />
+                    <small style="color:gray;" th:text="${action.description.value}">Description</small>
                 </a>
             </li>
         </ul>

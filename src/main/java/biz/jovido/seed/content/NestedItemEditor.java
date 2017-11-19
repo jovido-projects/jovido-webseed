@@ -1,9 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UsedInTemplates;
-import biz.jovido.seed.uimodel.Action;
-import biz.jovido.seed.uimodel.Actions;
-import biz.jovido.seed.uimodel.StaticText;
+import biz.jovido.seed.uimodel.*;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -156,6 +154,19 @@ public class NestedItemEditor implements ItemChangeListener {
 
     public static class PayloadFieldGroup {
 
+        public static class PayloadGroupAction extends Action {
+
+            private Text description;
+
+            public Text getDescription() {
+                return description;
+            }
+
+            public void setDescription(Text description) {
+                this.description = description;
+            }
+        }
+
         private final NestedItemEditor editor;
         private final String attributeName;
         private Actions actions;
@@ -241,8 +252,14 @@ public class NestedItemEditor implements ItemChangeListener {
                 if (attribute instanceof ItemAttribute) {
                     actions.setText(new StaticText("Append"));
                     for (String structureName : ((ItemAttribute) attribute).getAcceptedStructureNames()) {
-                        Action action = new Action();
-                        action.setText(new StaticText(structureName));
+                        PayloadGroupAction action = new PayloadGroupAction();
+                        ResolvableText actionText = new ResolvableText(getItemService().getMessageSource());
+                        actionText.setDefaultMessage(structureName);
+                        actionText.setMessageCode(String.format("seed.structure.%s", structureName));
+                        ResolvableText actionDescription = new ResolvableText(getItemService().getMessageSource());
+                        actionDescription.setMessageCode(String.format("seed.structure.%s.description", structureName));
+                        action.setDescription(actionDescription);
+                        action.setText(actionText);
                         action.setUrl("/admin/item/append" +
                                 "?item=" + getItem().getUuid() +
                                 "&attribute=" + attributeName +

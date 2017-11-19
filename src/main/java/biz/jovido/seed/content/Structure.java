@@ -20,6 +20,7 @@ public class Structure {
 
     private String name;
 
+    private boolean nestedOnly;
     private boolean publishable;
 
     private String labelAttributeName;
@@ -43,6 +44,14 @@ public class Structure {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isNestedOnly() {
+        return nestedOnly;
+    }
+
+    public void setNestedOnly(boolean nestedOnly) {
+        this.nestedOnly = nestedOnly;
     }
 
     public boolean isPublishable() {

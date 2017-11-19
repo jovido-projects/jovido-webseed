@@ -358,6 +358,10 @@ public class ItemService {
         return values;
     }
 
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
     public List<Locale> getAllSupportedLocales() {
         return Stream.of("de", "en", "it", "es")
                 .map(Locale::forLanguageTag)

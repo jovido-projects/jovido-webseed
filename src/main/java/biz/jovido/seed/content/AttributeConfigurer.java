@@ -38,6 +38,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public StructureConfigurer setNestedOnly(boolean nestedOnly) {
+        return parentConfigurer.setNestedOnly(nestedOnly);
+    }
+
+    @Override
     public StructureConfigurer setPublishable(boolean publishable) {
         return parentConfigurer.setPublishable(publishable);
     }

@@ -47,6 +47,12 @@ public class StructureService {
         return Collections.unmodifiableCollection(structureByName.values());
     }
 
+    public List<Structure> findStandaloneStructures() {
+        return getAllStructures().stream()
+                .filter(it -> !it.isNestedOnly())
+                .collect(Collectors.toList());
+    }
+
     public List<Structure> findPublishableStructures() {
         return getAllStructures().stream()
                 .filter(Structure::isPublishable)

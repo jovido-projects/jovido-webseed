@@ -5,6 +5,7 @@ package biz.jovido.seed.content;
  */
 public interface StructureConfiguration extends Configuration {
 
+    StructureConfigurer setNestedOnly(boolean nestedOnly);
     StructureConfigurer setPublishable(boolean publishable);
     StructureConfigurer setLabelAttribute(String name);
 

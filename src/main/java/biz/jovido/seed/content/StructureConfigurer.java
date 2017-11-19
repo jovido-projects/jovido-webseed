@@ -81,6 +81,12 @@ public class StructureConfigurer implements StructureConfiguration {
         return addAttribute(LinkAttribute.class, LinkAttributeConfigurer.class, name);
     }
 
+    public StructureConfigurer setNestedOnly(boolean nestedOnly) {
+        structure.setNestedOnly(nestedOnly);
+
+        return this;
+    }
+
     public StructureConfigurer setPublishable(boolean publishable) {
         structure.setPublishable(publishable);
 

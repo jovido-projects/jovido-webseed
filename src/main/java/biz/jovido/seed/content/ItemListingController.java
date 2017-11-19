@@ -79,9 +79,10 @@ public class ItemListingController {
         listing.addColumn("lastModifiedAt", "seed.item.lastModifiedAt");
         ActionGroup actionGroup = listing.getActionGroup();
         actionGroup.setMessageCode("seed.item.listing.create");
-        structureService.findPublishableStructures().forEach(structure -> {
+        structureService.findStandaloneStructures().forEach(structure -> {
             Action action = new Action();
             action.setDefaultMessage(structure.getName());
+            action.setMessageCode(String.format("seed.structure.%s", structure.getName()));
             action.setUrl("/admin/item/create?structure=" + structure.getName());
             actionGroup.addAction(action);
         });

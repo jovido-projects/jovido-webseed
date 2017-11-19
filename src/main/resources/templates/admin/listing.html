@@ -13,7 +13,7 @@
                 <th:block th:if="${actionGroup.defaultAction != null}"
                           th:with="action=${listing.actionGroup.defaultAction}">
                     <a class="btn btn-primary" th:href="${action.url}">
-                        <span th:text="#{seed.listing.create}">Create</span>
+                        <span th:text="${#messages.msgOrNull(action.messageCode)}">Create</span>
                     </a>
                 </th:block>
                 <th:block th:if="${actionGroup.defaultAction == null}">
@@ -29,7 +29,7 @@
                         <ul class="dropdown-menu">
                             <li th:each="action : ${actionGroup.actions}">
                                 <a th:href="${action.url}">
-                                    <span th:text="${action.defaultMessage}">Action</span>
+                                    <span th:text="${#messages.msgOrNull(action.messageCode, action.messageArguments) ?: action.defaultMessage}">Action</span>
                                 </a>
                             </li>
                         </ul>
