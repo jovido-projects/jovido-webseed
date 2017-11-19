@@ -1,0 +1,29 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+<th:block th:fragment="main">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>
+                    <span>Server error</span> <br />
+                    <small>
+                        on URL <span th:text="${url}">URL</span>
+                    </small>
+                </h1>
+
+                <!--<ul class="list-group">-->
+                    <!--<li th:each="frame : ${frames}" class="list-group-item">-->
+                        <!--<small th:text="${frame}"></small>-->
+                    <!--</li>-->
+                <!--</ul>-->
+                <th:block th:each="frame : ${frames}">
+                    <span th:text="${frame}">Frame</span><br />
+                </th:block>
+
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

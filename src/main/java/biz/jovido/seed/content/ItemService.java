@@ -4,6 +4,7 @@ import biz.jovido.seed.UsedInTemplates;
 import biz.jovido.seed.content.frontend.ItemValues;
 import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
+import biz.jovido.seed.net.HostService;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

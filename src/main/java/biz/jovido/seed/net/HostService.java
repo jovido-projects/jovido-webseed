@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
 import com.google.common.net.InternetDomainName;
 import org.springframework.beans.factory.annotation.Autowired;

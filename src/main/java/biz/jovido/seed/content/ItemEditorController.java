@@ -2,6 +2,7 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.ui.Breadcrumb;
 import biz.jovido.seed.ui.Text;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,14 +12,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
@@ -62,27 +61,25 @@ public class ItemEditorController {
         dataBinder.setDisallowedFields("item*");
     }
 
-//    @ModelAttribute
-//    protected ItemEditor editor(@RequestParam(name = "id", required = false) Long itemId,
-//                                @RequestParam(name = "new", required = false) String structureName) {
-//        ItemEditor editor = new ItemEditor(itemService);
-//
-//        if (itemId != null) {
-//            Item item = itemService.getItem(itemId);
-//            editor.setItem(item);
-//        } else if (StringUtils.hasText(structureName)) {
-//            Item item = itemService.createItem(structureName);
-//            editor.setItem(item);
-//        }
-//
-//        return editor;
-//    }
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleError(HttpServletRequest request, Exception e) {
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("e", e);
+
+        String[] stackFrames = ExceptionUtils.getStackFrames(e);
+        String message = ExceptionUtils.getMessage(e);
+        mav.addObject("frames", Arrays.asList(stackFrames));
+        mav.addObject("message", message);
+        mav.addObject("url", request.getRequestURL());
+        mav.setViewName("admin/error");
+
+        return mav;
+    }
 
     @ModelAttribute
     protected ItemEditor editor() {
-        ItemEditor editor = new ItemEditor(itemService);
-
-        return editor;
+        return new ItemEditor(itemService);
     }
 
     private String redirect(ItemEditor editor) {
@@ -104,7 +101,16 @@ public class ItemEditorController {
 
     @RequestMapping
     protected String index(@ModelAttribute ItemEditor editor,
+                           @RequestParam(name = "id", required = false) Long itemId,
                            BindingResult editorBinding) {
+
+        Item item = editor.getItem();
+        if (item == null) {
+
+            if (itemId != null) {
+                return "redirect:edit?id=" + itemId;
+            }
+        }
 
         editor.refresh();
 

@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.net;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
  * @author Stephan Grundner
  */
 @Repository
-public interface HostRepository extends JpaRepository<Host, Long> {
+public interface VisitRepository extends JpaRepository<Visit, Long> {
 
-    Host findByName(String name);
 }

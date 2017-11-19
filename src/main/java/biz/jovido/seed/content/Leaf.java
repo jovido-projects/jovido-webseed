@@ -1,6 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
+import biz.jovido.seed.net.Host;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;

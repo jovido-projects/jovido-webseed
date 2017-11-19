@@ -37,7 +37,7 @@ public class AbstractUnique implements Unique {
         return uuid;
     }
 
-    /*public*/ void setUuid(UUID uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 }
