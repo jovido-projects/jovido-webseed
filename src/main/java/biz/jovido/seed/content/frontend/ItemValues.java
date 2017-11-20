@@ -8,12 +8,22 @@ import biz.jovido.seed.content.Item;
 public final class ItemValues extends AbstractValuesMap<ValuesList> {
 
     private final Item item;
+    private final ItemValues parent;
 
     public Item getItem() {
         return item;
     }
 
-    public ItemValues(Item item) {
+    public ItemValues getParent() {
+        return parent;
+    }
+
+    public ItemValues(Item item, ItemValues parent) {
         this.item = item;
+        this.parent = parent;
+    }
+
+    public ItemValues(Item item) {
+        this(item, null);
     }
 }

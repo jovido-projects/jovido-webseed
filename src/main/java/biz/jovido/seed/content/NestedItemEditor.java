@@ -248,7 +248,8 @@ public class NestedItemEditor implements ItemChangeListener {
             actions.clear();
 
             Attribute attribute = getAttribute();
-            if (attribute.getCapacity() > 1) {
+            List<Payload> payloads = getItemService().getPayloads(getItem(), getAttributeName());
+            if (payloads.size() < attribute.getCapacity()) {
                 if (attribute instanceof ItemAttribute) {
                     actions.setText(new StaticText("Append"));
                     for (String structureName : ((ItemAttribute) attribute).getAcceptedStructureNames()) {
@@ -358,6 +359,8 @@ public class NestedItemEditor implements ItemChangeListener {
                 payloadTemplate = "admin/item/editor/field::image";
             } else if (attribute instanceof YesNoAttribute) {
                 payloadTemplate = "admin/item/editor/field::yesno";
+            } else if (attribute instanceof SelectionAttribute) {
+                payloadTemplate = "admin/item/editor/field::selection";
             } else {
                 throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
             }

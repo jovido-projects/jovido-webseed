@@ -100,4 +100,18 @@
     </div>
 </th:block>
 
+<th:block th:fragment="selection">
+    <th:block th:if="${!attribute.multiselect}">
+        <select class="form-control" th:field="*{fields[__${field.id}__].payload.values[0]}">
+            <!--<option value="">-->
+                <!--<span>Option</span>-->
+            <!--</option>-->
+            <option th:each="option : ${attribute.options}"
+                    th:value="${option}">
+                <span th:text="${option}">Option</span>
+            </option>
+        </select>
+    </th:block>
+</th:block>
+
 </html>

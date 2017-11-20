@@ -13,6 +13,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -80,10 +81,17 @@ public class ItemService {
     @Deprecated
     public String getLabelText(Item item) {
         Structure structure = getStructure(item);
-        String attributeName = structure.getLabelAttributeName();
-        TextPayload label = (TextPayload) getPayload(item, attributeName, 0);
+        if (structure != null) {
+            String attributeName = structure.getLabelAttributeName();
+            TextPayload label = (TextPayload) getPayload(item, attributeName, 0);
+            if (label != null) {
+                return label.getText();
+            }
 
-        return label.getText();
+            return null;
+        }
+
+        return null;
     }
 
     public List<Payload> getPayloads(Item item, String attributeName) {
@@ -163,13 +171,16 @@ public class ItemService {
     }
 
     @UsedInTemplates
+    @Deprecated
     public String getPath(Object object) {
         Item item = (Item) object;
         if (item != null) {
             String path = item.getPath();
             if (StringUtils.isEmpty(path)) {
                 Leaf leaf = item.getLeaf();
-                return String.format("/item?leaf=%s", leaf.getId());
+                return leaf != null
+                        ? String.format("/item?leaf=%s", leaf.getId())
+                        : null;
             }
 
             if (!path.startsWith("/")) {
@@ -180,6 +191,10 @@ public class ItemService {
         }
 
         return null;
+    }
+
+    public String getUrl(Item item) {
+        return getPath(item);
     }
 
     @Transactional
@@ -295,13 +310,14 @@ public class ItemService {
         return found.get();
     }
 
-    private ValuesList toList(Item item, String attributeName) {
+    private ValuesList toList(ItemValues values, String attributeName) {
+        Item item = values.getItem();
         ValuesList list = new ValuesList(attributeName);
         for (Payload payload : getPayloads(item, attributeName)) {
             Attribute attribute = getAttribute(payload);
             if (attribute instanceof ItemAttribute) {
                 Item relatedItem = ((ItemPayload) payload).getItem();
-                list.add(toModel(relatedItem));
+                list.add(toValues(relatedItem, values));
             } else {
 
                 ValueMap map = new ValueMap();
@@ -339,6 +355,16 @@ public class ItemService {
                     map.put("value", yesNo.isYes());
                     map.put("yes", yesNo.isYes());
                     map.put("no", !yesNo.isYes());
+                } else if (attribute instanceof SelectionAttribute) {
+                    SelectionPayload selection = ((SelectionPayload) payload);
+                    SelectionAttribute selectionAttribute = (SelectionAttribute) attribute;
+                    List<String> selectionValues = selection.getValues();
+                    for (String option : selectionAttribute.getOptions()) {
+                        boolean selected = selectionValues.contains(option);
+                        map.put(option, selected);
+                    }
+//                    map.put("selection", selection.getValues());
+                    map.put("value", selectionValues.get(0));
                 } else {
 //                    throw new UnsupportedOperationException();
                 }
@@ -349,13 +375,29 @@ public class ItemService {
         return list;
     }
 
-    public ItemValues toModel(Item item) {
-        ItemValues values = new ItemValues(item);
+    public ItemValues toValues(Item item, ItemValues parent) {
+        ItemValues values = new ItemValues(item, parent);
         for (String attributeName : item.getAttributeNames()) {
-            values.put(attributeName, toList(item, attributeName));
+            values.put(attributeName, toList(values, attributeName));
         }
 
         return values;
+    }
+
+    public ItemValues toValues(Item item) {
+        return toValues(item, null);
+    }
+
+    public Map<String, Object> toMap(Item item) {
+        Map<String, Object> map = new HashMap<>();
+        ItemValues values = toValues(item);
+        map.putAll(values);
+        map.put("self", values);
+        map.put("label", getLabelText(item));
+        map.put("url", getUrl(item));
+        map.put("date", item.getCreatedAt());
+
+        return map;
     }
 
     public MessageSource getMessageSource() {

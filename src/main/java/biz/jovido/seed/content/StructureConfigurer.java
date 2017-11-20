@@ -81,6 +81,11 @@ public class StructureConfigurer implements StructureConfiguration {
         return addAttribute(LinkAttribute.class, LinkAttributeConfigurer.class, name);
     }
 
+    @Override
+    public SelectionAttributeConfigurer addSelectionAttribute(String name) {
+        return addAttribute(SelectionAttribute.class, SelectionAttributeConfigurer.class, name);
+    }
+
     public StructureConfigurer setNestedOnly(boolean nestedOnly) {
         structure.setNestedOnly(nestedOnly);
 

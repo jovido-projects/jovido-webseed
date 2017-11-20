@@ -9,5 +9,6 @@ public enum PayloadType {
     ICON,
     LINK,
     TEXT,
-    YES_NO;
+    YES_NO,
+    SELECTION
 }

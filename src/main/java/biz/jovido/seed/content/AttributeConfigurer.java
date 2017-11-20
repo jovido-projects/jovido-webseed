@@ -82,6 +82,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
         return parentConfigurer.addLinkAttribute(name);
     }
 
+    @Override
+    public SelectionAttributeConfigurer addSelectionAttribute(String name) {
+        return parentConfigurer.addSelectionAttribute(name);
+    }
+
     public AttributeConfigurer(StructureConfigurer parentConfigurer, A attribute) {
         this.parentConfigurer = parentConfigurer;
         this.attribute = attribute;

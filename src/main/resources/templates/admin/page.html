@@ -209,7 +209,7 @@
                         </a>
                     </li>
 
-                    <li th:if="${!@environment.getProperty('seed.ui.user-management-disabled')}">
+                    <li th:unless="${@environment.getProperty('seed.ui.user-management-disabled')}">
                         <a th:href="@{/admin/users}">
                             <span th:text="#{seed.user.listing.title}">Users</span>
                         </a>

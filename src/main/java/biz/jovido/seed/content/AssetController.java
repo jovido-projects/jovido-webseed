@@ -36,6 +36,7 @@ public class AssetController {
         Asset asset = assetService.getAsset(uuid);
 //        Resource file = assetService.getResource(uuid);
         Resource file = assetService.getResource(asset);
+
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + asset.getFileName() + "\"").body(file);
     }

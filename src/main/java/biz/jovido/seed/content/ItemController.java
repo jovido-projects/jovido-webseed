@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 /**
  * @author Stephan Grundner
  */
@@ -18,10 +20,11 @@ public class ItemController {
 
     private String respond(Item item, Model model) {
         model.addAttribute("this", item);
-//        PayloadGroup label = itemService.getLabel(item);
-//        model.addAttribute("label", label);
         model.addAttribute("mode", itemService.getMode(item));
-        model.addAllAttributes(itemService.toModel(item));
+
+        Map<String, Object> map = itemService.toMap(item);
+        model.addAllAttributes(map);
+
         Structure structure = itemService.getStructure(item);
         return structure.getName();
     }
