@@ -83,9 +83,11 @@ public class ItemService {
         Structure structure = getStructure(item);
         if (structure != null) {
             String attributeName = structure.getLabelAttributeName();
-            TextPayload label = (TextPayload) getPayload(item, attributeName, 0);
-            if (label != null) {
-                return label.getText();
+            if (StringUtils.hasText(attributeName)) {
+                TextPayload label = (TextPayload) getPayload(item, attributeName, 0);
+                if (label != null) {
+                    return label.getText();
+                }
             }
 
             return null;
@@ -94,31 +96,33 @@ public class ItemService {
         return null;
     }
 
+    @Deprecated
     public List<Payload> getPayloads(Item item, String attributeName) {
-        return item.getPayloads().stream()
-                .filter(it -> it.getAttributeName().equals(attributeName))
-                .sorted(Comparator.comparingInt(Payload::getOrdinal))
-                .collect(Collectors.toList());
+        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+        return payloadGroup.getPayloads();
     }
 
+    @Deprecated
     public Payload getPayload(Item item, String attributeName, int index) {
-        return item.getPayloads().stream()
-                .filter(it -> it.getAttributeName().equals(attributeName) && it.getOrdinal() == index)
-                .findFirst().orElse(null);
+        return getPayloads(item, attributeName).get(index);
     }
 
     private void applyPayloads(Item item) {
         Structure structure = getStructure(item);
         for (String attributeName : structure.getAttributeNames()) {
-            List<Payload> payloads = getPayloads(item, attributeName);
-
             Attribute attribute = structure.getAttribute(attributeName);
+            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+            if (payloadGroup == null) {
+                payloadGroup = new PayloadGroup();
+                item.setPayloadGroup(attributeName, payloadGroup);
+            }
+
+            List<Payload> payloads = payloadGroup.getPayloads();
             if (!(attribute instanceof ItemAttribute)) {
                 int remaining = attribute.getRequired() - payloads.size();
                 while (remaining-- > 0) {
                     Payload payload = attribute.createPayload();
-                    payload.setAttributeName(attributeName);
-                    item.addPayload(payload);
+                    payloadGroup.addPayload(payload);
                 }
             }
         }
@@ -224,8 +228,9 @@ public class ItemService {
     }
 
     public Attribute getAttribute(Payload payload) {
-        Item item = payload.getOwningItem();
-        String attributeName = payload.getAttributeName();
+        PayloadGroup payloadGroup = payload.getGroup();
+        Item item = payloadGroup.getItem();
+        String attributeName = payloadGroup.getAttributeName();
         return getAttribute(item, attributeName);
     }
 
@@ -244,7 +249,8 @@ public class ItemService {
     public String getDescription(Payload payload, Object... messageArgs) {
         Assert.notNull(payload, "[payload] must not be null");
         Attribute attribute = getAttribute(payload);
-        Item item = payload.getOwningItem();
+        PayloadGroup payloadGroup = payload.getGroup();
+        Item item = payloadGroup.getItem();
 
         return getDescription(attribute, messageArgs, item.getLocale());
     }
@@ -265,10 +271,13 @@ public class ItemService {
     public ItemVisitResult walkItem(Item item, ItemVisitor visitor) {
         ItemVisitResult result = visitor.visitItem(item);
         if (result == ItemVisitResult.CONTINUE) {
-            for (Payload payload : item.getPayloads()) {
-                result = walkPayload(payload, visitor);
-                if (result != ItemVisitResult.CONTINUE) {
-                    return result;
+            for (String attributeName : item.getAttributeNames()) {
+                PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+                for (Payload payload : payloadGroup.getPayloads()) {
+                    result = walkPayload(payload, visitor);
+                    if (result != ItemVisitResult.CONTINUE) {
+                        return result;
+                    }
                 }
             }
         }

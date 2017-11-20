@@ -22,10 +22,8 @@ public class ItemUtils {
         return one.getId().equals(other.getId());
     }
 
+    @Deprecated
     public static List<Payload> getPayloads(Item item, String attributeName) {
-        return item.getPayloads().stream()
-                .filter(it -> it.getAttributeName().equals(attributeName))
-                .sorted(Comparator.comparingInt(Payload::getOrdinal))
-                .collect(Collectors.toList());
+        return item.getPayloadGroup(attributeName).getPayloads();
     }
 }

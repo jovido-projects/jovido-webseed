@@ -74,6 +74,8 @@ public class ItemEditorController {
         mav.addObject("url", request.getRequestURL());
         mav.setViewName("admin/error");
 
+        e.printStackTrace();
+
         return mav;
     }
 
@@ -171,9 +173,9 @@ public class ItemEditorController {
         Structure structure = itemService.getStructure(item);
         Attribute attribute = structure.getAttribute(attributeName);
         ItemPayload payload = (ItemPayload) attribute.createPayload();
-        payload.setAttributeName(attributeName);
         payload.setItem(embeddedItem);
-        item.addPayload(payload);
+        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+        payloadGroup.addPayload(payload);
 
         return redirect(editor);
     }
@@ -189,8 +191,8 @@ public class ItemEditorController {
         Structure structure = itemService.getStructure(item);
         Attribute attribute = structure.getAttribute(attributeName);
         Payload payload = attribute.createPayload();
-        payload.setAttributeName(attributeName);
-        item.addPayload(payload);
+        PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+        payloadGroup.addPayload(payload);
 
         return redirect(editor);
     }
@@ -201,9 +203,10 @@ public class ItemEditorController {
                                    @RequestParam(name = "payload") UUID payloadUuid) {
 
         Payload payload = itemService.findPayload(editor.getItem(), payloadUuid);
-        Item item = payload.getOwningItem();
+        PayloadGroup payloadGroup = payload.getGroup();
+        Item item = payloadGroup.getItem();
         int index = payload.getOrdinal();
-        String attributeName = payload.getAttributeName();
+        String attributeName = payloadGroup.getAttributeName();
         Payload previous = itemService.getPayload(item, attributeName, index - 1);
         payload.setOrdinal(previous.getOrdinal());
         previous.setOrdinal(index);
@@ -217,9 +220,10 @@ public class ItemEditorController {
                                      @RequestParam(name = "payload") UUID payloadUuid) {
 
         Payload payload = itemService.findPayload(editor.getItem(), payloadUuid);
-        Item item = payload.getOwningItem();
+        PayloadGroup payloadGroup = payload.getGroup();
+        Item item = payloadGroup.getItem();
         int index = payload.getOrdinal();
-        String attributeName = payload.getAttributeName();
+        String attributeName = payloadGroup.getAttributeName();
         Payload next = itemService.getPayload(item, attributeName, index + 1);
         payload.setOrdinal(next.getOrdinal());
         next.setOrdinal(index);
@@ -233,7 +237,8 @@ public class ItemEditorController {
                                    @RequestParam(name = "payload") UUID payloadUuid) {
 
         Payload payload = itemService.findPayload(editor.getItem(), payloadUuid);
-        payload.remove();
+        PayloadGroup payloadGroup = payload.getGroup();
+        payloadGroup.removePayload(payload);
 
         return redirect(editor);
     }

@@ -24,7 +24,6 @@ public class YesNoPayload extends Payload {
     @Override
     public Payload copy() {
         YesNoPayload copy = new YesNoPayload();
-        copy.setAttributeName(getAttributeName());
         copy.setYes(isYes());
 
         return copy;

@@ -3,7 +3,6 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.UsedInTemplates;
 import biz.jovido.seed.uimodel.*;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +69,8 @@ public class NestedItemEditor implements ItemChangeListener {
                 Item item = ((ItemPayload) payload).getItem();
                 caption = item.getStructureName();
             } else {
-                caption = payload.getAttributeName();
+                PayloadGroup payloadGroup = payload.getGroup();
+                caption = payloadGroup.getAttributeName();
             }
 
             return String.format("%s #%d", caption, payload.getOrdinal() + 1);
@@ -371,8 +371,11 @@ public class NestedItemEditor implements ItemChangeListener {
         }
 
         // Initial
-        for (Payload payload : item.getPayloads()) {
-            payloadAdded(item, payload);
+        for (String attributeName : item.getAttributeNames()) {
+            PayloadGroup payloadGroup = item.getPayloadGroup(attributeName);
+            for (Payload payload : payloadGroup.getPayloads()) {
+                payloadAdded(item, payload);
+            }
         }
     }
 
@@ -381,7 +384,8 @@ public class NestedItemEditor implements ItemChangeListener {
         if (this.item != item)
             return;
 
-        PayloadFieldGroup fieldGroup = findFieldGroup(payload.getAttributeName());
+        PayloadGroup payloadGroup = payload.getGroup();
+        PayloadFieldGroup fieldGroup = findFieldGroup(payloadGroup.getAttributeName());
         if (fieldGroup != null) {
             PayloadField field = new PayloadField(fieldGroup, payload);
             field.setCompressed(false);
@@ -405,7 +409,8 @@ public class NestedItemEditor implements ItemChangeListener {
 
     @Override
     public void payloadRemoved(Item item, Payload payload) {
-        String attributeName = payload.getAttributeName();
+        PayloadGroup payloadGroup = payload.getGroup();
+        String attributeName = payloadGroup.getAttributeName();
         PayloadFieldGroup fieldGroup = findFieldGroup(attributeName);
         PayloadField field = fieldGroup.getField(payload);
         fieldGroup.removeField(field);

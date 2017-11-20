@@ -32,7 +32,6 @@ public class LinkPayload extends Payload {
     @Override
     public Payload copy() {
         LinkPayload copy = new LinkPayload();
-        copy.setAttributeName(getAttributeName());
         copy.setText(getText());
         copy.setUrl(getUrl());
 

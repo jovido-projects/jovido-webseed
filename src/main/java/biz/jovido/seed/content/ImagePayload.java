@@ -26,7 +26,6 @@ public class ImagePayload extends AssetPayload {
     @Override
     public Payload copy() {
         ImagePayload copy = new ImagePayload();
-        copy.setAttributeName(getAttributeName());
         copy.setImage(getImage());
 
         return copy;

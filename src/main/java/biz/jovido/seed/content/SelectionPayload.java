@@ -23,7 +23,6 @@ public class SelectionPayload extends Payload {
     @Override
     public Payload copy() {
         SelectionPayload copy = new SelectionPayload();
-        copy.setAttributeName(getAttributeName());
         copy.getValues().addAll(getValues());
 
         return copy;

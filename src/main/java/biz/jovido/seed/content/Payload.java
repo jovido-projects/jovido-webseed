@@ -14,10 +14,8 @@ public abstract class Payload extends AbstractUnique {
     @Enumerated(EnumType.STRING)
     private PayloadType type;
 
-    @ManyToOne
-    private Item owningItem;
-
-    private String attributeName;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private PayloadGroup group;
 
     private int ordinal = -1;
 
@@ -29,20 +27,12 @@ public abstract class Payload extends AbstractUnique {
         this.type = type;
     }
 
-    public Item getOwningItem() {
-        return owningItem;
+    public PayloadGroup getGroup() {
+        return group;
     }
 
-    /*public*/ void setOwningItem(Item owningItem) {
-        this.owningItem = owningItem;
-    }
-
-    public String getAttributeName() {
-        return attributeName;
-    }
-
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+    /*public*/ void setGroup(PayloadGroup group) {
+        this.group = group;
     }
 
     public int getOrdinal() {
@@ -51,11 +41,6 @@ public abstract class Payload extends AbstractUnique {
 
     /*public*/ void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
-    }
-
-    @Deprecated
-    public void remove() {
-        owningItem.removePayload(this);
     }
 
     public abstract Payload copy();

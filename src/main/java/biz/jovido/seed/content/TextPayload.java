@@ -25,7 +25,6 @@ public class TextPayload extends Payload {
     @Override
     public Payload copy() {
         TextPayload copy = new TextPayload();
-        copy.setAttributeName(getAttributeName());
         copy.setText(getText());
 
         return copy;

@@ -30,15 +30,16 @@ public class Item extends AbstractUnique {
 
     private String structureName;
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @MapKeyColumn(name = "attribute_name")
+    private final Map<String, PayloadGroup> payloadGroups = new HashMap<>();
+
     @Column(name = "language_tag")
     @Convert(converter = LocaleConverter.class)
     private Locale locale;
 
     @Column(length = 255 * 4)
     private String path;
-
-    @OneToMany(mappedBy = "owningItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private final Set<Payload> payloads = new LinkedHashSet<>();
 
     @CreatedDate
     private Date createdAt;
@@ -81,6 +82,25 @@ public class Item extends AbstractUnique {
         this.structureName = structureName;
     }
 
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(payloadGroups.keySet());
+    }
+
+    public Map<String, PayloadGroup> getPayloadGroups() {
+        return Collections.unmodifiableMap(payloadGroups);
+    }
+
+    public PayloadGroup getPayloadGroup(String attributeName) {
+        return payloadGroups.get(attributeName);
+    }
+
+    public void setPayloadGroup(String attributeName, PayloadGroup payloadGroup) {
+//        TODO Sauber implementieren:
+        payloadGroup.setItem(this);
+        payloadGroup.setAttributeName(attributeName);
+        payloadGroups.put(attributeName, payloadGroup);
+    }
+
     public Locale getLocale() {
         return locale;
     }
@@ -96,64 +116,6 @@ public class Item extends AbstractUnique {
     public void setPath(String path) {
         this.path = path;
     }
-
-    public Set<Payload> getPayloads() {
-        return Collections.unmodifiableSet(payloads);
-    }
-
-    @Deprecated
-    public Set<String> getAttributeNames() {
-        return payloads.stream()
-                .map(Payload::getAttributeName)
-                .distinct()
-                .collect(Collectors.toSet());
-    }
-
-    public boolean addPayload(Payload payload) {
-        Assert.hasText(payload.getAttributeName(), "[payload.attributeName] must not be empty");
-        if (payloads.add(payload)) {
-            payload.setOwningItem(this);
-            long size = payloads.stream()
-                    .filter(it -> it.getAttributeName().equals(payload.getAttributeName()))
-                    .count();
-            payload.setOrdinal((int) size - 1);
-
-            for (ItemChangeListener changeListener : getChangeListeners()) {
-                changeListener.payloadAdded(this, payload);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean removePayload(Payload payload) {
-        if (payloads.remove(payload)) {
-            for (ItemChangeListener changeListener : getChangeListeners()) {
-                changeListener.payloadRemoved(this, payload);
-            }
-
-            payload.setOwningItem(null);
-            payload.setOrdinal(-1);
-
-            ListIterator<Payload> listIterator = ItemUtils
-                    .getPayloads(this, payload.getAttributeName()).listIterator();
-            while (listIterator.hasNext()) {
-                Payload next = listIterator.next();
-                next.setOrdinal(listIterator.previousIndex());
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-//    public void movePayload(String attributeName, int fromIndex, int toIndex) {
-//        List<Payload> payloads = ItemUtils.getPayloads(this, attributeName);
-//        Payload
-//    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -244,8 +206,9 @@ public class Item extends AbstractUnique {
         copy.setCreatedBy(getCreatedBy());
         copy.setLastModifiedBy(getLastModifiedBy());
 
-        for (Payload payload : payloads) {
-            copy.addPayload(payload.copy());
+        for (String attributeName : getAttributeNames()) {
+            PayloadGroup payloadGroup = getPayloadGroup(attributeName);
+            copy.setPayloadGroup(attributeName, payloadGroup.copy());
         }
 
         return copy;

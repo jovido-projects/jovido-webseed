@@ -26,7 +26,6 @@ public class ItemPayload extends Payload {
     @Override
     public Payload copy() {
         ItemPayload copy = new ItemPayload();
-        copy.setAttributeName(getAttributeName());
 
         Item item = getItem();
         if (item != null) {
