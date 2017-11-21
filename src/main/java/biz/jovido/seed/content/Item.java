@@ -95,10 +95,17 @@ public class Item extends AbstractUnique {
     }
 
     public void setPayloadGroup(String attributeName, PayloadGroup payloadGroup) {
-//        TODO Sauber implementieren:
-        payloadGroup.setItem(this);
-        payloadGroup.setAttributeName(attributeName);
-        payloadGroups.put(attributeName, payloadGroup);
+        PayloadGroup replaced = payloadGroups.put(attributeName, payloadGroup);
+
+        if (replaced != null) {
+            replaced.setAttributeName(null);
+            replaced.setItem(null);
+        }
+
+        if (payloadGroup != null) {
+            payloadGroup.setAttributeName(attributeName);
+            payloadGroup.setItem(this);
+        };
     }
 
     public Locale getLocale() {
