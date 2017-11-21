@@ -3,9 +3,8 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.AbstractUnique;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -22,8 +21,8 @@ public class PayloadGroup extends AbstractUnique {
     private String attributeName;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderBy("ordinal")
-    private final List<Payload> payloads = new ArrayList<>();
+//    @OrderBy("ordinal")
+    private final Set<Payload> payloads = new HashSet<>();
 
     public Item getItem() {
         return item;
@@ -42,12 +41,18 @@ public class PayloadGroup extends AbstractUnique {
     }
 
     public List<Payload> getPayloads() {
-        return Collections.unmodifiableList(payloads);
+        List<Payload> list = payloads.stream()
+                .sorted(Comparator.comparingInt(Payload::getOrdinal))
+                .collect(Collectors.toList());
+
+        return Collections.unmodifiableList(list);
     }
 
     public boolean addPayload(Payload payload) {
         if (payloads.add(payload)) {
+
             payload.setGroup(this);
+            payload.setOrdinal(payloads.size() - 1);
 
             if (item != null) {
                 for (ItemChangeListener changeListener : item.getChangeListeners()) {
@@ -63,11 +68,20 @@ public class PayloadGroup extends AbstractUnique {
 
     public boolean removePayload(Payload payload) {
         if (payloads.remove(payload)) {
+
             for (ItemChangeListener changeListener : item.getChangeListeners()) {
                 changeListener.payloadRemoved(item, payload);
             }
 
             payload.setGroup(null);
+//            payload.setOrdinal(-1);
+
+            int i = 0;
+            Iterator<Payload> payloadItr = payloads.iterator();
+            while (payloadItr.hasNext()) {
+                Payload next = payloadItr.next();
+                next.setOrdinal(i++);
+            }
 
             return true;
         }
