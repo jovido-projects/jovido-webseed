@@ -25,6 +25,8 @@ public class Structure {
 
     private String labelAttributeName;
 
+    private String template;
+
     @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKey(name = "name")
     @OrderBy("ordinal")
@@ -68,6 +70,14 @@ public class Structure {
 
     public void setLabelAttributeName(String labelAttributeName) {
         this.labelAttributeName = labelAttributeName;
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
     }
 
     public List<String> getAttributeNames() {

@@ -3,8 +3,8 @@ package biz.jovido.seed.thymeleaf.processor;
 import biz.jovido.seed.content.Item;
 import biz.jovido.seed.content.ItemService;
 import biz.jovido.seed.content.frontend.ItemValues;
-import biz.jovido.seed.content.frontend.ValuesList;
 import biz.jovido.seed.thymeleaf.TemplateNameResolver;
+import org.springframework.ui.ExtendedModelMap;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
@@ -81,8 +81,10 @@ public abstract class AbstractContentProcessor extends AbstractAttributeTagProce
                 templateName = item.getStructureName();
             }
 
-            Map<String, Object> map = itemService.toMap(item);
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
+//            TODO Create adapter for structureHandler
+            ExtendedModelMap model = new ExtendedModelMap();
+            itemService.itemToModel(item, model);
+            for (Map.Entry<String, Object> entry : model.entrySet()) {
                 structureHandler.setLocalVariable(entry.getKey(), entry.getValue());
             }
 

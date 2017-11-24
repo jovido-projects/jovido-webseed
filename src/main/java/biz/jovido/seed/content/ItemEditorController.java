@@ -136,6 +136,7 @@ public class ItemEditorController {
                           @RequestParam(name = "id") Long itemId) {
 
         Item item = itemService.getItem(itemId);
+        itemService.refrehItem(item);
         editor.setItem(item);
 
         return redirect(editor);

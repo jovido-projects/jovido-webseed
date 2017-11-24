@@ -8,6 +8,7 @@ public interface StructureConfiguration extends Configuration {
     StructureConfigurer setNestedOnly(boolean nestedOnly);
     StructureConfigurer setPublishable(boolean publishable);
     StructureConfigurer setLabelAttribute(String name);
+    StructureConfigurer setTemplate(String template);
 
     TextAttributeConfigurer addTextAttribute(String name);
     YesNoAttributeConfigurer addYesNoAttribute(String name);

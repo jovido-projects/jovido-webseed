@@ -1,6 +1,9 @@
 package biz.jovido.seed.configuration;
 
+import biz.jovido.seed.content.DeprecatedModelFactory;
 import biz.jovido.seed.content.ItemRequestMapping;
+import biz.jovido.seed.content.ItemService;
+import biz.jovido.seed.content.ModelFactoryProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -50,18 +53,18 @@ public class SeedConfigurationSupport implements ApplicationContextAware, BeanFa
     }
 
     @Bean
+    public ModelFactoryProvider modelFactoryProvider(ItemService itemService) {
+        ModelFactoryProvider modelFactoryProvider = new ModelFactoryProvider();
+        modelFactoryProvider.setDefaultModelFactory(new DeprecatedModelFactory(itemService));
+
+        return modelFactoryProvider;
+    }
+
+    @Bean
     @ConfigurationProperties(prefix = "seed.ui")
     public UIProperties uiProperties() {
         return new UIProperties();
     }
-
-//    @PostConstruct
-//    void registerAdditionalDialects() {
-//        SpringTemplateEngine templateEngine = applicationContext.getBean(SpringTemplateEngine.class);
-//        templateEngine.addDialect(new ContentDialect());
-////        templateEngine.addDialect(new FieldDialect());
-//        templateEngine.addDialect(new ComponentDialect());
-//    }
 
     @Bean
     public SessionRepository<?> sessionRepository() {

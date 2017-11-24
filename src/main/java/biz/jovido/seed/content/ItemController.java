@@ -3,10 +3,9 @@ package biz.jovido.seed.content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
 
 /**
  * @author Stephan Grundner
@@ -22,11 +21,15 @@ public class ItemController {
         model.addAttribute("this", item);
         model.addAttribute("mode", itemService.getMode(item));
 
-        Map<String, Object> map = itemService.toMap(item);
-        model.addAllAttributes(map);
+        itemService.itemToModel(item, model);
 
         Structure structure = itemService.getStructure(item);
-        return structure.getName();
+        String template = structure.getTemplate();
+        if (StringUtils.isEmpty(template)) {
+            template = structure.getName();
+        }
+
+        return template;
     }
 
     @RequestMapping(params = {"id"})

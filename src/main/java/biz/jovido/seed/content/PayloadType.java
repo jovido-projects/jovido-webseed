@@ -6,6 +6,7 @@ package biz.jovido.seed.content;
 public enum PayloadType {
     ITEM,
     IMAGE,
+    @Deprecated
     ICON,
     LINK,
     TEXT,

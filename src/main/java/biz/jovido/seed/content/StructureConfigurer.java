@@ -105,6 +105,13 @@ public class StructureConfigurer implements StructureConfiguration {
         return this;
     }
 
+    @Override
+    public StructureConfigurer setTemplate(String template) {
+        structure.setTemplate(template);
+
+        return this;
+    }
+
     public StructureConfigurer(Configurer parentConfigurer, Structure structure) {
         this.parentConfigurer = parentConfigurer;
         this.structure = structure;

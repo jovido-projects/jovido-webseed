@@ -249,7 +249,7 @@ public class NestedItemEditor implements ItemChangeListener {
 
             Attribute attribute = getAttribute();
             List<Payload> payloads = getItemService().getPayloads(getItem(), getAttributeName());
-            if (payloads.size() < attribute.getCapacity()) {
+            if (payloads != null && payloads.size() < attribute.getCapacity()) {
                 if (attribute instanceof ItemAttribute) {
                     actions.setText(new StaticText("Append"));
                     for (String structureName : ((ItemAttribute) attribute).getAcceptedStructureNames()) {

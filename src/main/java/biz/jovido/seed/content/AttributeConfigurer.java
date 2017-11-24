@@ -53,6 +53,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public StructureConfigurer setTemplate(String template) {
+        return parentConfigurer.setTemplate(template);
+    }
+
+    @Override
     public TextAttributeConfigurer addTextAttribute(String name) {
         return parentConfigurer.addTextAttribute(name);
     }
