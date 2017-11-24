@@ -92,7 +92,7 @@ public class PayloadGroup extends AbstractUnique {
     public PayloadGroup copy() {
         PayloadGroup copy = new PayloadGroup();
 
-        for (Payload payload : payloads) {
+        for (Payload payload : getPayloads()) {
             copy.addPayload(payload.copy());
         }
 

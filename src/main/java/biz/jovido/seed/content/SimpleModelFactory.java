@@ -107,6 +107,10 @@ public class SimpleModelFactory implements ModelFactory {
         Structure structure = itemService.getStructure(item);
         map.put("template", structure.getTemplate());
 
+        if (structure.isPublishable()) {
+            map.put("url", itemService.getUrl(item));
+        }
+
         for (String attributeName : structure.getAttributeNames()) {
             Attribute attribute = structure.getAttribute(attributeName);
             if (attribute.getCapacity() == 1) {
