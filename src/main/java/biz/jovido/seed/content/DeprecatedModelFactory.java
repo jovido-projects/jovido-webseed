@@ -3,6 +3,8 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.content.frontend.ItemValues;
 import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 
@@ -57,12 +59,6 @@ public class DeprecatedModelFactory implements ModelFactory {
                 } else if (attribute instanceof TextAttribute) {
                     TextPayload textPayload = ((TextPayload) payload);
                     String value = textPayload.getText();
-                    value = value.trim();
-                    if (StringUtils.startsWithIgnoreCase(value, "<p>")
-                            && StringUtils.endsWithIgnoreCase(value, "</p>")) {
-                        value = org.apache.commons.lang3.StringUtils.removeStart(value, "<p>");
-                        value = org.apache.commons.lang3.StringUtils.removeEnd(value, "</p>");
-                    }
                     map.put("value", value);
                 } else if (attribute instanceof YesNoAttribute) {
                     YesNoPayload yesNo = ((YesNoPayload) payload);
