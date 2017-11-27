@@ -1,10 +1,10 @@
 <html xmlns:th="//www.thymeleaf.org" th:remove="tag">
 
 <th:block th:fragment="item">
-    <div class="card" th:classappend="${nestingLevel % 2 == 0} ? level-even : level-odd">
-        <div class="card-body">
+    <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
+        <div class="panel-body">
             <th:block th:with="editor=${field.nestedEditor}">
-                <th:block th:replace="admin/item/editor-page::editor"/>
+                <th:block th:replace="admin/item/editor"/>
             </th:block>
         </div>
     </div>
@@ -19,39 +19,37 @@
 </th:block>
 
 <th:block th:fragment="image" th:with="image=${field.payload.image}">
-    <div class="card">
-        <div class="media">
-            <img th:remove="${image == null} ? tag : _" class="mr-1 img-fluid w-50"
-                 th:src="${@assetService.getRelativeUrl(image)} ?: _">
-            <div class="media-body pt-2 ml-2">
-                <h5 th:if="${image != null}" class="mt-0"
-                    th:text="${image.fileName}">Filename</h5>
-
-                <div class="btn-group pb-2" role="group" aria-label="First group"
-                     th:with="token=${#ids.seq('imagetoken')}">
-                    <span class="btn btn-secondary btn-file">
-                        <i class="fa fa-upload"></i>
-                        <input th:name="'file-__${token}__'" type="file"
-                               th:formaction="@{upload-image(token=${token},payload=${field.payload.uuid})}">
-                    </span>
-                    <button class="btn btn-secondary">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                </div>
-
-            </div>
-        </div>
+<div style="padding-bottom:0px;margin-bottom:-35px;">
+    <th:block th:if="${image != null}">
+        <img th:src="${@assetService.getRelativeUrl(image)} ?: _" width="100%">
+    </th:block>
+    <div th:if="${image == null}" style="background-color:lightgray; width:100%; min-height:55px;">
+        <!--No image, gray box-->
     </div>
+
+    <div class="btn-group" th:with="token=${#ids.seq('imagetoken')}"
+         style="position:relative; top:-45px;left:15px; min-height:35px;">
+        <span class="btn btn-default btn-file">
+            <i class="fa fa-upload"></i>
+            <input th:name="'file-__${token}__'" type="file"
+                   th:formaction="@{upload-image(token=${token},payload=${field.payload.uuid})}">
+        </span>
+        <!--<button class="btn btn-default" disabled="disabled">-->
+        <!--<span th:text="${image?.fileName}">File name</span>-->
+        <!--</button>-->
+    </div>
+</div>
 </th:block>
 
 <th:block th:fragment="link">
     <div class="panel panel-default" th:classappend="'nesting-level-__${nestingLevel}__'">
         <div class="panel-body" style="margin-bottom:5px;">
-            <label th:text="__${fieldGroup.attribute.name}__.payload.value">Text</label>
+            <label th:text="__${attribute.name}__.payload.value">Text</label>
             <input type="url" class="form-control input-sm"
                    th:field="*{fields[__${field.id}__].payload.text}">
 
-            <label th:text="__${fieldGroup.attribute.name}__.payload.uri">URI</label>
+
+            <label th:text="__${attribute.name}__.payload.uri">URI</label>
             <input type="url" class="form-control input-sm"
                    th:field="*{fields[__${field.id}__].payload.url}">
 
@@ -65,7 +63,7 @@
               th:field="*{fields[__${field.id}__].payload.text}"></textarea>
 
         <script type="text/javascript">
-        jQuery(document).ready(function($) {
+        $(document).ready(function() {
             var id = '#[[${id}]]';
             $(id).summernote({
                 height:125,
@@ -96,19 +94,19 @@
         <label>
             <input type="checkbox" class=""
                    th:field="*{fields[__${field.id}__].payload.yes}">
-            <span th:text="#{structure.__${fieldGroup?.editor?.item?.structureName}__.__${fieldGroup.attribute.name}__}">Field name</span>
+            <span th:text="${attribute.name}">Field name</span>
             <span th:if="${fieldGroup.fields.size() > 1}">#[[${fieldItr.index + 1}]]</span>
         </label>
     </div>
 </th:block>
 
 <th:block th:fragment="selection">
-    <th:block th:if="${!fieldGroup.attribute.multiselect}">
-        <select class="form-control custom-select d-block" th:field="*{fields[__${field.id}__].payload.values[0]}">
+    <th:block th:if="${!attribute.multiselect}">
+        <select class="form-control" th:field="*{fields[__${field.id}__].payload.values[0]}">
             <!--<option value="">-->
                 <!--<span>Option</span>-->
             <!--</option>-->
-            <option th:each="option : ${fieldGroup.attribute.options}"
+            <option th:each="option : ${attribute.options}"
                     th:value="${option}">
                 <span th:text="${option}">Option</span>
             </option>

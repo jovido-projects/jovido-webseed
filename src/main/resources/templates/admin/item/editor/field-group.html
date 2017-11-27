@@ -1,63 +1,66 @@
-<html xmlns:th="//www.thymeleaf.org" th:remove="tag">
-<div class="form-group"
-     th:each="field,fieldItr : ${fieldGroup.fields}"
-     th:with="attribute=${fieldGroup.attribute}">
+<html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
+<div class="field-group">
+    <div th:each="field,fieldItr : ${fieldGroup.fields}" th:id="${field.id}" class="field">
+        <div class="row">
+            <div class="col-md-12">
 
-    <h5>
-        <small th:text="${field.foobar}">Track</small> <br/>
-        <strong th:text="${field.caption}">Attribute name</strong>
-        <i th:if="${attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
+                <small th:text="${field.foobar}">Track</small> <br/>
+                <strong th:text="${field.caption}">Attribute name</strong>
+                <i th:if="${fieldGroup.attribute.isLabel()}" class="fa fa-tag" th:title="#{seed.attribute.label}"></i>
 
-        <span class="btn-group btn-group-xs pull-right" th:remove="${attribute.capacity < 1} ? all : _">
-            <th:block th:each="action : ${field.actions}">
-                <button class="btn btn-default"
-                        th:disabled="${action.disabled} ? disabled : _"
-                        th:formaction="__${action.url}__">
-                    <span th:utext="${action.text?.value}">Text</span>
-                </button>
-            </th:block>
-        </span>
-    </h5>
+                <th:block th:if="${fieldGroup.fields.size() > 1 || fieldGroup.fields.size() > fieldGroup.attribute.required}">
+                    <span class="btn-group btn-group-sm pull-right">
+                        <th:block th:each="action : ${field.actions}">
+                            <button class="btn btn-secondary"
+                                    th:disabled="${action.disabled} ? disabled : _"
+                                    th:formaction="__${action.url}__">
+                                <span th:utext="${action.text?.value}">Text</span>
+                            </button>
+                        </th:block>
+                    </span>
+                </th:block>
 
-    <th:block>
-        <th:block th:if="${!field.compressed}">
-            <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
-            <small th:text="${@itemService.getDescription(field.payload)}?: _"></small>
-        </th:block>
-        <th:block th:if="${field.compressed}"></th:block>
+            </div>
+        </div>
+
+        <div class="row" th:if="${!field.compressed}">
+            <div class="col-md-12">
+                <th:block th:replace="__${fieldGroup.payloadTemplate}__" />
+            </div>
+        </div>
+
+    </div>
+
+    <th:block th:if="${fieldGroup?.actions?.size() == 1}"
+              th:with="action=${fieldGroup.actions[0]}">
+        <br />
+        <button class="btn btn-secondary btn-append"
+                th:formaction="${action.url}">
+            <i class="fa fa-plus"></i>
+            <span th:text="${action.text?.value}">Append</span>
+        </button>
+    </th:block>
+    <th:block th:if="${fieldGroup?.actions?.size() > 1}">
+        <br />
+        <div class="btn-group dropup btn-append" >
+            <button type="button"
+                    class="btn btn-secondary dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fa fa-plus"></i>
+
+                <span th:text="${fieldGroup.actions.text.value}">Append</span>
+            </button>
+            <div class="dropdown-menu">
+                <th:block th:each="action : ${fieldGroup.actions}" >
+                    <button class="dropdown-item" type="submit" th:formaction="${action.url}" >
+                        <span th:text="${action.text.value}">Action</span><br />
+                        <small style="color:gray;" th:text="${action.description.value}">Description</small>
+                    </button>
+                </th:block>
+            </div>
+        </div>
     </th:block>
 </div>
-
-<th:block th:if="${fieldGroup?.actions?.size() == 1}"
-          th:with="action=${fieldGroup.actions[0]}">
-    <button class="btn btn-default"
-            th:formaction="${action.url}">
-        <i class="fa fa-plus"></i>
-        <span th:text="${action.text?.value}">Append</span>
-    </button>
-</th:block>
-<th:block th:if="${fieldGroup?.actions?.size() > 1}">
-    <div class="btn-group dropup" >
-            <button type="button"
-                class="btn btn-default dropdown-toggle"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-            <i class="fa fa-plus"></i>
-            <span th:text="${fieldGroup.actions.text.value}">Append</span>
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li th:each="action : ${fieldGroup.actions}" >
-                <a th:data-formaction="${action.url}" >
-                    <span th:text="${action.text.value}">Action</span><br />
-                    <small style="color:gray;" th:text="${action.description.value}">Description</small>
-                </a>
-            </li>
-        </ul>
-    </div>
-</th:block>
-
-
-
 </html>

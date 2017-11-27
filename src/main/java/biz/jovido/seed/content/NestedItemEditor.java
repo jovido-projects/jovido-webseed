@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UsedInTemplates;
-import biz.jovido.seed.uimodel.*;
+import biz.jovido.seed.admin.*;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -171,8 +171,13 @@ public class NestedItemEditor implements ItemChangeListener {
         private final String attributeName;
         private Actions actions;
         private String payloadTemplate;
+        private String template = "admin/item/editor/field-group";
 
         private final Set<PayloadField> fields = new HashSet<>();
+
+        public NestedItemEditor getEditor() {
+            return editor;
+        }
 
         private final ItemService getItemService() {
             return editor.getItemService();
@@ -209,6 +214,14 @@ public class NestedItemEditor implements ItemChangeListener {
 
         public void setPayloadTemplate(String payloadTemplate) {
             this.payloadTemplate = payloadTemplate;
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public void setTemplate(String template) {
+            this.template = template;
         }
 
         public Set<PayloadField> getFields() {

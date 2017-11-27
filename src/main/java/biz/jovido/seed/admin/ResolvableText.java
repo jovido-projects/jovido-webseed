@@ -1,4 +1,4 @@
-package biz.jovido.seed.uimodel;
+package biz.jovido.seed.admin;
 
 import org.springframework.context.MessageSource;
 

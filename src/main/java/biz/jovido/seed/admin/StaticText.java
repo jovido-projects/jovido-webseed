@@ -1,4 +1,4 @@
-package biz.jovido.seed.uimodel;
+package biz.jovido.seed.admin;
 
 /**
  * @author Stephan Grundner
