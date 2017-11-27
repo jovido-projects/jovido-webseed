@@ -37,6 +37,15 @@ public class ItemEditor extends NestedItemEditor {
         getItem().setPath(path);
     }
 
+    public Long getLoaded() {
+        Item item = getItem();
+        if (item != null) {
+            return item.getId();
+        }
+
+        return null;
+    }
+
     public ItemEditor(ItemService itemService) {
         super(null);
         this.itemService = itemService;

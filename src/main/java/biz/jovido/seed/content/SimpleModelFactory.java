@@ -18,24 +18,43 @@ public class SimpleModelFactory implements ModelFactory {
         return structure != null;
     }
 
-    private void apply(TextPayload payload, Map<String, Object> map) {
+    private Map<String, Object> apply(TextPayload payload) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("$payload", payload);
+
         map.put("value", payload.getText());
+
+        return map;
     }
 
-    private void apply(YesNoPayload payload, Map<String, Object> map) {
+    private Map<String, Object> apply(YesNoPayload payload) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("$payload", payload);
+
         map.put("value", payload.isYes());
         map.put("yes", payload.isYes());
         map.put("no", !payload.isYes());
+
+        return map;
     }
 
-    private void apply(LinkPayload payload, Map<String, Object> map) {
+    private Map<String, Object> apply(LinkPayload payload) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("$payload", payload);
+
         map.put("url", payload.getUrl());
         map.put("text", payload.getText());
+
+        return map;
     }
 
-    private void apply(ImagePayload payload,  Map<String, Object> map) {
+    private Map<String, Object> apply(ImagePayload payload) {
+        Map<String, Object> map = null;
+
         Image image = payload.getImage();
         if (image != null) {
+            map = new HashMap<>();
+            map.put("$payload", payload);
             map.put("fileName", image.getFileName());
             map.put("alt", image.getAlt());
 //                TODO Move to ItemService class:
@@ -44,9 +63,14 @@ public class SimpleModelFactory implements ModelFactory {
                     image.getFileName());
             map.put("url", url);
         }
+
+        return map;
     }
 
-    private void apply(SelectionPayload payload, Map<String, Object> map) {
+    private Map<String, Object> apply(SelectionPayload payload) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("$payload", payload);
+
         List<String> values = payload.getValues();
         SelectionAttribute attribute = (SelectionAttribute) itemService.getAttribute(payload);
         if (attribute.isMultiselect()) {
@@ -54,41 +78,37 @@ public class SimpleModelFactory implements ModelFactory {
         } else {
             map.put("value", CollectionUtils.getFirst(values));
         }
+
+        return map;
     }
 
-    private void apply(ItemPayload payload, Map<String, Object> map) {
-        Item item = payload.getItem();
-        map.putAll(toMap(item));
-    }
-
-    private Map<String, Object> toMap(Payload payload) {
+    private Map<String, Object> apply(ItemPayload payload) {
         Map<String, Object> map = new HashMap<>();
         map.put("$payload", payload);
 
+        Item item = payload.getItem();
+        map.putAll(toMap(item));
+
+        return map;
+    }
+
+    private Map<String, Object> toMap(Payload payload) {
         switch (payload.getType()) {
             case TEXT:
-                apply((TextPayload) payload, map);
-                break;
+                return apply((TextPayload) payload);
             case YES_NO:
-                apply((YesNoPayload) payload, map);
-                break;
+                return apply((YesNoPayload) payload);
             case IMAGE:
-                apply((ImagePayload) payload, map);
-                break;
+                return apply((ImagePayload) payload);
             case SELECTION:
-                apply((SelectionPayload) payload, map);
-                break;
+                return apply((SelectionPayload) payload);
             case LINK:
-                apply((LinkPayload) payload, map);
-                break;
+                return apply((LinkPayload) payload);
             case ITEM:
-                apply((ItemPayload) payload, map);
-                break;
+                return apply((ItemPayload) payload);
             default:
                 throw new RuntimeException("Unexpected payload type: " + payload.getType());
         }
-
-        return map;
     }
 
     private List<Object> toList(List<Payload> payloads) {

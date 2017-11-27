@@ -38,6 +38,12 @@
     <link rel="stylesheet" href="/css/components.css">
 
     <script>
+    function keepAlive(){
+        $.get( "/ping", function( data ) {console.log(data)} );
+    }
+
+    window.setInterval(keepAlive, 1000);
+
     function saveScrollTop() {
         var scrollTop = $(window).scrollTop();
         sessionStorage.setItem("window.scrollTop", scrollTop);

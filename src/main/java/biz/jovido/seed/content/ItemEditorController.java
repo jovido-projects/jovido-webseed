@@ -80,8 +80,16 @@ public class ItemEditorController {
     }
 
     @ModelAttribute
-    protected ItemEditor editor() {
-        return new ItemEditor(itemService);
+    protected ItemEditor editor(@RequestParam(name = "loaded", required = false) Long itemId, HttpServletRequest request) {
+        ItemEditor editor = new ItemEditor(itemService);
+
+        Object x = request.getParameterMap();
+        if (itemId != null) {
+            Item item = itemService.getItem(itemId);
+            editor.setItem(item);
+        }
+
+        return editor;
     }
 
     private String redirect(ItemEditor editor) {

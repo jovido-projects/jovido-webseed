@@ -45,6 +45,16 @@ public class SeedConfigurationSupport implements ApplicationContextAware, BeanFa
         this.applicationContext = applicationContext;
     }
 
+//    @Bean
+//    public Object xyz(RequestMappingHandlerAdapter requestMappingHandlerAdapter) {
+//        ConfigurableWebBindingInitializer webBindingInitializer = (ConfigurableWebBindingInitializer)
+//                requestMappingHandlerAdapter.getWebBindingInitializer();
+//
+//        webBindingInitializer.setAutoGrowNestedPaths(false);
+//
+//        return "OK";
+//    }
+
     @Bean
     public ItemRequestMapping itemRequestMapping() {
         ItemRequestMapping requestMapping = new ItemRequestMapping();
