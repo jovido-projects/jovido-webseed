@@ -374,6 +374,8 @@ public class NestedItemEditor implements ItemChangeListener {
                 payloadTemplate = "admin/item/editor/field::yesno";
             } else if (attribute instanceof SelectionAttribute) {
                 payloadTemplate = "admin/item/editor/field::selection";
+            } else if (attribute instanceof DateAttribute) {
+                payloadTemplate = "admin/item/editor/field::date";
             } else {
                 throw new RuntimeException("Unexpected attribute type: " + attribute.getClass());
             }

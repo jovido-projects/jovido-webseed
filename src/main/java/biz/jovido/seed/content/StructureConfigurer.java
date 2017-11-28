@@ -86,6 +86,11 @@ public class StructureConfigurer implements StructureConfiguration {
         return addAttribute(SelectionAttribute.class, SelectionAttributeConfigurer.class, name);
     }
 
+    @Override
+    public DateAttributeConfigurer addDateAttribute(String name) {
+        return addAttribute(DateAttribute.class, DateAttributeConfigurer.class, name);
+    }
+
     public StructureConfigurer setNestedOnly(boolean nestedOnly) {
         structure.setNestedOnly(nestedOnly);
 

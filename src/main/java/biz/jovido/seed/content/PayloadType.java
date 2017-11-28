@@ -11,5 +11,6 @@ public enum PayloadType {
     LINK,
     TEXT,
     YES_NO,
-    SELECTION
+    SELECTION,
+    DATE
 }

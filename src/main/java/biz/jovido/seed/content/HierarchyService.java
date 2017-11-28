@@ -83,9 +83,9 @@ public class HierarchyService {
             hierarchy.removeNode(node);
         }
 
-        Leaf leaf = node.getLeaf();
-        if (leaf != null) {
-            leaf.removeNode(node);
+        ItemHistory itemHistory = node.getItemHistory();
+        if (itemHistory != null) {
+            itemHistory.removeNode(node);
         }
     }
 
@@ -121,8 +121,8 @@ public class HierarchyService {
             ItemService itemService = beanFactory.getBean(ItemService.class);
             LinkedList<String> path = new LinkedList<>();
             while (node != null) {
-                Leaf history = node.getLeaf();
-                Item item = history.getCurrent();
+                ItemHistory itemHistory = node.getItemHistory();
+                Item item = itemHistory.getCurrent();
 //            String labelText = ItemUtils.labelToString(item);
                 String labelText = itemService.getLabelText(item);
                 path.addFirst(labelText);
@@ -147,12 +147,12 @@ public class HierarchyService {
         return null;
     }
 
-    public Item getItem(Leaf leaf, Mode mode) {
-        if (leaf != null) {
+    public Item getItem(ItemHistory itemHistory, Mode mode) {
+        if (itemHistory != null) {
             if (mode == Mode.PREVIEW) {
-                return leaf.getCurrent();
+                return itemHistory.getCurrent();
             } else {
-                return leaf.getPublished();
+                return itemHistory.getPublished();
             }
         }
 
@@ -161,8 +161,8 @@ public class HierarchyService {
 
     public Item getItem(Node node, Mode mode) {
         if (node != null) {
-            Leaf leaf = node.getLeaf();
-            return getItem(leaf, mode);
+            ItemHistory itemHistory = node.getItemHistory();
+            return getItem(itemHistory, mode);
         }
         return null;
     }

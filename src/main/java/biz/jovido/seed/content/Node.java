@@ -31,8 +31,8 @@ public class Node extends AbstractUnique {
     private final List<Node> children = new ArrayList<>();
 
     @ManyToOne(optional = false, cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "leaf_id")
-    private Leaf leaf;
+    @JoinColumn(name = "item_history_id")
+    private ItemHistory itemHistory;
 
     public Hierarchy getHierarchy() {
         return hierarchy;
@@ -154,18 +154,18 @@ public class Node extends AbstractUnique {
         return null;
     }
 
-    public Leaf getLeaf() {
-        return leaf;
+    public ItemHistory getItemHistory() {
+        return itemHistory;
     }
 
-    public void setLeaf(Leaf leaf) {
-        this.leaf = leaf;
+    public void setItemHistory(ItemHistory itemHistory) {
+        this.itemHistory = itemHistory;
     }
 
     public boolean belongsTo(Item item) {
-        Leaf leaf = getLeaf();
-        return ItemUtils.areTheSame(leaf.getPublished(), item) ||
-                ItemUtils.areTheSame(leaf.getCurrent(), item);
+        ItemHistory history = getItemHistory();
+        return ItemUtils.areTheSame(history.getPublished(), item) ||
+                ItemUtils.areTheSame(history.getCurrent(), item);
     }
 
     public Node copy() {

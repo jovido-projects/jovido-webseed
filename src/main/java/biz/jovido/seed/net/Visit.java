@@ -16,7 +16,7 @@ public class Visit {
     @ManyToOne
     private Visitor visitor;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Host host;
 
     @Column(length = 255 * 4)

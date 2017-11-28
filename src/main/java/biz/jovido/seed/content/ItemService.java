@@ -57,8 +57,8 @@ public class ItemService {
         return itemRepository.findOne(id);
     }
 
-    public Item findPublished(Long leafId) {
-        return itemRepository.findPublished(leafId);
+    public Item findPublished(Long historyId) {
+        return itemRepository.findPublished(historyId);
     }
 
     public List<Item> findAllItems() {
@@ -148,8 +148,8 @@ public class ItemService {
     }
 
     private Item createItem(Structure structure) {
-        Leaf leaf = new Leaf();
-        return createItem(structure, leaf);
+        ItemHistory history = new ItemHistory();
+        return createItem(structure, history);
     }
 
     public Item createItem(String structureName) {
@@ -157,13 +157,13 @@ public class ItemService {
         return createItem(structure);
     }
 
-    private Item createItem(Structure structure, Leaf leaf) {
+    private Item createItem(Structure structure, ItemHistory history) {
         Item item = new Item();
-        item.setLeaf(leaf);
+        item.setHistory(history);
         item.setStructureName(structure.getName());
         item.setLocale(LocaleContextHolder.getLocale());
-        if (leaf != null) {
-            leaf.setCurrent(item);
+        if (history != null) {
+            history.setCurrent(item);
         }
 
         applyPayloads(item);
@@ -178,10 +178,10 @@ public class ItemService {
 
     public boolean isPublished(Item item) {
         if (item != null) {
-            Leaf leaf = item.getLeaf();
-            if (leaf != null) {
+            ItemHistory history = item.getHistory();
+            if (history != null) {
                 return new EqualsBuilder()
-                        .append(leaf.getPublished(), item)
+                        .append(history.getPublished(), item)
                         .isEquals();
             }
         }
@@ -200,9 +200,9 @@ public class ItemService {
         if (item != null) {
             String path = item.getPath();
             if (StringUtils.isEmpty(path)) {
-                Leaf leaf = item.getLeaf();
-                return leaf != null
-                        ? String.format("/item?leaf=%s", leaf.getId())
+                ItemHistory history = item.getHistory();
+                return history != null
+                        ? String.format("/item?history=%s", history.getId())
                         : null;
             }
 
@@ -233,7 +233,7 @@ public class ItemService {
     public Item publishItem(final Item item) {
         Item current = item.copy();
         current = entityManager.merge(current);
-        Leaf history = current.getLeaf();
+        ItemHistory history = current.getHistory();
         history.setPublished(item);
         history.setCurrent(current);
         entityManager.merge(history);

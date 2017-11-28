@@ -8,11 +8,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -26,7 +24,7 @@ public class Item extends AbstractUnique {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Leaf leaf;
+    private ItemHistory history;
 
     private String structureName;
 
@@ -66,12 +64,12 @@ public class Item extends AbstractUnique {
         this.id = id;
     }
 
-    public Leaf getLeaf() {
-        return leaf;
+    public ItemHistory getHistory() {
+        return history;
     }
 
-    /*public*/ void setLeaf(Leaf leaf) {
-        this.leaf = leaf;
+    /*public*/ void setHistory(ItemHistory history) {
+        this.history = history;
     }
 
     public String getStructureName() {
@@ -157,7 +155,7 @@ public class Item extends AbstractUnique {
     }
 
     public boolean isCurrent() {
-        Leaf history = getLeaf();
+        ItemHistory history = getHistory();
         if (history != null) {
             Item current = history.getCurrent();
             if (current != null && current.getId() != null) {
@@ -169,10 +167,10 @@ public class Item extends AbstractUnique {
     }
 
     @Deprecated
-    public boolean belongsTo(Leaf leaf) {
-        if (leaf != null) {
+    public boolean belongsTo(ItemHistory history) {
+        if (history != null) {
 
-            if (leaf.equals(this.leaf)) {
+            if (history.equals(this.history)) {
                 return true;
             }
         }
@@ -193,9 +191,9 @@ public class Item extends AbstractUnique {
     }
 
     public boolean isPublished() {
-        Leaf leaf = getLeaf();
-        if (leaf != null) {
-            return leaf.getPublished() != null;
+        ItemHistory history = getHistory();
+        if (history != null) {
+            return history.getPublished() != null;
         }
 
         return false;
@@ -203,7 +201,7 @@ public class Item extends AbstractUnique {
 
     public Item copy() {
         Item copy = new Item();
-        copy.setLeaf(getLeaf());
+        copy.setHistory(getHistory());
         copy.setStructureName(getStructureName());
         copy.setLocale(getLocale());
         copy.setPath(getPath());

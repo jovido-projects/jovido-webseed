@@ -3,9 +3,12 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.ui.Breadcrumb;
 import biz.jovido.seed.ui.Text;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.PropertyAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingErrorProcessor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -57,7 +63,25 @@ public class ItemEditorController {
 
     @InitBinder("itemEditor")
     protected void initBinder(WebDataBinder dataBinder) {
+
         dataBinder.setDisallowedFields("item*");
+
+        ItemEditor editor = (ItemEditor) dataBinder.getTarget();
+        if (editor != null) {
+            Item item = editor.getItem();
+            if (item != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("mm-dd-yyyy");
+                CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
+                dataBinder.registerCustomEditor(Date.class, dateEditor);
+                dataBinder.setBindingErrorProcessor(new BindingErrorProcessor() {
+                    @Override
+                    public void processMissingFieldError(String missingField, BindingResult bindingResult) {}
+
+                    @Override
+                    public void processPropertyAccessException(PropertyAccessException e, BindingResult bindingResult) {}
+                });
+            }
+        }
     }
 
     @ExceptionHandler(Exception.class)
@@ -150,8 +174,8 @@ public class ItemEditorController {
     }
 
     @RequestMapping(path = "save")
-    protected String save(@ModelAttribute ItemEditor editor,
-                          BindingResult editorBinding) {
+    protected String save(@Valid @ModelAttribute ItemEditor editor,
+                          BindingResult bindingResult) {
 
         Item item = editor.getItem();
         item = itemService.saveItem(item);
@@ -339,12 +363,12 @@ public class ItemEditorController {
                              @RequestParam(name = "parent", required = false) Long parentId) {
 
         Item item = editor.getItem();
-        Leaf leaf = item.getLeaf();
+        ItemHistory history = item.getHistory();
 
         Hierarchy hierarchy = hierarchyService.getHierarchy(hierarchyId);
 
         Node node = new Node();
-        node.setLeaf(item.getLeaf());
+        node.setItemHistory(item.getHistory());
 
         if (parentId != null) {
             Node parent = hierarchyService.getNode(parentId);
@@ -354,7 +378,7 @@ public class ItemEditorController {
         hierarchy.addNode(node);
         node = hierarchyService.saveNode(node);
 
-        leaf.addNode(node);
+        history.addNode(node);
 
         return redirect(editor);
     }

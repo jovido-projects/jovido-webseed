@@ -17,4 +17,5 @@ public interface StructureConfiguration extends Configuration {
     ItemAttributeConfigurer addItemAttribute(String name);
     LinkAttributeConfigurer addLinkAttribute(String name);
     SelectionAttributeConfigurer addSelectionAttribute(String name);
+    DateAttributeConfigurer addDateAttribute(String name);
 }

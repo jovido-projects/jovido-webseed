@@ -116,4 +116,12 @@
     </th:block>
 </th:block>
 
+<th:block th:fragment="date">
+    <input type="date" class="form-control input-sm"
+           data-provide="datepicker"
+           data-date-format="mm-dd-yyyy" data-date-autoclose="true"
+           th:data-date-language="${#locale?.toLanguageTag()}"
+           th:field="*{fields[__${field.id}__].payload.value}">
+</th:block>
+
 </html>

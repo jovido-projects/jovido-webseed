@@ -9,7 +9,6 @@ import javax.persistence.Entity;
  * @author Stephan Grundner
  */
 @Entity
-//@Table(name = "")
 public class Host extends AbstractUnique {
 
     @Column(unique = true)

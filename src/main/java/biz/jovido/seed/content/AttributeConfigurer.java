@@ -88,6 +88,11 @@ public class AttributeConfigurer<A extends Attribute, C extends AttributeConfigu
     }
 
     @Override
+    public DateAttributeConfigurer addDateAttribute(String name) {
+        return parentConfigurer.addDateAttribute(name);
+    }
+
+    @Override
     public SelectionAttributeConfigurer addSelectionAttribute(String name) {
         return parentConfigurer.addSelectionAttribute(name);
     }
