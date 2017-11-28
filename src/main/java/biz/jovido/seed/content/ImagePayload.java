@@ -13,13 +13,13 @@ import javax.persistence.ManyToOne;
 public class ImagePayload extends AssetPayload {
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private Image image;
+    private OriginalImage image;
 
-    public Image getImage() {
+    public OriginalImage getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(OriginalImage image) {
         this.image = image;
     }
 

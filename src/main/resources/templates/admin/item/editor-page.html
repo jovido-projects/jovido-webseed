@@ -1,62 +1,72 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="admin/page(main=~{::main})"
+      th:replace="admin/page(main=~{::main},formactions=~{::formactions})"
       th:remove="tag">
 
+<div th:fragment="formactions" class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary" th:formaction="@{save}" form="form">
+            <i class="fa fa-floppy-o"></i>
+            Save
+        </button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" href="#" data-toggle="modal" data-target=".bd-example-modal-sm">
+                <i class="fa fa-retweet"></i>
+                Publish
+            </button>
+        </div>
+    </div>
+
+
+</div>
+
+
+
 <th:block th:fragment="main">
+
+    <div class="modal fade bd-example-modal-sm" style="z-index:1050 !important;" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" >
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>So you really want to publish your changes?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary"
+                            form="form"
+                            th:formaction="@{publish}">Publish now</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <style>
         .level-odd {
             background-color:#e9ecef;
         }
     </style>
-    <form th:object="${itemEditor}" method="post"
+    <form id="form" th:object="${itemEditor}" method="post"
           th:with="editor=${itemEditor},
               item=${editor.item},
               structure=${@itemService.getStructure(item)}">
 
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 offset-lg-2">
+                <div class="col-12">
                     <th:block th:replace="admin/breadcrumbs" />
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-8 offset-lg-2">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group" role="group" aria-label="First group">
-                            <button type="button" class="btn btn-secondary">
-                                <i class="fa fa-floppy-o"></i>
-                                Save
-                            </button>
-                            <button type="button" class="btn btn-secondary" disabled="disabled">
-                                <i class="fa fa-undo"></i>
-                                Undo
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".bd-example-modal-sm">
-                                <i class="fa fa-retweet"></i>
-                                Publish
-                            </button>
-                        </div>
 
-                        <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-sm">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Modal title</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Modal body text goes here.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
-                <div class="col-lg-8 offset-lg-2" th:with="nestingLevel=0">
+                <div class="col-12" th:with="nestingLevel=0">
 
                     <th:block th:fragment="editor">
                         <div th:each="fieldGroup,fieldGroupItr : ${editor.fieldGroups}"

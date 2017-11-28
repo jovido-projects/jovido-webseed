@@ -51,7 +51,7 @@ public class SimpleModelFactory implements ModelFactory {
     private Map<String, Object> apply(ImagePayload payload) {
         Map<String, Object> map = null;
 
-        Image image = payload.getImage();
+        OriginalImage image = payload.getImage();
         if (image != null) {
             map = new HashMap<>();
             map.put("$payload", payload);
@@ -62,6 +62,12 @@ public class SimpleModelFactory implements ModelFactory {
                     image.getUuid(),
                     image.getFileName());
             map.put("url", url);
+
+            Map<String, Object> small = new HashMap<>();
+            small.put("url", String.format("/asset/images/%s/%s?style=small",
+                    image.getUuid(),
+                    image.getFileName()));
+            map.put("small", small);
         }
 
         return map;

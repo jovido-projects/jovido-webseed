@@ -22,6 +22,9 @@ public class AssetController {
     @Autowired
     private AssetService assetService;
 
+    @Autowired
+    private ImageService imageService;
+
     @GetMapping
     protected ResponseEntity<Resource> assetByUuid(@RequestParam(name = "uuid") UUID uuid) {
         Resource file = assetService.getResource(uuid);
@@ -33,11 +36,27 @@ public class AssetController {
     protected ResponseEntity<Resource> assetByUuidWithFileName(
             @PathVariable(name = "uuid") UUID uuid,
             @PathVariable(name = "fileName") String fileName) {
+
         Asset asset = assetService.getAsset(uuid);
-//        Resource file = assetService.getResource(uuid);
         Resource file = assetService.getResource(asset);
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + asset.getFileName() + "\"").body(file);
+    }
+
+    @GetMapping(path = "/images/{uuid}/{fileName:[a-zA-Z0-9]+\\.jpg}")
+    protected ResponseEntity<Resource> imageByUuidWithStyleAndFileName(
+            @PathVariable(name = "uuid") UUID uuid,
+            @PathVariable(name = "fileName") String fileName,
+            @RequestParam(name = "style", required = false) String styleName) {
+
+        Asset asset = assetService.getAsset(uuid);
+//        Resource file = assetService.getResource(asset);
+
+        ConvertedImage convertedImage = imageService.getConvertedImage((OriginalImage) asset, styleName);
+        Resource file = assetService.getResource(convertedImage);
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + convertedImage.getFileName() + "\"").body(file);
     }
 }

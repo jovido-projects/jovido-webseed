@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
+import java.io.*;
 import java.util.UUID;
 
 /**
@@ -37,6 +39,17 @@ public class AssetService {
 
     public Asset saveAsset(Asset asset) {
         return assetRepository.saveAndFlush(asset);
+    }
+
+    public File getAssetFile(Asset asset) {
+        return new File("assets/" + asset.getUuid() + ".asset");
+    }
+
+    public void saveAssetFile(Asset asset, InputStream inputStream) throws IOException {
+        File fileOnDisk = getAssetFile(asset);
+        try (OutputStream outputStream = new FileOutputStream(fileOnDisk)) {
+            FileCopyUtils.copy(inputStream, outputStream);
+        }
     }
 
     public String getRelativeUrl(Asset asset) {

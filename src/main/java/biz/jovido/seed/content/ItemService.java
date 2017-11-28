@@ -286,7 +286,7 @@ public class ItemService {
         return null;
     }
 
-    public Image getImage(Item item, String attributeName, int index) {
+    public OriginalImage getImage(Item item, String attributeName, int index) {
         ImagePayload payload = (ImagePayload) getPayload(item, attributeName, index);
         if (payload != null) {
             return payload.getImage();

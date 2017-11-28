@@ -3,10 +3,7 @@ package biz.jovido.seed.content;
 import biz.jovido.seed.content.frontend.ItemValues;
 import biz.jovido.seed.content.frontend.ValueMap;
 import biz.jovido.seed.content.frontend.ValuesList;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +37,10 @@ public class DeprecatedModelFactory implements ModelFactory {
 
                 if (attribute instanceof ImageAttribute) {
                     ImagePayload imagePayload = (ImagePayload) payload;
-                    Image image = imagePayload.getImage();
-                    map.put("fileName", Optional.ofNullable(image).map(Image::getFileName));
-                    map.put("alt", Optional.ofNullable(image).map(Image::getAlt));
-                    map.put("id", Optional.ofNullable(image).map(Image::getId));
+                    OriginalImage image = imagePayload.getImage();
+                    map.put("fileName", Optional.ofNullable(image).map(OriginalImage::getFileName));
+                    map.put("alt", Optional.ofNullable(image).map(OriginalImage::getAlt));
+                    map.put("id", Optional.ofNullable(image).map(OriginalImage::getId));
                     String url = image != null ? String.format("/asset/files/%s/%s",
                             image.getUuid(),
                             image.getFileName()) : null;

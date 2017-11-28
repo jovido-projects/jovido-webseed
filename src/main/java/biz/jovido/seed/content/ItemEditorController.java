@@ -6,7 +6,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -287,26 +286,22 @@ public class ItemEditorController {
                                  HttpServletRequest request) throws IOException, ServletException {
 
         ImagePayload payload = (ImagePayload) itemService.findPayload(editor.getItem(), payloadUuid);
-        Image image = (Image) payload.getImage();
+        OriginalImage image = (OriginalImage) payload.getImage();
 
         if (image == null) {
-            image = new Image();
+            image = new OriginalImage();
             payload.setImage(image);
         }
 
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         MultipartFile file = multipartRequest.getMultiFileMap().getFirst("file-" + token);
 
-        File fileOnDisk = new File("assets/" + image.getUuid() + ".asset");
-
         try (InputStream inputStream = file.getInputStream()) {
-            try (OutputStream outputStream = new FileOutputStream(fileOnDisk)) {
-                FileCopyUtils.copy(inputStream, outputStream);
-            }
+            assetService.saveAssetFile(image, inputStream);
         }
 
         image.setFileName(file.getOriginalFilename());
-        image = (Image) assetService.saveAsset(image);
+        image = (OriginalImage) assetService.saveAsset(image);
 //        payload.setImage(image);
 
         return redirect(editor);
