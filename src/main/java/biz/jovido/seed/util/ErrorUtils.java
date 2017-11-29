@@ -1,4 +1,4 @@
-package biz.jovido.seed.ui;
+package biz.jovido.seed.util;
 
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;

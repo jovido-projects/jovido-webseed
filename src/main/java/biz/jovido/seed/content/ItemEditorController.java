@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.ui.Breadcrumb;
-import biz.jovido.seed.ui.Text;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.PropertyAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,10 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
@@ -44,22 +45,20 @@ public class ItemEditorController {
     @Autowired
     private StructureService structureService;
 
-    @ModelAttribute("breadcrumbs")
-    protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
-        List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
-        breadcrumbs.add(new Breadcrumb("seed.item.listing.title", "/admin/items"));
-
-        Item item = editor.getItem();
-        if (item != null) {
-            String label = itemService.getLabelText(item);
-            Text text = new Text();
-            text.setDefaultMessage(label);
-            breadcrumbs.add(new Breadcrumb(text));
-        }
-
-        return breadcrumbs;
-    }
+//    @ModelAttribute("breadcrumbs")
+//    protected List<Breadcrumb> breadcrumbs(@ModelAttribute ItemEditor editor) {
+//        List<Breadcrumb> breadcrumbs = new ArrayList<>();
+//        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+//        breadcrumbs.add(new Breadcrumb("seed.item.listing.title", "/admin/items"));
+//
+//        Item item = editor.getItem();
+//        if (item != null) {
+//            String label = itemService.getLabelText(item);
+//            breadcrumbs.add(new Breadcrumb(new StaticText(label)));
+//        }
+//
+//        return breadcrumbs;
+//    }
 
     @InitBinder("itemEditor")
     protected void initBinder(WebDataBinder dataBinder) {

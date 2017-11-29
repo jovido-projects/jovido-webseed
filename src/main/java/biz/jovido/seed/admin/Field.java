@@ -1,4 +1,4 @@
-package biz.jovido.seed.ui;
+package biz.jovido.seed.admin;
 
 import biz.jovido.seed.component.HasTemplate;
 import org.springframework.beans.BeanWrapper;
@@ -7,6 +7,7 @@ import org.springframework.beans.BeanWrapperImpl;
 /**
  * @author Stephan Grundner
  */
+@Deprecated
 public abstract class Field<T> implements HasTemplate {
 
     private final BeanWrapper wrapper;

@@ -4,6 +4,7 @@ import biz.jovido.seed.AbstractUnique;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.net.URI;
 
 /**
  * @author Stephan Grundner
@@ -14,7 +15,7 @@ public class Host extends AbstractUnique {
     @Column(unique = true)
     private String name;
 
-    private String path;
+    private URI uri;
 
     public String getName() {
         return name;
@@ -24,11 +25,11 @@ public class Host extends AbstractUnique {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public URI getUri() {
+        return uri;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUri(URI uri) {
+        this.uri = uri;
     }
 }

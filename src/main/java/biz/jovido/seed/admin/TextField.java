@@ -1,7 +1,5 @@
 package biz.jovido.seed.admin;
 
-import biz.jovido.seed.ui.Field;
-
 /**
  * @author Stephan Grundner
  */

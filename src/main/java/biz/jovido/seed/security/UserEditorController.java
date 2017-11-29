@@ -1,7 +1,6 @@
 package biz.jovido.seed.security;
 
-import biz.jovido.seed.ui.Breadcrumb;
-import biz.jovido.seed.ui.ErrorUtils;
+import biz.jovido.seed.util.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -51,14 +48,14 @@ public class UserEditorController {
         dataBinder.addValidators(new PasswordValidator());
     }
 
-    @ModelAttribute("breadcrumbs")
-    protected List<Breadcrumb> breadcrumbs() {
-        List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
-        breadcrumbs.add(new Breadcrumb("seed.user.listing.title", "/admin/users"));
-        breadcrumbs.add(new Breadcrumb("seed.user"));
-        return breadcrumbs;
-    }
+//    @ModelAttribute("breadcrumbs")
+//    protected List<Breadcrumb> breadcrumbs() {
+//        List<Breadcrumb> breadcrumbs = new ArrayList<>();
+//        breadcrumbs.add(new Breadcrumb(new ResolvableText("seed.home"), "/admin"));
+//        breadcrumbs.add(new Breadcrumb(new ResolvableText("seed.user.listing.title"), "/admin/users"));
+//        breadcrumbs.add(new Breadcrumb(new ResolvableText("seed.user")));
+//        return breadcrumbs;
+//    }
 
     private String redirect(User user) {
 

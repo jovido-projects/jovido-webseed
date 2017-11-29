@@ -1,13 +1,10 @@
 package biz.jovido.seed.net;
 
-import biz.jovido.seed.ui.Breadcrumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,13 +17,13 @@ public class HostListingController {
     @Autowired
     private HostService hostService;
 
-    @ModelAttribute("breadcrumbs")
-    protected List<Breadcrumb> breadcrumbs() {
-        List<Breadcrumb> breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
-        breadcrumbs.add(new Breadcrumb("seed.host.listing.title"));
-        return breadcrumbs;
-    }
+//    @ModelAttribute("breadcrumbs")
+//    protected List<Breadcrumb> breadcrumbs() {
+//        List<Breadcrumb> breadcrumbs = new ArrayList<>();
+//        breadcrumbs.add(new Breadcrumb("seed.home", "/admin"));
+//        breadcrumbs.add(new Breadcrumb("seed.host.listing.title"));
+//        return breadcrumbs;
+//    }
 
     @RequestMapping
     protected String list(Model model) {

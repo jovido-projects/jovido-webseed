@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class NavigationSupport {
 
     @ModelAttribute
-    protected Navigation navigation() {
-        Navigation navigation = new Navigation();
+    protected Navigation navigation(@ModelAttribute Administration administration) {
+        Navigation navigation = administration.getNavigation();
 
         Actions actions = navigation.getActions();
         Action home = new Action();

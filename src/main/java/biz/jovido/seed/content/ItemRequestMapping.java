@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -31,11 +32,11 @@ public class ItemRequestMapping extends AbstractHandlerMapping {
         Host host = hostService.getHost(hostName);
         if (host != null) {
             String path = request.getServletPath();
-            if ("/".equals(path)) {
-                path = host.getPath();
-            } else if (StringUtils.hasLength(path) && path.startsWith("/")) {
-                path = path.substring(1);
-            }
+//            if ("/".equals(path)) {
+//                path = host.getUri();
+//            } else if (StringUtils.hasLength(path) && path.startsWith("/")) {
+//                path = path.substring(1);
+//            }
 
             List<Item> items = itemService.findAllPublishedItemsByPath(path);
             if (!items.isEmpty()) {
