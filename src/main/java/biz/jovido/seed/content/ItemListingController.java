@@ -58,6 +58,7 @@ public class ItemListingController {
                            BindingResult bindingResult) {
 
         List<Item> items = itemService.findAllItems();
+        listing.setItems(items);
 
         return "admin/item/listing-page";
     }

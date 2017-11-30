@@ -1,0 +1,27 @@
+<html xmlns:th="//www.thymeleaf.org"
+      th:replace="admin/page(main=~{::main})"
+      th:remove="tag">
+
+<th:block th:fragment="main">
+    <form id="form" th:object="${itemListing}" method="post"
+          th:with="listing=${itemListing}">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <th:block th:replace="admin/breadcrumbs" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+
+                    <th:block component:replace="${listing.grid}"  />
+
+                </div>
+            </div>
+
+        </div>
+    </form>
+</th:block>
+</html>

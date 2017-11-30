@@ -1,0 +1,38 @@
+<html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
+<style>
+.grid .actions {
+    text-align: right !important;
+}
+</style>
+<table class="table grid" th:with="grid=${self}">
+    <thead>
+    <tr>
+        <th th:each="column : ${grid.columns}" class="text-left"
+            th:classappend="${column.name}">
+            <span th:text="${column.name}">Column name</span>
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="source,sourceItr : ${grid.container?.sources}">
+        <th:block th:each="column : ${grid.columns}" th:classappend="${column.name}">
+            <!--<th:block th:if="${column.cellTemplate != null}">-->
+                <!--<th:block th:replace="__${column.cellTemplate}__" />-->
+            <!--</th:block>-->
+            <!--<th:block th:if="${column.cellTemplate == null}"-->
+                <!--th:with="property = ${source.getProperty(column.name)}">-->
+                <!--<span th:text="${property?.value}">Property value</span>-->
+            <!--</th:block>-->
+            <th:block th:with="cell=${grid.generateCell()}">
+
+            </th:block>
+        </th:block>
+    </tr>
+    </tbody>
+</table>
+
+
+
+
+</html>
