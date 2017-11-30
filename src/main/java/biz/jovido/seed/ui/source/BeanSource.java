@@ -4,64 +4,60 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.beans.PropertyDescriptor;
-import java.util.*;
 
 /**
  * @author Stephan Grundner
  */
-public class BeanSource implements Source {
+public class BeanSource<T> extends AbstractSource {
 
-    private final SourcesContainer container;
-    private final Object bean;
-    protected final BeanWrapper wrapper;
+    public static class Property extends AbstractProperty<BeanSource> {
 
-    private final Map<String, BeanSourceProperty> propertyByName = new LinkedHashMap<>();
+        @Override
+        public Object getValue() {
+            String propertyPath = String.format("bean.%s", name);
+            return source.beanWrapper.getPropertyValue(propertyPath);
+        }
 
-    public Object getBean() {
+        @Override
+        public void setValue(Object value) {
+            String propertyPath = String.format("bean.%s", name);
+            source.beanWrapper.setPropertyValue(propertyPath, value);
+        }
+
+        public Property(BeanSource source, String name) {
+            super(source, name);
+        }
+    }
+
+    private final T bean;
+
+    private final BeanWrapper beanWrapper = new BeanWrapperImpl(this);
+
+    public T getBean() {
         return bean;
     }
 
     @Override
-    public Set<String> getPropertyNames() {
-        return Collections.unmodifiableSet(propertyByName.keySet());
-    }
-
-    @Override
-    public Collection<SourceProperty> getProperties() {
-        return Collections.unmodifiableCollection(propertyByName.values());
-    }
-
-    @Override
-    public SourceProperty getProperty(String name) {
-        SourceProperty property = propertyByName.get(name);
+    public Source.Property getProperty(String name) {
+        Source.Property property = super.getProperty(name);
         if (property == null) {
-            PropertyDescriptor descriptor = wrapper.getPropertyDescriptor(name);
+            String propertyPath = String.format("bean.%s", name);
+            PropertyDescriptor descriptor = beanWrapper.getPropertyDescriptor(propertyPath);
             if (descriptor != null) {
-                property = addProperty(name);
+                property = new Property(this, name);
+                addProperty(name, property);
             }
         }
 
         return property;
     }
 
-    public BeanSourceProperty addProperty(String name) {
-        if (propertyByName.containsKey(name)) {
-            throw new IllegalArgumentException(String.format("Property [%s] already exists", name));
-        }
-        BeanSourceProperty property = new BeanSourceProperty(this, name);
-        propertyByName.put(name, property);
-        return property;
+    @Override
+    public Property addProperty(String name) {
+        throw new UnsupportedOperationException();
     }
 
-
-
-    public BeanSource(SourcesContainer container, Object bean) {
-        this.container = container;
+    public BeanSource(T bean) {
         this.bean = bean;
-        wrapper = new BeanWrapperImpl(bean);
-    }
-
-    public BeanSource(Object bean) {
-        this(null, bean);
     }
 }

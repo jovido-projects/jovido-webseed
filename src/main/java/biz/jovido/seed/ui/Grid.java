@@ -3,7 +3,6 @@ package biz.jovido.seed.ui;
 import biz.jovido.seed.component.HasTemplate;
 import biz.jovido.seed.ui.source.Source;
 import biz.jovido.seed.ui.source.SourcesContainer;
-import biz.jovido.seed.ui.source.SourcesListContainer;
 import biz.jovido.seed.util.MapUtils;
 
 import java.util.*;
@@ -90,6 +89,15 @@ public class Grid implements HasTemplate {
 
     public static class Row {
 
+        private final Source source;
+
+        public Source getSource() {
+            return source;
+        }
+
+        public Row(Source source) {
+            this.source = source;
+        }
     }
 
     private String template = "ui/grid";
@@ -97,7 +105,7 @@ public class Grid implements HasTemplate {
     private final Map<String, Column> columnByName = new LinkedHashMap<>();
     private final List<Row> rows = new ArrayList<>();
 
-    private SourcesListContainer container;
+    private SourcesContainer<?, ?> container;
 
     public String getTemplate() {
         return template;
@@ -130,11 +138,40 @@ public class Grid implements HasTemplate {
         columnByName.clear();
     }
 
-    public SourcesContainer getContainer() {
+    public List<Row> getRows() {
+        return Collections.unmodifiableList(rows);
+    }
+
+    private void addRows(Collection<? extends Source> sources) {
+        for (Source source : sources) {
+            Row row = new Row(source);
+            rows.add(row);
+        }
+    }
+
+    private void removeRows(Collection<? extends Source> sources) {
+        for (Source source : sources) {
+            rows.removeIf(it -> it.source == source);
+        }
+    }
+
+    private void containerChanged(SourcesContainer.ChangeEvent<? extends Source, ? extends SourcesContainer> event) {
+        if (event.added()) {
+            addRows(event.getSources());
+        } else if (event.removed()) {
+            removeRows(event.getSources());
+        }
+    }
+
+    public SourcesContainer<?, ?> getContainer() {
         return container;
     }
 
-    public void setContainer(SourcesListContainer container) {
+    public void setContainer(SourcesContainer<?, ?> container) {
         this.container = container;
+
+        rows.clear();
+        addRows(container.getSources());
+        container.addChangeListener(Grid.this::containerChanged);
     }
 }

@@ -8,7 +8,21 @@ import java.util.Set;
  */
 public interface Source {
 
+    interface Property {
+
+        String getName();
+
+        Object getValue();
+        void setValue(Object value);
+
+        boolean isReadOnly();
+    }
+
     Set<String> getPropertyNames();
-    Collection<SourceProperty> getProperties();
-    SourceProperty getProperty(String name);
+
+    Collection<Property> getProperties();
+    boolean containsProperty(String name);
+    Property getProperty(String name);
+    Property addProperty(String name);
+    boolean removeProperty(String name);
 }

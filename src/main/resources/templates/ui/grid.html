@@ -15,19 +15,10 @@
     </thead>
 
     <tbody>
-    <tr th:each="source,sourceItr : ${grid.container?.sources}">
-        <th:block th:each="column : ${grid.columns}" th:classappend="${column.name}">
-            <!--<th:block th:if="${column.cellTemplate != null}">-->
-                <!--<th:block th:replace="__${column.cellTemplate}__" />-->
-            <!--</th:block>-->
-            <!--<th:block th:if="${column.cellTemplate == null}"-->
-                <!--th:with="property = ${source.getProperty(column.name)}">-->
-                <!--<span th:text="${property?.value}">Property value</span>-->
-            <!--</th:block>-->
-            <th:block th:with="cell=${grid.generateCell()}">
-
-            </th:block>
-        </th:block>
+    <tr th:each="row,rowItr : ${grid.rows}">
+        <td th:each="column : ${grid.columns}" th:classappend="${column.name}">
+            [[${row.source.getProperty(column.name).value}]]
+        </td>
     </tr>
     </tbody>
 </table>

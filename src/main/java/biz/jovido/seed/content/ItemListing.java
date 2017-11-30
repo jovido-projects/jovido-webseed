@@ -2,7 +2,8 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.admin.Listing;
 import biz.jovido.seed.ui.Grid;
-import biz.jovido.seed.ui.source.BeanListContainer;
+import biz.jovido.seed.ui.source.BeanSource;
+import biz.jovido.seed.ui.source.BeanSourcesContainer;
 
 import java.util.List;
 
@@ -34,10 +35,10 @@ public class ItemListing extends Listing {
 
         grid.addColumn("lastModifiedAt");
 
-        Grid.Column actionsColumn = grid.addColumn("actions");
-        actionsColumn.setCellTemplate("admin/item/grid/actions-cell");
+//        Grid.Column actionsColumn = grid.addColumn("actions");
+//        actionsColumn.setCellTemplate("admin/item/grid/actions-cell");
 
-        BeanListContainer container = new BeanListContainer();
+        BeanSourcesContainer<Item> container = new BeanSourcesContainer<>();
         container.addBeans(items);
         grid.setContainer(container);
     }
