@@ -1,8 +1,14 @@
-<html xmlns:th="//www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
 <th:block th:fragment="main">
+<style>
+.grid .actions-column {
+    text-align: right !important;
+}
+</style>
     <form id="form" th:object="${itemListing}" method="post"
           th:with="listing=${itemListing}">
 
@@ -15,9 +21,7 @@
 
             <div class="row">
                 <div class="col-12">
-
-                    <th:block component:replace="${listing.grid}"  />
-
+                    <th:block cp:replace="${listing.grid}"  />
                 </div>
             </div>
 

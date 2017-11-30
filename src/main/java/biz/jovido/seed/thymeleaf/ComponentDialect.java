@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class ComponentDialect extends AbstractProcessorDialect {
 
-    private static final String PREFIX = "component";
+    private static final String PREFIX = "cp";
 
     private Set<TemplateResolver> templateResolvers;
 

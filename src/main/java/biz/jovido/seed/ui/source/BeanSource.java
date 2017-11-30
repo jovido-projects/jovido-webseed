@@ -2,6 +2,7 @@ package biz.jovido.seed.ui.source;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.InvalidPropertyException;
 
 import java.beans.PropertyDescriptor;
 
@@ -42,11 +43,13 @@ public class BeanSource<T> extends AbstractSource {
         Source.Property property = super.getProperty(name);
         if (property == null) {
             String propertyPath = String.format("bean.%s", name);
-            PropertyDescriptor descriptor = beanWrapper.getPropertyDescriptor(propertyPath);
-            if (descriptor != null) {
-                property = new Property(this, name);
-                addProperty(name, property);
-            }
+            try {
+                PropertyDescriptor descriptor = beanWrapper.getPropertyDescriptor(propertyPath);
+                if (descriptor != null) {
+                    property = new Property(this, name);
+                    addProperty(name, property);
+                }
+            } catch (InvalidPropertyException e) {}
         }
 
         return property;

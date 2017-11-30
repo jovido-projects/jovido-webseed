@@ -1,29 +1,23 @@
-<html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
-<style>
-.grid .actions {
-    text-align: right !important;
-}
-</style>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
 <table class="table grid" th:with="grid=${self}">
     <thead>
     <tr>
         <th th:each="column : ${grid.columns}" class="text-left"
-            th:classappend="${column.name}">
+            th:classappend="__${column.name}__-column">
             <span th:text="${column.name}">Column name</span>
         </th>
     </tr>
     </thead>
-
     <tbody>
     <tr th:each="row,rowItr : ${grid.rows}">
-        <td th:each="column : ${grid.columns}" th:classappend="${column.name}">
-            [[${row.source.getProperty(column.name).value}]]
+        <td th:each="column : ${grid.columns}"
+            th:with="cell = ${row.getCell(column.name)}"
+            th:classappend="__${column.name}__-column">
+            <th:block cp:replace="${cell}" />
         </td>
     </tr>
     </tbody>
 </table>
-
-
-
-
 </html>

@@ -14,7 +14,7 @@ public class Grid implements HasTemplate {
 
     public interface CellGenerator {
 
-        Cell generateCell(Column column, int rowIndex, Source source);
+        Cell generateCell(Row row, Column column);
     }
 
     public static class Column {
@@ -22,8 +22,6 @@ public class Grid implements HasTemplate {
         private final Grid grid;
         private final String name;
 
-        @Deprecated
-        private String cellTemplate;
         private CellGenerator cellGenerator;
 
         public Grid getGrid() {
@@ -32,16 +30,6 @@ public class Grid implements HasTemplate {
 
         public String getName() {
             return name;
-        }
-
-        @Deprecated
-        public String getCellTemplate() {
-            return cellTemplate;
-        }
-
-        @Deprecated
-        public void setCellTemplate(String cellTemplate) {
-            this.cellTemplate = cellTemplate;
         }
 
         public CellGenerator getCellGenerator() {
@@ -60,16 +48,16 @@ public class Grid implements HasTemplate {
 
     public static class Cell implements HasTemplate {
 
+        private final Row row;
         private final Column column;
-        private final int rowIndex;
-        private String template;
+        private String template = "ui/grid-cell";
+
+        public Row getRow() {
+            return row;
+        }
 
         public Column getColumn() {
             return column;
-        }
-
-        public int getRowIndex() {
-            return rowIndex;
         }
 
         @Override
@@ -81,21 +69,44 @@ public class Grid implements HasTemplate {
             this.template = template;
         }
 
-        public Cell(Column column, int rowIndex) {
+        public Cell(Row row, Column column) {
+            this.row = row;
             this.column = column;
-            this.rowIndex = rowIndex;
         }
     }
 
     public static class Row {
 
+        private final Grid grid;
         private final Source source;
+
+        private final Map<String, ? extends Cell> cellByColumnName = new HashMap<>();
+
+        public Cell getCell(String columnName) {
+            Cell cell = cellByColumnName.get(columnName);
+            if (cell == null) {
+                Column column = grid.getColumn(columnName);
+                CellGenerator cellGenerator = column.getCellGenerator();
+                if (cellGenerator != null) {
+                    return cellGenerator.generateCell(Row.this, column);
+                } else {
+                    cell = new Cell(Row.this, column);
+                }
+            }
+
+            return cell;
+        }
+
+        public Grid getGrid() {
+            return grid;
+        }
 
         public Source getSource() {
             return source;
         }
 
-        public Row(Source source) {
+        public Row(Grid grid, Source source) {
+            this.grid = grid;
             this.source = source;
         }
     }
@@ -144,7 +155,7 @@ public class Grid implements HasTemplate {
 
     private void addRows(Collection<? extends Source> sources) {
         for (Source source : sources) {
-            Row row = new Row(source);
+            Row row = new Row(this, source);
             rows.add(row);
         }
     }
