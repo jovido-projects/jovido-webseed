@@ -3,7 +3,7 @@ package biz.jovido.seed.admin;
 /**
  * @author Stephan Grundner
  */
-public class StaticText implements Text {
+public class StaticText extends AbstractText {
 
     private String value;
 

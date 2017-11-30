@@ -14,6 +14,7 @@
     <tr th:each="row,rowItr : ${grid.rows}">
         <td th:each="column : ${grid.columns}"
             th:with="cell = ${row.getCell(column.name)}"
+            class="align-middle"
             th:classappend="__${column.name}__-column">
             <th:block cp:replace="${cell}" />
         </td>

@@ -1,7 +1,9 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.admin.Action;
 import biz.jovido.seed.admin.Actions;
 import biz.jovido.seed.admin.Listing;
+import biz.jovido.seed.admin.StaticText;
 import biz.jovido.seed.ui.Grid;
 import biz.jovido.seed.ui.source.BeanSource;
 import biz.jovido.seed.ui.source.BeanSourcesContainer;
@@ -52,11 +54,14 @@ public class ItemListing extends Listing {
         actionsColumn.setCellGenerator(new Grid.CellGenerator() {
             @Override
             public Grid.Cell generateCell(Grid.Row row, Grid.Column column) {
-                Source source = row.getSource();
-                Item item = ((BeanSource<Item>) source).getBean();
+                Item item = (Item) BeanSource.getBean(row.getSource());
                 ActionsCell cell = new ActionsCell(row, column);
                 cell.setTemplate("admin/item/grid/actions-cell");
                 Actions actions = cell.getActions();
+                Action edit = new Action();
+//                edit.setText(new StaticText("Edit"));
+                edit.setUrl("/admin/item/edit?id=" + item.getId());
+                actions.setPrimaryAction(edit);
 //                actions.add(new Action());
                 return cell;
             }

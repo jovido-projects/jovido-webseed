@@ -8,6 +8,10 @@
 .grid .actions-column {
     text-align: right !important;
 }
+.grid .actions-column .action-primary:before {
+    font-family: FontAwesome;
+    content: '\f040';
+}
 </style>
     <form id="form" th:object="${itemListing}" method="post"
           th:with="listing=${itemListing}">

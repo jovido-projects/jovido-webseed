@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * @author Stephan Grundner
  */
-public final class ResolvableText implements Text {
+public final class ResolvableText extends AbstractText {
 
     private MessageSource messageSource;
 

@@ -30,6 +30,14 @@ public class BeanSource<T> extends AbstractSource {
         }
     }
 
+    public static Object getBean(Source source) {
+        if (source instanceof BeanSource) {
+            return ((BeanSource) source).bean;
+        }
+
+        return null;
+    }
+
     private final T bean;
 
     private final BeanWrapper beanWrapper = new BeanWrapperImpl(this);

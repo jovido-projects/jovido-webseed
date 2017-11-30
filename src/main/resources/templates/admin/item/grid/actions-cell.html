@@ -1,7 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org" th:remove="tag">
-<div class="btn-group btn-group-sm">
-    <button class="btn btn-secondary">
-        <i class="fa fa-cog"></i>
-    </button>
-</div>
+<th:block th:with="size=sm">
+    <th:block cp:replace="${self.actions}"  />
+</th:block>
 </html>
