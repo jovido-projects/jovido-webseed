@@ -1,6 +1,4 @@
-package biz.jovido.seed.admin;
-
-import biz.jovido.seed.admin.Text;
+package biz.jovido.seed.ui;
 
 /**
  * @author Stephan Grundner

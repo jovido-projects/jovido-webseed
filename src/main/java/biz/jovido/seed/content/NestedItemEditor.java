@@ -1,7 +1,7 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.UsedInTemplates;
-import biz.jovido.seed.admin.*;
+import biz.jovido.seed.ui.*;
 import org.springframework.util.Assert;
 
 import java.util.*;

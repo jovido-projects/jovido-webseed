@@ -1,6 +1,6 @@
 package biz.jovido.seed.security;
 
-import biz.jovido.seed.admin.Field;
+import biz.jovido.seed.ui.Field;
 
 import javax.validation.Valid;
 

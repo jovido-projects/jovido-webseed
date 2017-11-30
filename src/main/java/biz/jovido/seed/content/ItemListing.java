@@ -1,13 +1,11 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.admin.Action;
-import biz.jovido.seed.admin.Actions;
-import biz.jovido.seed.admin.Listing;
-import biz.jovido.seed.admin.StaticText;
+import biz.jovido.seed.ui.Action;
+import biz.jovido.seed.ui.Actions;
+import biz.jovido.seed.ui.Listing;
 import biz.jovido.seed.ui.Grid;
 import biz.jovido.seed.ui.source.BeanSource;
 import biz.jovido.seed.ui.source.BeanSourcesContainer;
-import biz.jovido.seed.ui.source.Source;
 
 import java.util.List;
 

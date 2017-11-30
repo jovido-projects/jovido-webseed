@@ -1,6 +1,7 @@
 package biz.jovido.seed.admin;
 
 import biz.jovido.seed.content.ItemListing;
+import biz.jovido.seed.ui.Navigation;
 
 /**
  * @author Stephan Grundner

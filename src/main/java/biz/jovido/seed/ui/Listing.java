@@ -1,9 +1,9 @@
-package biz.jovido.seed.admin;
+package biz.jovido.seed.ui;
 
 /**
  * @author Stephan Grundner
  */
-public class Editor {
+public class Listing {
 
     private Breadcrumbs breadcrumbs;
 

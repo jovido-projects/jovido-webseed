@@ -1,5 +1,6 @@
-package biz.jovido.seed.admin;
+package biz.jovido.seed.ui;
 
+import biz.jovido.seed.admin.Administration;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 

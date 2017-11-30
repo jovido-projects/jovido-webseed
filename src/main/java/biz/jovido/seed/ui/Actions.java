@@ -1,4 +1,4 @@
-package biz.jovido.seed.admin;
+package biz.jovido.seed.ui;
 
 import biz.jovido.seed.component.HasTemplate;
 import org.apache.commons.collections4.list.AbstractListDecorator;
