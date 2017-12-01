@@ -21,6 +21,7 @@ public class Grid implements HasTemplate {
 
         private final Grid grid;
         private final String name;
+        private Text text;
 
         private CellGenerator cellGenerator;
 
@@ -30,6 +31,18 @@ public class Grid implements HasTemplate {
 
         public String getName() {
             return name;
+        }
+
+        public Text getText() {
+            if (text == null) {
+                text = new StaticText(name);
+            }
+
+            return text;
+        }
+
+        public void setText(Text text) {
+            this.text = text;
         }
 
         public CellGenerator getCellGenerator() {

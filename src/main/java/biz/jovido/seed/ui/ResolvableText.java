@@ -1,5 +1,6 @@
 package biz.jovido.seed.ui;
 
+import biz.jovido.seed.MessageSourceProvider;
 import org.springframework.context.MessageSource;
 
 import java.util.Locale;
@@ -9,15 +10,15 @@ import java.util.Locale;
  */
 public final class ResolvableText extends AbstractText {
 
-    private MessageSource messageSource;
+    private final MessageSourceProvider messageSourceProvider;
 
     private String messageCode;
     private Object[] messageArgs;
     private String defaultMessage;
     private Locale locale;
 
-    public MessageSource getMessageSource() {
-        return messageSource;
+    private MessageSource getMessageSource() {
+        return messageSourceProvider.getMessageSource();
     }
 
     public String getMessageCode() {
@@ -54,29 +55,30 @@ public final class ResolvableText extends AbstractText {
 
     @Override
     public final String getValue() {
-        return messageSource.getMessage(messageCode, messageArgs, defaultMessage, locale);
+        return getMessageSource().getMessage(messageCode, messageArgs, defaultMessage, locale);
     }
 
-    public ResolvableText(String messageCode, Object[] messageArgs, String defaultMessage, Locale locale) {
+    public ResolvableText(MessageSourceProvider messageSourceProvider, String messageCode, Object[] messageArgs, String defaultMessage, Locale locale) {
+        this.messageSourceProvider = messageSourceProvider;
         this.messageCode = messageCode;
         this.messageArgs = messageArgs;
         this.defaultMessage = defaultMessage;
         this.locale = locale;
     }
 
-    public ResolvableText(String messageCode, Object[] messageArgs, String defaultMessage) {
-        this(messageCode, messageArgs, defaultMessage, null);
+    public ResolvableText(MessageSourceProvider messageSourceProvider, String messageCode, Object[] messageArgs, String defaultMessage) {
+        this(messageSourceProvider, messageCode, messageArgs, defaultMessage, null);
     }
 
-    public ResolvableText(String messageCode, String defaultMessage) {
-        this(messageCode, null, defaultMessage);
+    public ResolvableText(MessageSourceProvider messageSourceProvider, String messageCode, String defaultMessage) {
+        this(messageSourceProvider, messageCode, null, defaultMessage);
     }
 
-    public ResolvableText(String messageCode) {
-        this(messageCode, null);
+    public ResolvableText(MessageSourceProvider messageSourceProvider, String messageCode) {
+        this(messageSourceProvider, messageCode, null);
     }
 
-    public ResolvableText(MessageSource messageSource) {
-        this.messageSource = messageSource;
+    public ResolvableText(MessageSourceProvider messageSourceProvider) {
+        this(messageSourceProvider, null, null);
     }
 }

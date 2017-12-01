@@ -6,7 +6,7 @@
     <tr>
         <th th:each="column : ${grid.columns}" class="text-left"
             th:classappend="__${column.name}__-column">
-            <span th:text="${column.name}">Column name</span>
+            <span th:text="${column.text?.value}">Column name</span>
         </th>
     </tr>
     </thead>

@@ -1,18 +1,17 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.ui.Action;
-import biz.jovido.seed.ui.Actions;
-import biz.jovido.seed.ui.Listing;
-import biz.jovido.seed.ui.Grid;
+import biz.jovido.seed.MessageSourceProvider;
+import biz.jovido.seed.ui.*;
 import biz.jovido.seed.ui.source.BeanSource;
 import biz.jovido.seed.ui.source.BeanSourcesContainer;
+import org.springframework.context.MessageSource;
 
 import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemListing extends Listing {
+public class ItemListing extends Listing implements MessageSourceProvider {
 
     public static class ActionsCell extends Grid.Cell {
 
@@ -27,9 +26,18 @@ public class ItemListing extends Listing {
         }
     }
 
+    private MessageSource messageSource;
     private Grid grid = new Grid();
 
     private List<Item> items;
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     public Grid getGrid() {
         return grid;
@@ -57,13 +65,14 @@ public class ItemListing extends Listing {
                 cell.setTemplate("admin/item/grid/actions-cell");
                 Actions actions = cell.getActions();
                 Action edit = new Action();
-//                edit.setText(new StaticText("Edit"));
                 edit.setUrl("/admin/item/edit?id=" + item.getId());
                 actions.setPrimaryAction(edit);
-//                actions.add(new Action());
                 return cell;
             }
         });
+        ResolvableText actionsColumnText = new ResolvableText(this,
+                "itemlisting.actions", "Action");
+        actionsColumn.setText(actionsColumnText);
 
         BeanSourcesContainer<Item> container = new BeanSourcesContainer<>();
         container.addBeans(items);

@@ -1,7 +1,9 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.MessageSourceProvider;
 import biz.jovido.seed.UsedInTemplates;
 import biz.jovido.seed.ui.*;
+import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -10,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * @author Stephan Grundner
  */
-public class NestedItemEditor implements ItemChangeListener {
+public class NestedItemEditor implements MessageSourceProvider, ItemChangeListener {
 
     public static class PayloadField {
 
@@ -267,10 +269,10 @@ public class NestedItemEditor implements ItemChangeListener {
                     actions.setText(new StaticText("Append"));
                     for (String structureName : ((ItemAttribute) attribute).getAcceptedStructureNames()) {
                         PayloadGroupAction action = new PayloadGroupAction();
-                        ResolvableText actionText = new ResolvableText(getItemService().getMessageSource());
+                        ResolvableText actionText = new ResolvableText(editor);
                         actionText.setDefaultMessage(structureName);
                         actionText.setMessageCode(String.format("seed.structure.%s", structureName));
-                        ResolvableText actionDescription = new ResolvableText(getItemService().getMessageSource());
+                        ResolvableText actionDescription = new ResolvableText(editor);
                         actionDescription.setMessageCode(String.format("seed.structure.%s.description", structureName));
                         action.setDescription(actionDescription);
                         action.setText(actionText);
@@ -321,6 +323,11 @@ public class NestedItemEditor implements ItemChangeListener {
         }
 
         return parent.getRootEditor();
+    }
+
+    @Override
+    public MessageSource getMessageSource() {
+        return getRootEditor().getMessageSource();
     }
 
     protected ItemService getItemService() {

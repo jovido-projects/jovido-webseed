@@ -1,16 +1,29 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.MessageSourceProvider;
+import org.springframework.context.MessageSource;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Stephan Grundner
  */
-public class ItemEditor extends NestedItemEditor {
+public class ItemEditor extends NestedItemEditor implements MessageSourceProvider {
 
+    private MessageSource messageSource;
     private final ItemService itemService;
 
     private final Map<String, PayloadField> fields = new HashMap<>();
+
+    @Override
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public ItemService getItemService() {

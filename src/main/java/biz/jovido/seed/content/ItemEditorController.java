@@ -102,10 +102,10 @@ public class ItemEditorController {
     }
 
     @ModelAttribute
-    protected ItemEditor editor(@RequestParam(name = "loaded", required = false) Long itemId, HttpServletRequest request) {
+    protected ItemEditor editor(@RequestParam(name = "loaded", required = false) Long itemId) {
         ItemEditor editor = new ItemEditor(itemService);
+        editor.setMessageSource(itemService.getMessageSource());
 
-        Object x = request.getParameterMap();
         if (itemId != null) {
             Item item = itemService.getItem(itemId);
             editor.setItem(item);

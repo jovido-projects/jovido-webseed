@@ -46,9 +46,11 @@ public class ItemListingController {
     protected ItemListing listing() {
         ItemListing listing = new ItemListing();
 
-        structureService.findStandaloneStructures().forEach(structure -> {
+//        structureService.findStandaloneStructures().forEach(structure -> {
+//
+//        });
 
-        });
+        listing.setMessageSource(messageSource);
 
         return listing;
     }
