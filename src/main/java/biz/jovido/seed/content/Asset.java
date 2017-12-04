@@ -1,46 +1,19 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.UUIDConverter;
+import biz.jovido.seed.AbstractUnique;
 
-import javax.persistence.*;
-import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * @author Stephan Grundner
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Asset {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Column(unique = true)
-    @Convert(converter = UUIDConverter.class)
-    private UUID uuid = UUID.randomUUID();
+public abstract class Asset extends AbstractUnique {
 
     private String fileName;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
 
     public String getFileName() {
         return fileName;

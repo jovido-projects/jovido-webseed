@@ -8,46 +8,28 @@ import javax.persistence.*;
  * @author Stephan Grundner
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "kind")
 public abstract class Payload extends AbstractUnique {
 
-    @Enumerated(EnumType.STRING)
-    private PayloadType type;
+    @ManyToOne(optional = false)
+    private PayloadSequence sequence;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private PayloadGroup group;
+    private int ordinal;
 
-    private int ordinal = -1;
-
-    public PayloadType getType() {
-        return type;
+    public PayloadSequence getSequence() {
+        return sequence;
     }
 
-    /*public*/ void setType(PayloadType type) {
-        this.type = type;
-    }
-
-    public PayloadGroup getGroup() {
-        return group;
-    }
-
-    /*public*/ void setGroup(PayloadGroup group) {
-        this.group = group;
+    protected void setSequence(PayloadSequence sequence) {
+        this.sequence = sequence;
     }
 
     public int getOrdinal() {
         return ordinal;
     }
 
-    /*public*/ void setOrdinal(int ordinal) {
+    protected void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
     }
-
-    public abstract Payload copy();
-
-    protected Payload(PayloadType type) {
-        this.type = type;
-    }
-
-    public Payload() {}
 }

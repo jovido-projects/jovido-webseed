@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Date;
@@ -9,27 +10,18 @@ import java.util.Date;
  */
 @Entity
 @DiscriminatorValue("date")
-public class DatePayload extends Payload {
+public class DatePayload extends ValuePayload<Date> {
 
+    @Column(name = "date_value")
     private Date value;
 
+    @Override
     public Date getValue() {
         return value;
     }
 
+    @Override
     public void setValue(Date value) {
         this.value = value;
-    }
-
-    @Override
-    public Payload copy() {
-        DatePayload copy = new DatePayload();
-        copy.setValue(copy.getValue());
-
-        return copy;
-    }
-
-    public DatePayload() {
-        super(PayloadType.DATE);
     }
 }

@@ -1,8 +1,8 @@
 package biz.jovido.seed.content;
 
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
@@ -10,28 +10,19 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 @DiscriminatorValue("image")
-public class ImagePayload extends AssetPayload {
+public class ImagePayload extends AssetPayload<Image> {
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private OriginalImage image;
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
-    public OriginalImage getImage() {
+    @Override
+    public Image getAsset() {
         return image;
     }
 
-    public void setImage(OriginalImage image) {
-        this.image = image;
-    }
-
     @Override
-    public Payload copy() {
-        ImagePayload copy = new ImagePayload();
-        copy.setImage(getImage());
-
-        return copy;
-    }
-
-    public ImagePayload() {
-        super(PayloadType.IMAGE);
+    public void setAsset(Image asset) {
+        image = asset;
     }
 }

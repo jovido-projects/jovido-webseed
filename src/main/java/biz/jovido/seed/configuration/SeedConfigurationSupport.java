@@ -1,14 +1,9 @@
 package biz.jovido.seed.configuration;
 
-import biz.jovido.seed.content.DeprecatedModelFactory;
-import biz.jovido.seed.content.ItemRequestMapping;
-import biz.jovido.seed.content.ItemService;
-import biz.jovido.seed.content.ModelFactoryProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -55,26 +50,26 @@ public class SeedConfigurationSupport implements ApplicationContextAware, BeanFa
 //        return "OK";
 //    }
 
-    @Bean
-    public ItemRequestMapping itemRequestMapping() {
-        ItemRequestMapping requestMapping = new ItemRequestMapping();
-        requestMapping.setOrder(0);
-        return requestMapping;
-    }
-
-    @Bean
-    public ModelFactoryProvider modelFactoryProvider(ItemService itemService) {
-        ModelFactoryProvider modelFactoryProvider = new ModelFactoryProvider();
-        modelFactoryProvider.setDefaultModelFactory(new DeprecatedModelFactory(itemService));
-
-        return modelFactoryProvider;
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "seed.ui")
-    public UIProperties uiProperties() {
-        return new UIProperties();
-    }
+//    @Bean
+//    public ItemRequestMapping itemRequestMapping() {
+//        ItemRequestMapping requestMapping = new ItemRequestMapping();
+//        requestMapping.setOrder(0);
+//        return requestMapping;
+//    }
+//
+//    @Bean
+//    public ModelFactoryProvider modelFactoryProvider(ItemService itemService) {
+//        ModelFactoryProvider modelFactoryProvider = new ModelFactoryProvider();
+//        modelFactoryProvider.setDefaultModelFactory(new DeprecatedModelFactory(itemService));
+//
+//        return modelFactoryProvider;
+//    }
+//
+//    @Bean
+//    @ConfigurationProperties(prefix = "seed.ui")
+//    public UIProperties uiProperties() {
+//        return new UIProperties();
+//    }
 
     @Bean
     public SessionRepository<?> sessionRepository() {

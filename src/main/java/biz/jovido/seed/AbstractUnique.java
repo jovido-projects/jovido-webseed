@@ -14,11 +14,6 @@ public class AbstractUnique implements Unique {
     @GeneratedValue
     private Long id;
 
-    @Access(AccessType.PROPERTY)
-    @Column(unique = true)
-    @Convert(converter = UUIDConverter.class)
-    private UUID uuid;
-
     @Override
     public Long getId() {
         return id;
@@ -26,18 +21,5 @@ public class AbstractUnique implements Unique {
 
     /*public*/ void setId(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 }

@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.ValuePayload;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -10,19 +8,19 @@ import javax.persistence.Entity;
  * @author Stephan Grundner
  */
 @Entity
-@DiscriminatorValue("text")
-public class TextPayload extends ValuePayload<String> {
+@DiscriminatorValue("boolean")
+public class BooleanPayload extends ValuePayload<Boolean> {
 
-    @Column(name = "text_value")
-    private String value;
+    @Column(name = "boolean_value")
+    private Boolean value;
 
     @Override
-    public String getValue() {
+    public Boolean getValue() {
         return value;
     }
 
     @Override
-    public void setValue(String value) {
+    public void setValue(Boolean value) {
         this.value = value;
     }
 }
