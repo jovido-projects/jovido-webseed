@@ -89,7 +89,8 @@ jQuery(document).ready(function($) {
             </ul>
         </div>
 
-        <div class="form-inline ml-auto" th:insert="${formactions} ?: _"></div>
+        [[${primaryActions}]]
+        <div class="form-inline ml-auto" cp:insert="${primaryActions} ?: _"></div>
 
     </div>
 

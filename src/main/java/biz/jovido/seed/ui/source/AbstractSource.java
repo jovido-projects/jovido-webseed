@@ -9,7 +9,7 @@ import java.util.*;
  */
 public abstract class AbstractSource implements Source {
 
-    protected abstract static class AbstractProperty<S extends Source> implements Property {
+    protected abstract static class AbstractProperty<V, S extends Source> implements Property<V> {
 
         protected final S source;
         protected final String name;
@@ -31,6 +31,23 @@ public abstract class AbstractSource implements Source {
 
         public void setReadOnly(boolean readOnly) {
             this.readOnly = readOnly;
+        }
+
+        protected abstract void setValue(int index, V value);
+
+        @Override
+        public V getValue() {
+            List<V> values = getValues();
+            if (values.size() > 0) {
+                return values.get(0);
+            }
+
+            return null;
+        }
+
+        @Override
+        public void setValue(V v) {
+            setValue(0, v);
         }
 
         public AbstractProperty(S source, String name) {

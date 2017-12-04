@@ -3,15 +3,15 @@
       th:remove="tag">
 
 <th:block>
-    <th:block th:with="actions = ${self},primaryAction = ${actions?.primaryAction}">
-        <th:block th:if="primaryAction != null" >
-            <button class="btn btn-secondary action action-primary" th:formaction="${primaryAction.url}"
+    <th:block th:with="actions = ${self},defaultAction = ${actions?.defaultAction}">
+        <th:block th:if="defaultAction != null" >
+            <button class="btn btn-secondary action action-primary" th:formaction="${defaultAction.url}"
                     th:classappend="${size == 'sm' ? 'btn-sm' : (size == 'lg' ? 'btn-lg' : _)}">
-                [[${primaryAction.text?.value}]]
+                [[${defaultAction.text?.value}]]
             </button>
         </th:block>
 
-        <th:block th:if="primaryAction == null">
+        <th:block th:if="defaultAction == null">
             no
         </th:block>
     </th:block>

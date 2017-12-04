@@ -6,6 +6,7 @@ package biz.jovido.seed.ui;
 public class Listing {
 
     private Breadcrumbs breadcrumbs;
+    private Actions actions;
 
     public Breadcrumbs getBreadcrumbs() {
         if (breadcrumbs == null) {
@@ -17,5 +18,17 @@ public class Listing {
 
     public void setBreadcrumbs(Breadcrumbs breadcrumbs) {
         this.breadcrumbs = breadcrumbs;
+    }
+
+    public Actions getActions() {
+        if (actions == null) {
+            actions = new Actions();
+        }
+
+        return actions;
+    }
+
+    public void setActions(Actions actions) {
+        this.actions = actions;
     }
 }

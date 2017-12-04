@@ -8,7 +8,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("link")
-public class LinkPayload extends Payload {
+public class LinkPayload extends Payload implements Link {
 
     private String text;
     private String url;

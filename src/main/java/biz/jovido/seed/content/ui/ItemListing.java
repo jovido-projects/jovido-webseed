@@ -1,6 +1,7 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.MessageSourceProvider;
+import biz.jovido.seed.content.Item;
 import biz.jovido.seed.ui.*;
 import biz.jovido.seed.ui.source.BeanSource;
 import biz.jovido.seed.ui.source.BeanSourcesContainer;
@@ -66,7 +67,7 @@ public class ItemListing extends Listing implements MessageSourceProvider {
                 Actions actions = cell.getActions();
                 Action edit = new Action();
                 edit.setUrl("/admin/item/edit?id=" + item.getId());
-                actions.setPrimaryAction(edit);
+                actions.setDefaultAction(edit);
                 return cell;
             }
         });

@@ -5,16 +5,32 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
 
 import java.beans.PropertyDescriptor;
+import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
 public class BeanSource<T> extends AbstractSource {
 
-    public static class Property extends AbstractProperty<BeanSource> {
+    public static class Property<V> extends AbstractProperty<V, BeanSource> {
 
         @Override
-        public Object getValue() {
+        protected void setValue(int index, V value) {
+
+        }
+
+        @Override
+        public List<V> getValues() {
+            return null;
+        }
+
+        @Override
+        public V removeValue(int index) {
+            return null;
+        }
+
+        @Override
+        public V getValue() {
             String propertyPath = String.format("bean.%s", name);
             return source.beanWrapper.getPropertyValue(propertyPath);
         }

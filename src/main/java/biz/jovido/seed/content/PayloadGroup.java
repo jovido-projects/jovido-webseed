@@ -66,6 +66,16 @@ public class PayloadGroup extends AbstractUnique {
         return false;
     }
 
+    public Payload removePayload(int index) {
+        List<Payload> payloads = getPayloads();
+        Payload payload = payloads.get(index);
+        if (removePayload(payload)) {
+            return payload;
+        }
+
+        return null;
+    }
+
     public boolean removePayload(Payload payload) {
         if (payloads.remove(payload)) {
 

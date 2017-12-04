@@ -1,6 +1,7 @@
 package biz.jovido.seed.ui;
 
 import biz.jovido.seed.component.HasTemplate;
+import biz.jovido.seed.ui.source.Source;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -10,56 +11,27 @@ import org.springframework.beans.BeanWrapperImpl;
 @Deprecated
 public abstract class Field<T> implements HasTemplate {
 
-    private final BeanWrapper wrapper;
-    private String bindingPath;
-    private String template;
-    private String type;
+    private final Source source;
+    private final String propertyName;
 
-    private boolean disabled;
-
-    public String getBindingPath() {
-        return bindingPath;
+    public Source getSource() {
+        return source;
     }
 
-    public void setBindingPath(String bindingPath) {
-        this.bindingPath = bindingPath;
+    public String getPropertyName() {
+        return propertyName;
     }
 
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    @SuppressWarnings("unchecked")
     public T getValue() {
-        return (T) wrapper.getPropertyValue(bindingPath);
+        return (T) source.getProperty(propertyName).getValue();
     }
 
     public void setValue(T value) {
-        wrapper.setPropertyValue(bindingPath, value);
+        source.getProperty(propertyName).setValue(value);
     }
 
-    public Field(Object object, String bindingPath) {
-        wrapper = new BeanWrapperImpl(object);
-        this.bindingPath = bindingPath;
+    public Field(Source source, String propertyName) {
+        this.source = source;
+        this.propertyName = propertyName;
     }
 }

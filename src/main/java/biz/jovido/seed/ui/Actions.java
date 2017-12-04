@@ -12,7 +12,7 @@ public class Actions extends AbstractListDecorator<Action> implements HasTemplat
 
     private String template = "ui/actions";
     private Text text;
-    private Action primaryAction;
+    private Action defaultAction;
 
     @Override
     public String getTemplate() {
@@ -31,12 +31,12 @@ public class Actions extends AbstractListDecorator<Action> implements HasTemplat
         this.text = text;
     }
 
-    public Action getPrimaryAction() {
-        return primaryAction;
+    public Action getDefaultAction() {
+        return defaultAction;
     }
 
-    public void setPrimaryAction(Action primaryAction) {
-        this.primaryAction = primaryAction;
+    public void setDefaultAction(Action defaultAction) {
+        this.defaultAction = defaultAction;
     }
 
     public Actions() {

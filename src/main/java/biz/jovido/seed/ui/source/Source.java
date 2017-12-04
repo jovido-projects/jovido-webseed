@@ -1,6 +1,7 @@
 package biz.jovido.seed.ui.source;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -8,12 +9,16 @@ import java.util.Set;
  */
 public interface Source {
 
-    interface Property {
+    interface Property<V> {
 
         String getName();
 
-        Object getValue();
-        void setValue(Object value);
+        List<V> getValues();
+//        boolean addValue(V t);
+        V removeValue(int index);
+
+        V getValue();
+        void setValue(V v);
 
         boolean isReadOnly();
     }

@@ -1,16 +1,25 @@
 package biz.jovido.seed.admin;
 
-import biz.jovido.seed.content.ItemListing;
+import biz.jovido.seed.ui.Breadcrumbs;
 import biz.jovido.seed.ui.Navigation;
+import org.springframework.context.MessageSource;
 
 /**
  * @author Stephan Grundner
  */
 public class Administration {
 
+    private MessageSource messageSource;
     private Navigation navigation;
+    private Breadcrumbs breadcrumbs;
 
-    private ItemListing itemListing;
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     public Navigation getNavigation() {
         if (navigation == null) {
@@ -24,11 +33,15 @@ public class Administration {
         this.navigation = navigation;
     }
 
-    public ItemListing getItemListing() {
-        return itemListing;
+    public Breadcrumbs getBreadcrumbs() {
+        if (breadcrumbs == null) {
+            breadcrumbs = new Breadcrumbs();
+        }
+
+        return breadcrumbs;
     }
 
-    public void setItemListing(ItemListing itemListing) {
-        this.itemListing = itemListing;
+    public void setBreadcrumbs(Breadcrumbs breadcrumbs) {
+        this.breadcrumbs = breadcrumbs;
     }
 }

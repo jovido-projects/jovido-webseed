@@ -1,29 +1,6 @@
 <html xmlns:th="//www.thymeleaf.org"
-      th:replace="admin/page(main=~{::main},formactions=~{::formactions})"
+      th:replace="admin/page(main=~{::main})"
       th:remove="tag">
-
-<div th:fragment="formactions" class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-
-    <div class="btn-group">
-        <button type="submit" class="btn btn-primary" th:formaction="@{save}" form="form">
-            <i class="fa fa-floppy-o"></i>
-            Save
-        </button>
-        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="sr-only">Toggle Dropdown</span>
-        </button>
-        <div class="dropdown-menu">
-            <button class="dropdown-item" href="#" data-toggle="modal" data-target=".bd-example-modal-sm">
-                <i class="fa fa-retweet"></i>
-                Publish
-            </button>
-        </div>
-    </div>
-
-
-</div>
-
-
 
 <th:block th:fragment="main">
 
