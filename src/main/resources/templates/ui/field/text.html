@@ -1,0 +1,10 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<div class="form-group" th:with="field=${self}">
+    <input type="text" class="form-control" th:field="*{__${field.bindingPath}__}">
+</div>
+capacity: [[${field.property.capacity}]]
+
+</html>

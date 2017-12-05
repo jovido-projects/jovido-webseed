@@ -19,7 +19,7 @@ public class Fragment extends AbstractUnique {
 
     @OneToMany(mappedBy = "fragment", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "attribute_name")
-    private final Map<String, PayloadSequence> sequenceByAttributeName = new HashMap<>();
+    private final Map<String, PayloadList<? extends Payload<?>>> payloadListByAttributeName = new HashMap<>();
 
     @Transient
     private final Set<FragmentChangeListener> changeListeners = new LinkedHashSet<>();
@@ -49,30 +49,27 @@ public class Fragment extends AbstractUnique {
     }
 
     public Set<String> getAttributeNames() {
-        return Collections.unmodifiableSet(sequenceByAttributeName.keySet());
+        return Collections.unmodifiableSet(payloadListByAttributeName.keySet());
     }
 
-    public Collection<PayloadSequence> getSequences() {
-        return Collections.unmodifiableCollection(sequenceByAttributeName.values());
+    public PayloadList<? extends Payload<?>> getPayloadList(String attributeName) {
+        return payloadListByAttributeName.get(attributeName);
     }
 
-    public PayloadSequence getSequence(String attributeName) {
-        return sequenceByAttributeName.get(attributeName);
-    }
-
-    public PayloadSequence setSequence(String attributeName, PayloadSequence sequence) {
-        if (sequence != null) {
-            sequence.setFragment(this);
-            sequence.setAttributeName(attributeName);
+    public PayloadList<? extends Payload<?>> setPayloadList(String attributeName, PayloadList<? extends Payload<?>> payloadList) {
+        if (payloadList != null) {
+            payloadList.setFragment(this);
+            payloadList.setAttributeName(attributeName);
         }
 
-        PayloadSequence replaced = sequenceByAttributeName.put(attributeName, sequence);
-        if (replaced != null) {
-            replaced.setFragment(null);
-            replaced.setAttributeName(null);
+        PayloadList<? extends Payload<?>> replacedPayloadList = payloadListByAttributeName.put(attributeName, payloadList);
+
+        if (replacedPayloadList != null) {
+            replacedPayloadList.setFragment(null);
+            replacedPayloadList.setAttributeName(null);
         }
 
-        return replaced;
+        return replacedPayloadList;
     }
 
     public boolean addChangeListener(FragmentChangeListener changeListener) {

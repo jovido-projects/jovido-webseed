@@ -1,0 +1,10 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<th:block th:with="editor = ${self}">
+    <th:block th:each="field : ${editor.fields}">
+        <th:block cp:replace="${field}" />
+    </th:block>
+</th:block>
+</html>

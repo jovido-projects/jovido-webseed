@@ -10,19 +10,19 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "kind")
-public abstract class Payload extends AbstractUnique {
+public abstract class Payload<T> extends AbstractUnique {
 
     @ManyToOne(optional = false)
-    private PayloadSequence sequence;
+    private PayloadList list;
 
     private int ordinal;
 
-    public PayloadSequence getSequence() {
-        return sequence;
+    public PayloadList getList() {
+        return list;
     }
 
-    protected void setSequence(PayloadSequence sequence) {
-        this.sequence = sequence;
+    protected void setList(PayloadList list) {
+        this.list = list;
     }
 
     public int getOrdinal() {
@@ -32,4 +32,7 @@ public abstract class Payload extends AbstractUnique {
     protected void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
     }
+
+    public abstract T getValue();
+    public abstract void setValue(T value);
 }

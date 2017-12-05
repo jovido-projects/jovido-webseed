@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -29,12 +27,12 @@ public class FragmentService {
         return null;
     }
 
-    public PayloadAttribute<?> getAttribute(PayloadSequence sequence) {
-        if (sequence != null) {
-            Fragment fragment = sequence.getFragment();
+    public PayloadAttribute<? extends Payload<?>> getAttribute(PayloadList list) {
+        if (list != null) {
+            Fragment fragment = list.getFragment();
             FragmentStructure structure = getStructure(fragment);
             if (structure != null) {
-                String attributeName = sequence.getAttributeName();
+                String attributeName = list.getAttributeName();
                 return structure.getAttribute(attributeName);
             }
         }
@@ -42,32 +40,31 @@ public class FragmentService {
         return null;
     }
 
-    public void addPayload(PayloadSequence sequence) {
-        PayloadAttribute<?> attribute = getAttribute(sequence);
-        Payload payload = attribute.createPayload();
-        sequence.addPayload(payload);
+    @SuppressWarnings("unchecked")
+    public <P extends Payload<?>> void addPayload(PayloadList<P> list) {
+        PayloadAttribute<P> attribute = (PayloadAttribute<P>) getAttribute(list);
+        P payload = attribute.createPayload();
+        list.add(payload);
     }
 
     public void addPayload(Fragment fragment, String attributeName) {
-        PayloadSequence sequence = fragment.getSequence(attributeName);
-        addPayload(sequence);
+        PayloadList<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+        addPayload(list);
     }
 
-    public void applyPayloadSequences(Fragment fragment) {
+    public void applyPayloadLists(Fragment fragment) {
         FragmentStructure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
             PayloadAttribute<?> attribute = structure.getAttribute(attributeName);
-            PayloadSequence sequence = fragment.getSequence(attributeName);
-            if (sequence == null) {
-                sequence = new PayloadSequence();
-                fragment.setSequence(attributeName, sequence);
+            PayloadList<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+            if (list == null) {
+                list = new PayloadList<>();
+                fragment.setPayloadList(attributeName, list);
             }
 
-            int remaining = attribute.getRequired() - sequence.getPayloads().size();
+            int remaining = attribute.getRequired() - list.size();
             while (remaining-- > 0) {
-//                Payload payload = attribute.createPayload();
-//                sequence.addPayload(payload);
-                addPayload(sequence);
+                addPayload(list);
             }
         }
     }
@@ -81,34 +78,20 @@ public class FragmentService {
 
         fragment.setStructureName(structure.getName());
 
-        applyPayloadSequences(fragment);
+        applyPayloadLists(fragment);
 
         return fragment;
     }
 
-    public PayloadSequence getSequence(Fragment fragment, String attributeName) {
-        if (fragment != null) {
-            return fragment.getSequence(attributeName);
-        }
-
-        return null;
+    public Fragment createFragment(String structureName) {
+        FragmentStructure structure = structureService.getStructure(structureName);
+        return createFragment(structure);
     }
 
-    public List<Payload> getPayloads(Fragment fragment, String attributeName) {
-        PayloadSequence sequence = getSequence(fragment, attributeName);
-        if (sequence != null) {
-            return sequence.getPayloads().stream()
-                    .sorted(Comparator.comparingInt(Payload::getOrdinal))
-                    .collect(Collectors.toList());
-        }
-
-        return null;
-    }
-
-    public Payload getPayload(Fragment fragment, String attributeName, int index) {
-        List<Payload> payloads = getPayloads(fragment, attributeName);
-        if (payloads != null) {
-            return payloads.get(index);
+    public Payload<?> getPayload(Fragment fragment, String attributeName, int index) {
+        List<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+        if (list != null) {
+            return list.get(index);
         }
 
         return null;
@@ -126,8 +109,8 @@ public class FragmentService {
 
     @SuppressWarnings("unchecked")
     public <T> void setValue(Fragment fragment, String attributeName, int index, T value) {
-        List<Payload> payloads = getPayloads(fragment, attributeName);
-        ValuePayload<T> payload = (ValuePayload<T>) payloads.get(index);
+        List<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+        ValuePayload<T> payload = (ValuePayload<T>) list.get(index);
         payload.setValue(value);
     }
 

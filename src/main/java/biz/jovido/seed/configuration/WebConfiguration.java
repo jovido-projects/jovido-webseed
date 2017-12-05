@@ -1,7 +1,9 @@
 package biz.jovido.seed.configuration;
 
+import biz.jovido.seed.thymeleaf.ComponentDialect;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -44,13 +46,12 @@ public class WebConfiguration extends WebMvcConfigurerAdapter implements Applica
 //        return dialect;
 //    }
 //
-//    @Bean
-//    public ComponentDialect componentDialect(Set<TemplateResolver> templateResolvers) {
-//        ComponentDialect dialect = new ComponentDialect();
-//        dialect.setTemplateResolvers(templateResolvers);
-//
-//        return dialect;
-//    }
+    @Bean
+    public ComponentDialect componentDialect() {
+        ComponentDialect dialect = new ComponentDialect();
+
+        return dialect;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

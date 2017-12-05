@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 @DiscriminatorValue("fragment")
-public class FragmentPayload extends Payload {
+public class FragmentPayload extends Payload<Fragment> {
 
     @ManyToOne
     private Fragment fragment;
@@ -20,5 +20,15 @@ public class FragmentPayload extends Payload {
 
     public void setFragment(Fragment fragment) {
         this.fragment = fragment;
+    }
+
+    @Override
+    public Fragment getValue() {
+        return fragment;
+    }
+
+    @Override
+    public void setValue(Fragment value) {
+        fragment = value;
     }
 }

@@ -3,7 +3,7 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public abstract class PayloadAttribute<P extends Payload> {
+public abstract class PayloadAttribute<P extends Payload<?>> {
 
     private FragmentStructure structure;
     private String name;
