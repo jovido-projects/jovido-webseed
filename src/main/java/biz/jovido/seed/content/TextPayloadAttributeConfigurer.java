@@ -3,7 +3,7 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public class TextPayloadAttributeConfigurer extends ValuePayloadAttributeConfigurer<TextPayloadAttribute> {
+public class TextPayloadAttributeConfigurer extends PayloadAttributeConfigurer<TextPayloadAttribute> {
 
     public TextPayloadAttributeConfigurer setMultiline(boolean multiline) {
         attribute.setMultiline(multiline);

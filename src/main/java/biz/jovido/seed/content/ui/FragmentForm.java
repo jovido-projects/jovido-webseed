@@ -19,12 +19,11 @@ public class FragmentForm {
         return fragment;
     }
 
-    private <T, P extends Payload<T>> Field<T> createField(P payload) {
-        Field<T> field = null;
-
-        PayloadList<T> list = payload.getList();
-        PayloadAttribute<? extends Payload<T>> attribute = fragmentService.getAttribute(list);
-
+    private <T> Field<T> createField(Payload<T> payload) {
+        PayloadList<? extends Payload<T>> list = payload.getList();
+        PayloadAttribute<T> attribute = fragmentService.getAttribute(list);
+        FragmentSource.PayloadProperty<T> property = new FragmentSource.PayloadProperty<>(list, attribute.getCapacity());
+        Field<T> field = attribute.createField(property);
 
         return field;
     }

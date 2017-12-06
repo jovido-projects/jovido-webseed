@@ -19,7 +19,7 @@ public class Fragment extends AbstractUnique {
 
     @OneToMany(mappedBy = "fragment", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "attribute_name")
-    private final Map<String, PayloadList<?>> payloadListByAttributeName = new HashMap<>();
+    private final Map<String, PayloadList<Payload<?>>> payloadListByAttributeName = new HashMap<>();
 
     @Transient
     private final Set<FragmentChangeListener> changeListeners = new LinkedHashSet<>();
@@ -52,17 +52,17 @@ public class Fragment extends AbstractUnique {
         return Collections.unmodifiableSet(payloadListByAttributeName.keySet());
     }
 
-    public PayloadList<?> getPayloadList(String attributeName) {
+    public PayloadList<Payload<?>> getPayloadList(String attributeName) {
         return payloadListByAttributeName.get(attributeName);
     }
 
-    public PayloadList<?> setPayloadList(String attributeName, PayloadList<?> payloadList) {
+    public PayloadList<Payload<?>> setPayloadList(String attributeName, PayloadList<Payload<?>> payloadList) {
         if (payloadList != null) {
             payloadList.setFragment(this);
             payloadList.setAttributeName(attributeName);
         }
 
-        PayloadList<?> replacedPayloadList = payloadListByAttributeName.put(attributeName, payloadList);
+        PayloadList<Payload<?>> replacedPayloadList = payloadListByAttributeName.put(attributeName, payloadList);
 
         if (replacedPayloadList != null) {
             replacedPayloadList.setFragment(null);

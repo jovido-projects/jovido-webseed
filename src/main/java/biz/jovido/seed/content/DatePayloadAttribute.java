@@ -1,12 +1,14 @@
 package biz.jovido.seed.content;
 
+import java.util.Date;
+
 /**
  * @author Stephan Grundner
  */
-public class DatePayloadAttribute extends ValuePayloadAttribute<DatePayload> {
+public class DatePayloadAttribute extends PayloadAttribute<Date> {
 
     @Override
-    public DatePayload createPayload() {
+    public Payload<Date> createPayload() {
         return new DatePayload();
     }
 }

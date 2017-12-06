@@ -13,15 +13,20 @@ import javax.persistence.*;
 public abstract class Payload<T> extends AbstractUnique {
 
     @ManyToOne(optional = false)
-    private PayloadList<T> list;
+    private PayloadList<Payload<T>> list;
 
     private int ordinal;
 
-    public PayloadList<T> getList() {
+//    @SuppressWarnings("unchecked")
+//    public <P extends Payload<T>> PayloadList<P> getList() {
+//        return (PayloadList<P>) list;
+//    }
+
+    public PayloadList<Payload<T>> getList() {
         return list;
     }
 
-    protected void setList(PayloadList<T> list) {
+    protected void setList(PayloadList<Payload<T>> list) {
         this.list = list;
     }
 

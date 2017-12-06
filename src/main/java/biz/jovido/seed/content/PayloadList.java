@@ -11,7 +11,7 @@ import java.util.List;
  * @author Stephan Grundner
  */
 @Entity
-public class PayloadList<T> extends ListDecorator<Payload<T>> implements Unique {
+public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implements Unique {
 
     @Id
     @GeneratedValue
@@ -25,7 +25,7 @@ public class PayloadList<T> extends ListDecorator<Payload<T>> implements Unique 
 
     @OneToMany(mappedBy = "list", targetEntity = Payload.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("ordinal")
-    private final List<? extends Payload<T>> payloads = new ArrayList<>();
+    private final List<P> payloads = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -53,24 +53,25 @@ public class PayloadList<T> extends ListDecorator<Payload<T>> implements Unique 
     }
 
     @Override
-    protected List<Payload<T>> decorated() {
+    protected List<P> decorated() {
         return null;
     }
 
     @Override
-    public Payload<T> set(int index, Payload<T> element) {
+    public P set(int index, P element) {
         return null;
     }
 
     @Override
-    public void add(int index, Payload<T> element) {
+    public void add(int index, P element) {
 
     }
 
     @Override
-    public Payload<T> remove(int index) {
+    public P remove(int index) {
         return null;
     }
+
 
 //    @Override
 //    protected List<? extends Payload<T>> decorated() {

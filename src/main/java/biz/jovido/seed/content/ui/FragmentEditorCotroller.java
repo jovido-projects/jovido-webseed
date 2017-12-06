@@ -3,6 +3,7 @@ package biz.jovido.seed.content.ui;
 import biz.jovido.seed.component.HasTemplate;
 import biz.jovido.seed.content.*;
 import biz.jovido.seed.ui.Field;
+import biz.jovido.seed.ui.Source;
 import biz.jovido.seed.ui.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,19 +49,6 @@ public class FragmentEditorCotroller {
 
             fields.clear();
 
-
-            PayloadList<String> titlePayloads = (PayloadList<String>) fragment.getPayloadList("title");
-//            titlePayloads.
-            PayloadAttribute<?> titleAttribute = fragmentService.getAttribute(titlePayloads);
-
-            TextPayload title0Payload = (TextPayload) titlePayloads.get(0);
-            title0Payload.setValue("Wert");
-
-            FragmentSource.PayloadProperty<String> titleProperty = new FragmentSource.PayloadProperty<>(titlePayloads, titleAttribute.getCapacity());
-            TextField titleField = new TextField(titleProperty);
-            titleField.setBindingPath("fields[0].value");
-
-            fields.add(titleField);
         }
 
         public List<Field<?>> getFields() {

@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * @author Stephan Grundner
  */
-public class FragmentPayloadAttribute extends PayloadAttribute<FragmentPayload> {
+public class FragmentPayloadAttribute extends PayloadAttribute<Fragment> {
 
     private final Map<String, FragmentStructure> assignableStructureByName = new LinkedHashMap<>();
     private FragmentStructure preferredStructure;

@@ -9,7 +9,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("boolean")
-public class BooleanPayload extends ValuePayload<Boolean> {
+public class BooleanPayload extends Payload<Boolean> {
 
     @Column(name = "boolean_value")
     private Boolean value;

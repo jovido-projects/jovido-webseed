@@ -27,40 +27,40 @@ public class FragmentService {
         return null;
     }
 
-    public <T> PayloadAttribute<? extends Payload<T>> getAttribute(PayloadList<T> list) {
+    public <T> PayloadAttribute<T> getAttribute(PayloadList<? extends Payload<?>> list) {
         if (list != null) {
             Fragment fragment = list.getFragment();
             FragmentStructure structure = getStructure(fragment);
             if (structure != null) {
                 String attributeName = list.getAttributeName();
-                return (PayloadAttribute<? extends Payload<T>>) structure.getAttribute(attributeName);
+                return (PayloadAttribute<T>) structure.getAttribute(attributeName);
             }
         }
 
         return null;
     }
 
-//    public PayloadAttribute<?> getAttribute(Payload<?> payload) {
-//        return getAttribute(payload.getList());
+//    public <T, P extends Payload<T>> void addPayload(PayloadList<P> list) {
+//        PayloadAttribute<T> attribute = getAttribute(list);
+//        P payload = (P) attribute.createPayload();
+//        list.add(payload);
 //    }
-
-    @SuppressWarnings("unchecked")
-    public <T, P extends Payload<T>> void addPayload(PayloadList<T> list) {
-        PayloadAttribute<P> attribute = (PayloadAttribute<P>) getAttribute(list);
-        P payload = attribute.createPayload();
+    public void addPayload(PayloadList<Payload<?>> list) {
+        PayloadAttribute<?> attribute = getAttribute(list);
+        Payload<?> payload = attribute.createPayload();
         list.add(payload);
     }
 
-    public void addPayload(Fragment fragment, String attributeName) {
-        PayloadList<?> list = fragment.getPayloadList(attributeName);
-        addPayload(list);
-    }
+//    public <T, P extends Payload<T>> void addPayload(Fragment fragment, String attributeName) {
+//        PayloadList<P> list = (PayloadList<P>) fragment.getPayloadList(attributeName);
+//        addPayload(list);
+//    }
 
     public void applyPayloadLists(Fragment fragment) {
         FragmentStructure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
             PayloadAttribute<?> attribute = structure.getAttribute(attributeName);
-            PayloadList<?> list = fragment.getPayloadList(attributeName);
+            PayloadList<Payload<?>> list = fragment.getPayloadList(attributeName);
             if (list == null) {
                 list = new PayloadList<>();
                 fragment.setPayloadList(attributeName, list);
@@ -103,7 +103,7 @@ public class FragmentService {
 
     @SuppressWarnings("unchecked")
     public <T> T getValue(Fragment fragment, String attributeName, int index) {
-        ValuePayload<T> payload = (ValuePayload<T>) getPayload(fragment, attributeName, index);
+        Payload<T> payload = (Payload<T>) getPayload(fragment, attributeName, index);
         if (payload != null) {
             return payload.getValue();
         }
@@ -114,7 +114,7 @@ public class FragmentService {
     @SuppressWarnings("unchecked")
     public <T> void setValue(Fragment fragment, String attributeName, int index, T value) {
         List<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
-        ValuePayload<T> payload = (ValuePayload<T>) list.get(index);
+        Payload<T> payload = (Payload<T>) list.get(index);
         payload.setValue(value);
     }
 

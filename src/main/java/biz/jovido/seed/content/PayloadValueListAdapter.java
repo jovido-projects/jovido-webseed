@@ -8,9 +8,9 @@ import java.util.ListIterator;
 /**
  * @author Stephan Grundner
  */
-public class PayloadValueListAdapter<T> implements List<T> {
+public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T> {
 
-    private final PayloadList<T> list;
+    private final PayloadList<P> list;
 
     @Override
     public int size() {
@@ -27,9 +27,9 @@ public class PayloadValueListAdapter<T> implements List<T> {
         return list.contains(o);
     }
 
-    protected static class PayloadValueIterator<T> implements Iterator<T> {
+    protected class PayloadValueIterator implements Iterator<T> {
 
-        private final Iterator<Payload<T>> payloadIterator;
+        private final Iterator<P> payloadIterator;
 
         @Override
         public boolean hasNext() {
@@ -41,15 +41,15 @@ public class PayloadValueListAdapter<T> implements List<T> {
             return payloadIterator.next().getValue();
         }
 
-        public PayloadValueIterator(Iterator<Payload<T>> payloadIterator) {
+        public PayloadValueIterator(Iterator<P> payloadIterator) {
             this.payloadIterator = payloadIterator;
         }
     }
 
     @Override
     public Iterator<T> iterator() {
-        Iterator<Payload<T>> payloadIterator = list.iterator();
-        return new PayloadValueIterator<>(payloadIterator);
+        Iterator<P> payloadIterator = list.iterator();
+        return new PayloadValueIterator(payloadIterator);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class PayloadValueListAdapter<T> implements List<T> {
         throw new UnsupportedOperationException();
     }
 
-    public PayloadValueListAdapter(PayloadList<T> list) {
+    public PayloadValueListAdapter(PayloadList<P> list) {
         this.list = list;
     }
 }

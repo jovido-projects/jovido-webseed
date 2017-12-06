@@ -1,7 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.ValuePayload;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -11,7 +9,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("text")
-public class TextPayload extends ValuePayload<String> {
+public class TextPayload extends Payload<String> {
 
     @Column(name = "text_value")
     private String value;

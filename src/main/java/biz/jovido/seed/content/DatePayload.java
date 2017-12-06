@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Entity
 @DiscriminatorValue("date")
-public class DatePayload extends ValuePayload<Date> {
+public class DatePayload extends Payload<Date> {
 
     @Column(name = "date_value")
     private Date value;
