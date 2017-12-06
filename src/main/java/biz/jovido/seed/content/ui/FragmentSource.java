@@ -2,10 +2,9 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.content.Fragment;
 import biz.jovido.seed.content.FragmentService;
-import biz.jovido.seed.content.Payload;
 import biz.jovido.seed.content.PayloadList;
-import biz.jovido.seed.ui.Source;
 import biz.jovido.seed.content.PayloadValueListAdapter;
+import biz.jovido.seed.ui.Source;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ public class FragmentSource implements Source {
 
     public static class PayloadProperty<T> implements Source.Property<T> {
 
-        private PayloadValueListAdapter<T, ? extends Payload<T>> values;
+        private PayloadValueListAdapter<T> values;
         private final int capacity;
 
         @Override
@@ -42,7 +41,7 @@ public class FragmentSource implements Source {
             return capacity;
         }
 
-        public PayloadProperty(PayloadList<? extends Payload<T>> list, int capacity) {
+        public PayloadProperty(PayloadList<T> list, int capacity) {
             values = new PayloadValueListAdapter<>(list);
             this.capacity = capacity;
         }

@@ -13,15 +13,15 @@ import javax.persistence.*;
 public abstract class Payload<T> extends AbstractUnique {
 
     @ManyToOne(optional = false)
-    private PayloadList list;
+    private PayloadList<T> list;
 
     private int ordinal;
 
-    public PayloadList getList() {
+    public PayloadList<T> getList() {
         return list;
     }
 
-    protected void setList(PayloadList list) {
+    protected void setList(PayloadList<T> list) {
         this.list = list;
     }
 

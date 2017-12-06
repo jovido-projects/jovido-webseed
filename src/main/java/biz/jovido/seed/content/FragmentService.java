@@ -27,28 +27,32 @@ public class FragmentService {
         return null;
     }
 
-    public PayloadAttribute<? extends Payload<?>> getAttribute(PayloadList list) {
+    public <T> PayloadAttribute<? extends Payload<T>> getAttribute(PayloadList<T> list) {
         if (list != null) {
             Fragment fragment = list.getFragment();
             FragmentStructure structure = getStructure(fragment);
             if (structure != null) {
                 String attributeName = list.getAttributeName();
-                return structure.getAttribute(attributeName);
+                return (PayloadAttribute<? extends Payload<T>>) structure.getAttribute(attributeName);
             }
         }
 
         return null;
     }
 
+//    public PayloadAttribute<?> getAttribute(Payload<?> payload) {
+//        return getAttribute(payload.getList());
+//    }
+
     @SuppressWarnings("unchecked")
-    public <P extends Payload<?>> void addPayload(PayloadList<P> list) {
+    public <T, P extends Payload<T>> void addPayload(PayloadList<T> list) {
         PayloadAttribute<P> attribute = (PayloadAttribute<P>) getAttribute(list);
         P payload = attribute.createPayload();
         list.add(payload);
     }
 
     public void addPayload(Fragment fragment, String attributeName) {
-        PayloadList<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+        PayloadList<?> list = fragment.getPayloadList(attributeName);
         addPayload(list);
     }
 
@@ -56,7 +60,7 @@ public class FragmentService {
         FragmentStructure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
             PayloadAttribute<?> attribute = structure.getAttribute(attributeName);
-            PayloadList<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+            PayloadList<?> list = fragment.getPayloadList(attributeName);
             if (list == null) {
                 list = new PayloadList<>();
                 fragment.setPayloadList(attributeName, list);

@@ -49,8 +49,8 @@ public class FragmentEditorCotroller {
             fields.clear();
 
 
-            PayloadList<? extends Payload<String>> titlePayloads = (PayloadList<? extends Payload<String>>)
-                    fragment.getPayloadList("title");
+            PayloadList<String> titlePayloads = (PayloadList<String>) fragment.getPayloadList("title");
+//            titlePayloads.
             PayloadAttribute<?> titleAttribute = fragmentService.getAttribute(titlePayloads);
 
             TextPayload title0Payload = (TextPayload) titlePayloads.get(0);

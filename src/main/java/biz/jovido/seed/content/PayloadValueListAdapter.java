@@ -1,8 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.Payload;
-import biz.jovido.seed.content.PayloadList;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +8,9 @@ import java.util.ListIterator;
 /**
  * @author Stephan Grundner
  */
-public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T> {
+public class PayloadValueListAdapter<T> implements List<T> {
 
-    private final PayloadList<P> list;
+    private final PayloadList<T> list;
 
     @Override
     public int size() {
@@ -30,9 +27,9 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
         return list.contains(o);
     }
 
-    protected static class PayloadValueIterator<T, P extends Payload<T>> implements Iterator<T> {
+    protected static class PayloadValueIterator<T> implements Iterator<T> {
 
-        private final Iterator<P> payloadIterator;
+        private final Iterator<Payload<T>> payloadIterator;
 
         @Override
         public boolean hasNext() {
@@ -44,14 +41,14 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
             return payloadIterator.next().getValue();
         }
 
-        public PayloadValueIterator(Iterator<P> payloadIterator) {
+        public PayloadValueIterator(Iterator<Payload<T>> payloadIterator) {
             this.payloadIterator = payloadIterator;
         }
     }
 
     @Override
     public Iterator<T> iterator() {
-        Iterator<P> payloadIterator = list.iterator();
+        Iterator<Payload<T>> payloadIterator = list.iterator();
         return new PayloadValueIterator<>(payloadIterator);
     }
 
@@ -107,13 +104,13 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
 
     @Override
     public T get(int index) {
-        P payload = list.get(index);
+        Payload<T> payload = list.get(index);
         return payload.getValue();
     }
 
     @Override
     public T set(int index, T element) {
-        P payload = list.get(index);
+        Payload<T> payload = list.get(index);
         T tmp = payload.getValue();
         payload.setValue(element);
         return tmp;
@@ -154,7 +151,7 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
         throw new UnsupportedOperationException();
     }
 
-    public PayloadValueListAdapter(PayloadList<P> list) {
+    public PayloadValueListAdapter(PayloadList<T> list) {
         this.list = list;
     }
 }
