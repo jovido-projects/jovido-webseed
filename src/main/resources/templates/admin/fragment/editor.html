@@ -2,8 +2,8 @@
       xmlns:cp="http://www.getwebseed/dialect/cp"
       th:remove="tag">
 
-<th:block th:with="editor = ${self}">
-    <th:block th:each="field : ${editor.fields}">
+<th:block th:with="form = ${self.form}">
+    <th:block th:each="e : ${form.fields}" th:with="field = ${e.value}">
         <th:block cp:replace="${field}" />
     </th:block>
 </th:block>

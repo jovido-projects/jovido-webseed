@@ -101,6 +101,10 @@ public class FragmentService {
         return null;
     }
 
+    public <T> PayloadList<? extends Payload<T>> getPayloadList(Payload<T> payload) {
+        return (PayloadList<? extends Payload<T>>) payload.getList();
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getValue(Fragment fragment, String attributeName, int index) {
         Payload<T> payload = (Payload<T>) getPayload(fragment, attributeName, index);

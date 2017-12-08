@@ -43,7 +43,7 @@ public abstract class AbstractComponentProcessor extends AbstractAttributeTagPro
         if (result instanceof HasTemplate) {
             template = ((HasTemplate) result).getTemplate();
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException("No component");
         }
 
         if (StringUtils.isEmpty(template)) {

@@ -38,6 +38,8 @@ public abstract class Field<T> {
         property.setValue(value);
     }
 
+    public Field() { }
+
     public Field(Source.Property<T> property) {
         this.property = property;
     }

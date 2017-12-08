@@ -3,8 +3,8 @@
       th:remove="tag">
 
 <div class="form-group" th:with="field=${self}">
-    <input type="text" class="form-control" th:field="*{__${field.bindingPath}__}">
+    <label th:text="${field?.bindingPath}">Label</label>
+    <input type="text" class="form-control" th:field="*{__${field?.bindingPath}__.value}">
 </div>
-capacity: [[${field.property.capacity}]]
 
 </html>

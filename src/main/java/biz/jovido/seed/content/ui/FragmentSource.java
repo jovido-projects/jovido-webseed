@@ -57,5 +57,13 @@ public class FragmentSource implements Source {
     public FragmentSource(FragmentService fragmentService, Fragment fragment) {
         this.fragmentService = fragmentService;
         this.fragment = fragment;
+
+
+        for (String attributeName : fragment.getAttributeNames()) {
+            PayloadList<?> list = fragment.getPayloadList(attributeName);
+            PayloadAttribute<?> attribute = fragmentService.getAttribute(list);
+            Property<?> property = new PayloadProperty<>(list, attribute.getCapacity());
+            propertyByName.put(attributeName, property);
+        }
     }
 }

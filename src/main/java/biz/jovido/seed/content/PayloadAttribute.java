@@ -1,7 +1,6 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.ui.Field;
-import biz.jovido.seed.ui.Source;
 
 /**
  * @author Stephan Grundner
@@ -57,7 +56,7 @@ public abstract class PayloadAttribute<T> {
 
     public abstract Payload<T> createPayload();
 
-    public Field<T> createField(Source.Property<T> property) {
+    public Field<T> createField() {
         return null;
     }
 }

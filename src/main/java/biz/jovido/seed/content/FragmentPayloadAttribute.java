@@ -1,5 +1,8 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.ui.FragmentField;
+import biz.jovido.seed.ui.Field;
+
 import java.util.*;
 
 /**
@@ -41,5 +44,10 @@ public class FragmentPayloadAttribute extends PayloadAttribute<Fragment> {
     @Override
     public FragmentPayload createPayload() {
         return new FragmentPayload();
+    }
+
+    @Override
+    public Field<Fragment> createField() {
+        return new FragmentField();
     }
 }

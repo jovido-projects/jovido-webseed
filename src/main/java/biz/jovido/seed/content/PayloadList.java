@@ -2,9 +2,11 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.Unique;
 import biz.jovido.seed.util.ListDecorator;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,50 +56,29 @@ public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implemen
 
     @Override
     protected List<P> decorated() {
-        return null;
+        return payloads;
     }
 
     @Override
-    public P set(int index, P element) {
-        return null;
+    public P set(int index, P payload) {
+        Assert.notNull(payload, "[payload] must not be null");
+        return payloads.set(index, payload);
     }
 
     @Override
-    public void add(int index, P element) {
+    public void add(int index, P payload) {
+        payloads.add(index, payload);
 
+        payload.setOrdinal(index);
+        payload.setList(this);
+
+        FragmentChange change = new FragmentChange(fragment,
+                Collections.singletonList(payload), new ArrayList<>());
+        fragment.notifyFragmentChanged(change);
     }
 
     @Override
     public P remove(int index) {
-        return null;
+        return payloads.remove(index);
     }
-
-
-//    @Override
-//    protected List<? extends Payload<T>> decorated() {
-//        return payloads;
-//    }
-//
-//    @Override
-//    public P set(int index, P payload) {
-//        Assert.notNull(payload, "[payload] must not be null");
-//        return payloads.set(index, payload);
-//    }
-//
-//    @Override
-//    public void add(int index, P payload) {
-//        payloads.add(index, payload);
-//
-//        payload.setOrdinal(index);
-//        payload.setList(this);
-//
-//        FragmentChange change = new FragmentChange(fragment,
-//                Collections.singletonList(payload), new ArrayList<>());
-//        fragment.notifyFragmentChanged(change);
-//    }
-//
-//    @Override
-//    public P remove(int index) {
-//        return payloads.remove(index);
-//    }
 }

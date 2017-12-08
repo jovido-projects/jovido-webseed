@@ -1,7 +1,6 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.ui.Field;
-import biz.jovido.seed.ui.Source;
 import biz.jovido.seed.ui.TextField;
 
 /**
@@ -25,7 +24,7 @@ public class TextPayloadAttribute extends PayloadAttribute<String> {
     }
 
     @Override
-    public Field<String> createField(Source.Property<String> property) {
-        return new TextField(property);
+    public Field<String> createField() {
+        return new TextField();
     }
 }

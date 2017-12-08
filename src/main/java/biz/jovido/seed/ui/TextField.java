@@ -18,7 +18,5 @@ public class TextField extends Field<String> implements HasTemplate {
         this.template = template;
     }
 
-    public TextField(Source.Property<String> property) {
-        super(property);
-    }
+    public TextField() {}
 }

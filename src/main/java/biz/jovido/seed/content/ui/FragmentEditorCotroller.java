@@ -1,20 +1,14 @@
 package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.component.HasTemplate;
-import biz.jovido.seed.content.*;
-import biz.jovido.seed.ui.Field;
-import biz.jovido.seed.ui.Source;
-import biz.jovido.seed.ui.TextField;
+import biz.jovido.seed.content.Fragment;
+import biz.jovido.seed.content.FragmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Stephan Grundner
@@ -27,9 +21,7 @@ public class FragmentEditorCotroller {
     public class FragmentEditor implements HasTemplate {
 
         private String template = "admin/fragment/editor";
-        private Fragment fragment;
-
-        private final List<Field<?>> fields = new ArrayList<>();
+        private FragmentForm form = new FragmentForm(fragmentService);
 
         @Override
         public String getTemplate() {
@@ -40,19 +32,23 @@ public class FragmentEditorCotroller {
             this.template = template;
         }
 
+        public FragmentForm getForm() {
+            return form;
+        }
+
+        public void setForm(FragmentForm form) {
+            this.form = form;
+        }
+
         public Fragment getFragment() {
-            return fragment;
+            return form.getFragment();
         }
 
         public void setFragment(Fragment fragment) {
-            this.fragment = fragment;
+            form.setNestedPath("form");
+            form.setFragment(fragment);
 
-            fields.clear();
 
-        }
-
-        public List<Field<?>> getFields() {
-            return Collections.unmodifiableList(fields);
         }
     }
 
