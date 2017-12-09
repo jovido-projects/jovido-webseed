@@ -8,7 +8,7 @@ import biz.jovido.seed.ui.SourceProperty;
  */
 public class PayloadField<T> extends Field<T> {
 
-    public PayloadField(SourceProperty<T> property) {
+    public PayloadField(SourceProperty property) {
         super(property);
     }
 }

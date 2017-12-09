@@ -31,9 +31,9 @@ public class FragmentFormField extends Field<Fragment> implements HasTemplate {
     }
 
     @Override
-    public void setProperty(SourceProperty<Fragment> property) {
+    public void setProperty(SourceProperty property) {
         super.setProperty(property);
-        Fragment fragment = property.getValue();
+        Fragment fragment = (Fragment) property.getValue();
         form.setFragment(fragment);
     }
 //    public Fragment getFragment() {

@@ -1,20 +1,23 @@
 package biz.jovido.seed.ui;
 
+import biz.jovido.seed.component.HasTemplate;
+
 import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
-public abstract class Field<T> {
+public class Field<T> implements HasTemplate {
 
-    private SourceProperty<T> property;
+    private SourceProperty property;
     private String bindingPath;
+    private String template;
 
-    public SourceProperty<T> getProperty() {
+    public SourceProperty getProperty() {
         return property;
     }
 
-    public void setProperty(SourceProperty<T> property) {
+    public void setProperty(SourceProperty property) {
         this.property = property;
     }
 
@@ -27,20 +30,29 @@ public abstract class Field<T> {
     }
 
     public List<T> getValues() {
-        return property.getValues();
+        return (List<T>) property.getValues();
     }
 
     public T getValue() {
-        return property.getValue();
+        return (T) property.getValue();
     }
 
     public void setValue(T value) {
         property.setValue(value);
     }
 
+    @Override
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
     public Field() { }
 
-    public Field(SourceProperty<T> property) {
+    public Field(SourceProperty property) {
         this.property = property;
     }
 }
