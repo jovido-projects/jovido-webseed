@@ -35,7 +35,7 @@ public class FragmentStructureService {
 
     public void validateStructure(FragmentStructure structure) {
         for (String attributeName : structure.getAttributeNames()) {
-            PayloadAttribute<?> attribute = structure.getAttribute(attributeName);
+            PayloadAttribute attribute = structure.getAttribute(attributeName);
 
             Assert.isTrue(attribute.getRequired() <= attribute.getCapacity(),
                     "[required] must not be greater than [capacity]");

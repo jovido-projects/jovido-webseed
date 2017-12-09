@@ -1,14 +1,11 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.ui.FragmentField;
-import biz.jovido.seed.ui.Field;
-
 import java.util.*;
 
 /**
  * @author Stephan Grundner
  */
-public class FragmentPayloadAttribute extends PayloadAttribute<Fragment> {
+public class FragmentPayloadAttribute extends PayloadAttribute {
 
     private final Map<String, FragmentStructure> assignableStructureByName = new LinkedHashMap<>();
     private FragmentStructure preferredStructure;
@@ -39,15 +36,5 @@ public class FragmentPayloadAttribute extends PayloadAttribute<Fragment> {
 
     public void setPreferredStructure(FragmentStructure preferredStructure) {
         this.preferredStructure = preferredStructure;
-    }
-
-    @Override
-    public FragmentPayload createPayload() {
-        return new FragmentPayload();
-    }
-
-    @Override
-    public Field<Fragment> createField() {
-        return new FragmentField();
     }
 }

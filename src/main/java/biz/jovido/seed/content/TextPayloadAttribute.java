@@ -1,12 +1,9 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.ui.Field;
-import biz.jovido.seed.ui.TextField;
-
 /**
  * @author Stephan Grundner
  */
-public class TextPayloadAttribute extends PayloadAttribute<String> {
+public class TextPayloadAttribute extends PayloadAttribute {
 
     private boolean multiline;
 
@@ -16,15 +13,5 @@ public class TextPayloadAttribute extends PayloadAttribute<String> {
 
     public void setMultiline(boolean multiline) {
         this.multiline = multiline;
-    }
-
-    @Override
-    public Payload<String> createPayload() {
-        return new TextPayload();
-    }
-
-    @Override
-    public Field<String> createField() {
-        return new TextField();
     }
 }

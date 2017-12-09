@@ -7,14 +7,14 @@ import java.util.List;
  */
 public abstract class Field<T> {
 
-    private Source.Property<T> property;
+    private SourceProperty<T> property;
     private String bindingPath;
 
-    public Source.Property<T> getProperty() {
+    public SourceProperty<T> getProperty() {
         return property;
     }
 
-    public void setProperty(Source.Property<T> property) {
+    public void setProperty(SourceProperty<T> property) {
         this.property = property;
     }
 
@@ -40,7 +40,7 @@ public abstract class Field<T> {
 
     public Field() { }
 
-    public Field(Source.Property<T> property) {
+    public Field(SourceProperty<T> property) {
         this.property = property;
     }
 }

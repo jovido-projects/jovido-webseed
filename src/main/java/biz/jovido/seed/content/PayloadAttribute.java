@@ -1,11 +1,9 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.ui.Field;
-
 /**
  * @author Stephan Grundner
  */
-public abstract class PayloadAttribute<T> {
+public abstract class PayloadAttribute {
 
     private FragmentStructure structure;
     private String name;
@@ -52,11 +50,5 @@ public abstract class PayloadAttribute<T> {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-    }
-
-    public abstract Payload<T> createPayload();
-
-    public Field<T> createField() {
-        return null;
     }
 }

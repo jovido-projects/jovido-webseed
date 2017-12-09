@@ -2,7 +2,7 @@
       xmlns:cp="http://www.getwebseed/dialect/cp"
       th:remove="tag">
 
-<th:block th:with="form = ${self.form}">
+<th:block th:with="form = ${self}">
     <th:block th:each="e : ${form.fields}" th:with="field = ${e.value}">
         <th:block cp:replace="${field}" />
     </th:block>

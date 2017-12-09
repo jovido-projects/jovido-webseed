@@ -14,8 +14,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    OK
-                    <th:block cp:replace="${editor}" />
+                    <th:block cp:replace="${editor.form}" />
+                    <button type="submit" class="btn btn-primary"
+                            th:formaction="@{save}">
+                        Save
+                    </button>
                 </div>
             </div>
         </div>

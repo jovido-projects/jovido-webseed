@@ -13,7 +13,7 @@ import java.util.List;
  * @author Stephan Grundner
  */
 @Entity
-public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implements Unique {
+public class PayloadList extends ListDecorator<Payload> implements Unique {
 
     @Id
     @GeneratedValue
@@ -27,7 +27,7 @@ public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implemen
 
     @OneToMany(mappedBy = "list", targetEntity = Payload.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("ordinal")
-    private final List<P> payloads = new ArrayList<>();
+    private final List<Payload> payloads = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -55,18 +55,18 @@ public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implemen
     }
 
     @Override
-    protected List<P> decorated() {
+    protected List<Payload> decorated() {
         return payloads;
     }
 
     @Override
-    public P set(int index, P payload) {
+    public Payload set(int index, Payload payload) {
         Assert.notNull(payload, "[payload] must not be null");
         return payloads.set(index, payload);
     }
 
     @Override
-    public void add(int index, P payload) {
+    public void add(int index, Payload payload) {
         payloads.add(index, payload);
 
         payload.setOrdinal(index);
@@ -78,7 +78,7 @@ public class PayloadList<P extends Payload<?>> extends ListDecorator<P> implemen
     }
 
     @Override
-    public P remove(int index) {
+    public Payload remove(int index) {
         return payloads.remove(index);
     }
 }

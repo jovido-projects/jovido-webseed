@@ -11,7 +11,7 @@ public class FragmentStructure {
     private final String name;
     private boolean publishable;
 
-    private final Map<String, PayloadAttribute<?>> attributeByName = new LinkedHashMap<>();
+    private final Map<String, PayloadAttribute> attributeByName = new LinkedHashMap<>();
 
     public String getName() {
         return name;
@@ -29,25 +29,25 @@ public class FragmentStructure {
         return Collections.unmodifiableSet(attributeByName.keySet());
     }
 
-    public List<PayloadAttribute<?>> getAttributes() {
-        List<PayloadAttribute<?>> attributes = attributeByName.values().stream()
+    public List<PayloadAttribute> getAttributes() {
+        List<PayloadAttribute> attributes = attributeByName.values().stream()
                 .sorted(Comparator.comparingInt(PayloadAttribute::getOrdinal))
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(attributes);
     }
 
-    public PayloadAttribute<?> getAttribute(String name) {
+    public PayloadAttribute getAttribute(String name) {
         return attributeByName.get(name);
     }
 
-    public PayloadAttribute<?> setAttribute(String name, PayloadAttribute<?> attribute) {
+    public PayloadAttribute setAttribute(String name, PayloadAttribute attribute) {
         if (attribute != null) {
             attribute.setStructure(this);
             attribute.setName(name);
             attribute.setOrdinal(attributeByName.size());
         }
 
-        PayloadAttribute<?> replaced = attributeByName.put(name, attribute);
+        PayloadAttribute replaced = attributeByName.put(name, attribute);
         if (replaced != null) {
             replaced.setStructure(null);
             replaced.setName(null);

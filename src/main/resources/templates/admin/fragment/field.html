@@ -1,5 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:cp="http://www.getwebseed/dialect/cp"
       th:remove="tag">
-:)
+
+<strong>Label</strong>
+<div class="card" th:with="field = ${self}, fragment = ${field?.form?.fragment}">
+    <div class="card-body" th:if="${fragment != null}">
+        <th:block cp:replace="${field.form}" />
+    </div>
+</div>
+
 </html>

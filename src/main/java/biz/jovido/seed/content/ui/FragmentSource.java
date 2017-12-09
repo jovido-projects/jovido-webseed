@@ -1,68 +1,60 @@
 package biz.jovido.seed.content.ui;
 
-import biz.jovido.seed.content.*;
+import biz.jovido.seed.content.Fragment;
+import biz.jovido.seed.content.FragmentService;
 import biz.jovido.seed.ui.Source;
+import biz.jovido.seed.ui.SourceProperty;
+import org.springframework.util.Assert;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Stephan Grundner
  */
 public class FragmentSource implements Source {
 
-    public static class PayloadProperty<T> implements Source.Property<T> {
+    protected final FragmentService fragmentService;
+    protected final Fragment fragment;
 
-        private PayloadValueListAdapter<T, ? extends Payload<T>> values;
-        private final int capacity;
+    private final Map<String, SourceProperty> propertyByName = new HashMap<>();
 
-        @Override
-        public List<T> getValues() {
-            return values;
-        }
-
-        @Override
-        public T getValue() {
-            return values.get(0);
-        }
-
-        @Override
-        public void setValue(T value) {
-            values.set(0, value);
-        }
-
-        @Override
-        public int getCapacity() {
-            return capacity;
-        }
-
-        public PayloadProperty(PayloadList<? extends Payload<T>> list, int capacity) {
-            values = new PayloadValueListAdapter<>(list);
-            this.capacity = capacity;
-        }
+    public Fragment getFragment() {
+        return fragment;
     }
 
-    private final FragmentService fragmentService;
-    private final Fragment fragment;
-
-    private final Map<String, Property<?>> propertyByName = new HashMap<>();
+    @Override
+    public Set<String> getPropertyNames() {
+        return Collections.unmodifiableSet(propertyByName.keySet());
+    }
 
     @Override
-    public Map<String, Property<?>> getProperties() {
-        return Collections.unmodifiableMap(propertyByName);
+    public Collection<SourceProperty> getProperties() {
+        return Collections.unmodifiableCollection(propertyByName.values());
+    }
+
+    @Override
+    public SourceProperty getProperty(String name) {
+        return propertyByName.get(name);
+    }
+
+    @Override
+    public SourceProperty setProperty(String name, SourceProperty property) {
+        return propertyByName.put(name, property);
+    }
+
+    @Override
+    public boolean removeProperty(String name) {
+        SourceProperty property = getProperty(name);
+        return propertyByName.remove(name, property);
     }
 
     public FragmentSource(FragmentService fragmentService, Fragment fragment) {
+        Assert.notNull(fragment);
         this.fragmentService = fragmentService;
         this.fragment = fragment;
 
-
         for (String attributeName : fragment.getAttributeNames()) {
-            PayloadList<?> list = fragment.getPayloadList(attributeName);
-            PayloadAttribute<?> attribute = fragmentService.getAttribute(list);
-            Property<?> property = new PayloadProperty<>(list, attribute.getCapacity());
+            SourceProperty property = new PayloadProperty(this, attributeName);
             propertyByName.put(attributeName, property);
         }
     }

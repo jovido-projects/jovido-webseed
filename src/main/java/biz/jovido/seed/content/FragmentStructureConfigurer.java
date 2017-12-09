@@ -13,7 +13,7 @@ public class FragmentStructureConfigurer implements FragmentStructureConfigurati
     private final FragmentStructure structure;
 
     @SuppressWarnings("unchecked")
-    private <A extends PayloadAttribute<?>, C extends PayloadAttributeConfigurer<A>> C configureAttribute(String attributeName, Class<A> attributeType, Class<C> configurerType) {
+    private <A extends PayloadAttribute, C extends PayloadAttributeConfigurer<A>> C configureAttribute(String attributeName, Class<A> attributeType, Class<C> configurerType) {
         A attribute = (A) structure.getAttribute(attributeName);
         if (attribute == null) {
             attribute = BeanUtils.instantiate(attributeType);

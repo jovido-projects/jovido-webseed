@@ -8,9 +8,10 @@ import java.util.ListIterator;
 /**
  * @author Stephan Grundner
  */
-public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T> {
+public class PayloadValueListAdapter<T> implements List<T> {
 
-    private final PayloadList<P> list;
+    private final FragmentService fragmentService;
+    private final PayloadList list;
 
     @Override
     public int size() {
@@ -29,26 +30,28 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
 
     protected class PayloadValueIterator implements Iterator<T> {
 
-        private final Iterator<P> payloadIterator;
+        private final Iterator<Payload> i;
 
         @Override
         public boolean hasNext() {
-            return payloadIterator.hasNext();
+            return i.hasNext();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public T next() {
-            return payloadIterator.next().getValue();
+            Payload payload = i.next();
+            return (T) fragmentService.getValue(payload);
         }
 
-        public PayloadValueIterator(Iterator<P> payloadIterator) {
-            this.payloadIterator = payloadIterator;
+        public PayloadValueIterator(Iterator<Payload> i) {
+            this.i = i;
         }
     }
 
     @Override
     public Iterator<T> iterator() {
-        Iterator<P> payloadIterator = list.iterator();
+        Iterator<Payload> payloadIterator = list.iterator();
         return new PayloadValueIterator(payloadIterator);
     }
 
@@ -102,17 +105,19 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T get(int index) {
-        Payload<T> payload = list.get(index);
-        return payload.getValue();
+        Payload payload = list.get(index);
+        return (T) fragmentService.getValue(payload);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T set(int index, T element) {
-        Payload<T> payload = list.get(index);
-        T tmp = payload.getValue();
-        payload.setValue(element);
+        Payload payload = list.get(index);
+        T tmp = (T) fragmentService.getValue(payload);
+        fragmentService.setValue(payload, element);
         return tmp;
     }
 
@@ -151,7 +156,8 @@ public class PayloadValueListAdapter<T, P extends Payload<T>> implements List<T>
         throw new UnsupportedOperationException();
     }
 
-    public PayloadValueListAdapter(PayloadList<P> list) {
+    public PayloadValueListAdapter(FragmentService fragmentService, PayloadList list) {
+        this.fragmentService = fragmentService;
         this.list = list;
     }
 }

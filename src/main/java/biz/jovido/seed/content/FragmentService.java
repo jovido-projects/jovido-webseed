@@ -27,48 +27,40 @@ public class FragmentService {
         return null;
     }
 
-    public <T> PayloadAttribute<T> getAttribute(PayloadList<? extends Payload<?>> list) {
-        if (list != null) {
-            Fragment fragment = list.getFragment();
+    public PayloadAttribute getAttribute(Fragment fragment, String attributeName) {
+        if (fragment != null) {
             FragmentStructure structure = getStructure(fragment);
             if (structure != null) {
-                String attributeName = list.getAttributeName();
-                return (PayloadAttribute<T>) structure.getAttribute(attributeName);
+                return structure.getAttribute(attributeName);
             }
         }
 
         return null;
     }
 
-//    public <T, P extends Payload<T>> void addPayload(PayloadList<P> list) {
-//        PayloadAttribute<T> attribute = getAttribute(list);
-//        P payload = (P) attribute.createPayload();
-//        list.add(payload);
-//    }
-    public void addPayload(PayloadList<Payload<?>> list) {
-        PayloadAttribute<?> attribute = getAttribute(list);
-        Payload<?> payload = attribute.createPayload();
-        list.add(payload);
-    }
+    public PayloadAttribute getAttribute(PayloadList list) {
+        if (list != null) {
+            Fragment fragment = list.getFragment();
+            String attributeName = list.getAttributeName();
+            return getAttribute(fragment, attributeName);
+        }
 
-//    public <T, P extends Payload<T>> void addPayload(Fragment fragment, String attributeName) {
-//        PayloadList<P> list = (PayloadList<P>) fragment.getPayloadList(attributeName);
-//        addPayload(list);
-//    }
+        return null;
+    }
 
     public void applyPayloadLists(Fragment fragment) {
         FragmentStructure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
-            PayloadAttribute<?> attribute = structure.getAttribute(attributeName);
-            PayloadList<Payload<?>> list = fragment.getPayloadList(attributeName);
+            PayloadAttribute attribute = structure.getAttribute(attributeName);
+            PayloadList list = fragment.getPayloadList(attributeName);
             if (list == null) {
-                list = new PayloadList<>();
+                list = new PayloadList();
                 fragment.setPayloadList(attributeName, list);
             }
 
             int remaining = attribute.getRequired() - list.size();
             while (remaining-- > 0) {
-                addPayload(list);
+                list.add(new Payload());
             }
         }
     }
@@ -92,8 +84,8 @@ public class FragmentService {
         return createFragment(structure);
     }
 
-    public Payload<?> getPayload(Fragment fragment, String attributeName, int index) {
-        List<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
+    public Payload getPayload(Fragment fragment, String attributeName, int index) {
+        List<Payload> list = fragment.getPayloadList(attributeName);
         if (list != null) {
             return list.get(index);
         }
@@ -101,25 +93,40 @@ public class FragmentService {
         return null;
     }
 
-    public <T> PayloadList<? extends Payload<T>> getPayloadList(Payload<T> payload) {
-        return (PayloadList<? extends Payload<T>>) payload.getList();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getValue(Fragment fragment, String attributeName, int index) {
-        Payload<T> payload = (Payload<T>) getPayload(fragment, attributeName, index);
-        if (payload != null) {
-            return payload.getValue();
+    public Object getValue(Payload payload) {
+        PayloadList list = payload.getList();
+        PayloadAttribute attribute = getAttribute(list);
+        if (attribute instanceof TextPayloadAttribute) {
+            return payload.getText();
+        } else if (attribute instanceof FragmentPayloadAttribute) {
+            return payload.getFragment();
+        } else {
+            throw new RuntimeException(String.format("Unexpected attribute type [%s]",
+                    attribute.getClass()));
         }
-
-        return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> void setValue(Fragment fragment, String attributeName, int index, T value) {
-        List<? extends Payload<?>> list = fragment.getPayloadList(attributeName);
-        Payload<T> payload = (Payload<T>) list.get(index);
-        payload.setValue(value);
+    public Object getValue(Fragment fragment, String attributeName, int index) {
+        Payload payload = getPayload(fragment, attributeName, index);
+        return getValue(payload);
+    }
+
+    public void setValue(Payload payload, Object value) {
+        PayloadList list = payload.getList();
+        PayloadAttribute attribute = getAttribute(list);
+        if (attribute instanceof TextPayloadAttribute) {
+            payload.setText((String) value);
+        } else if (attribute instanceof FragmentPayloadAttribute) {
+            payload.setFragment((Fragment) value);
+        } else {
+            throw new RuntimeException(String.format("Unexpected attribute type [%s]",
+                    attribute.getClass()));
+        }
+    }
+
+    public void setValue(Fragment fragment, String attributeName, int index, Object value) {
+        Payload payload = getPayload(fragment, attributeName, index);
+        setValue(payload, value);
     }
 
     public Fragment saveFragment(Fragment fragment) {

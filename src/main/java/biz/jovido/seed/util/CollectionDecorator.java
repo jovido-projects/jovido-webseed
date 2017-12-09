@@ -27,7 +27,7 @@ public abstract class CollectionDecorator<E> implements Collection<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return decorated().iterator();
     }
 
     @Override
