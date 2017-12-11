@@ -5,11 +5,13 @@ import java.util.List;
 /**
  * @author Stephan Grundner
  */
-public interface SourceProperty {
+public interface BindingProperty<T> {
 
     String getName();
-    List<Object> getValues();
-    Object getValue();
-    void setValue(Object value);
+
+    T getValue();
+    void setValue(T value);
+
+    List<T> getValues();
     int getCapacity();
 }

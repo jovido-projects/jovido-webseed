@@ -3,16 +3,16 @@ package biz.jovido.seed.content.ui;
 import biz.jovido.seed.content.PayloadAttribute;
 import biz.jovido.seed.content.PayloadList;
 import biz.jovido.seed.content.PayloadValueListAdapter;
-import biz.jovido.seed.ui.SourceProperty;
+import biz.jovido.seed.ui.BindingProperty;
 
 import java.util.List;
 
 /**
  * @author Stephan Grundner
  */
-public class PayloadProperty implements SourceProperty {
+public class PayloadProperty implements BindingProperty {
 
-    private FragmentSource source;
+    private FragmentBinding source;
     private final String attributeName;
     private PayloadValueListAdapter<Object> values;
 
@@ -45,7 +45,7 @@ public class PayloadProperty implements SourceProperty {
         return getAttribute().getCapacity();
     }
 
-    public PayloadProperty(FragmentSource source, String attributeName) {
+    public PayloadProperty(FragmentBinding source, String attributeName) {
         this.source = source;
         this.attributeName = attributeName;
 

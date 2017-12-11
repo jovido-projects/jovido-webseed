@@ -2,8 +2,8 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.content.Fragment;
 import biz.jovido.seed.content.FragmentService;
-import biz.jovido.seed.ui.Source;
-import biz.jovido.seed.ui.SourceProperty;
+import biz.jovido.seed.ui.Binding;
+import biz.jovido.seed.ui.BindingProperty;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -11,12 +11,12 @@ import java.util.*;
 /**
  * @author Stephan Grundner
  */
-public class FragmentSource implements Source {
+public class FragmentBinding implements Binding {
 
     protected final FragmentService fragmentService;
     protected final Fragment fragment;
 
-    private final Map<String, SourceProperty> propertyByName = new HashMap<>();
+    private final Map<String, BindingProperty<?>> propertyByName = new HashMap<>();
 
     public Fragment getFragment() {
         return fragment;
@@ -28,33 +28,33 @@ public class FragmentSource implements Source {
     }
 
     @Override
-    public Collection<SourceProperty> getProperties() {
+    public Collection<BindingProperty<?>> getProperties() {
         return Collections.unmodifiableCollection(propertyByName.values());
     }
 
     @Override
-    public SourceProperty getProperty(String name) {
+    public BindingProperty<?> getProperty(String name) {
         return propertyByName.get(name);
     }
 
     @Override
-    public SourceProperty setProperty(String name, SourceProperty property) {
+    public BindingProperty<?> setProperty(String name, BindingProperty<?> property) {
         return propertyByName.put(name, property);
     }
 
     @Override
     public boolean removeProperty(String name) {
-        SourceProperty property = getProperty(name);
+        BindingProperty<?> property = getProperty(name);
         return propertyByName.remove(name, property);
     }
 
-    public FragmentSource(FragmentService fragmentService, Fragment fragment) {
+    public FragmentBinding(FragmentService fragmentService, Fragment fragment) {
         Assert.notNull(fragment);
         this.fragmentService = fragmentService;
         this.fragment = fragment;
 
         for (String attributeName : fragment.getAttributeNames()) {
-            SourceProperty property = new PayloadProperty(this, attributeName);
+            BindingProperty<?> property = new PayloadProperty(this, attributeName);
             propertyByName.put(attributeName, property);
         }
     }

@@ -3,7 +3,7 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public class FragmentPayloadAttributeConfigurer extends PayloadAttributeConfigurer<FragmentPayloadAttribute> {
+public class FragmentPayloadAttributeConfigurer extends PayloadAttributeConfigurer<FragmentPayloadAttribute, FragmentPayloadAttributeConfigurer> {
 
     public FragmentPayloadAttributeConfigurer addAssignableStructureNames(String... structureNames) {
         FragmentStructureService structureService = structureConfigurer.structureService;

@@ -34,7 +34,7 @@ public class FragmentEditorCotroller {
         }
 
         public Fragment getFragment() {
-            return form.getFragment();
+            return form.getBinding().getFragment();
         }
 
         public void setFragment(Fragment fragment) {

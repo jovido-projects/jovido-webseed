@@ -1,0 +1,9 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:replace="ui/field-layout(control=~{::textarea})"
+      th:remove="tag" >
+
+<textarea class="form-control"
+          th:field="*{__${field?.bindingPath}__.values[__${valueItr.index}__]}"></textarea>
+
+</html>

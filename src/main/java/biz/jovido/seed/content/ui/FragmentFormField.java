@@ -2,8 +2,8 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.component.HasTemplate;
 import biz.jovido.seed.content.Fragment;
+import biz.jovido.seed.ui.BindingProperty;
 import biz.jovido.seed.ui.Field;
-import biz.jovido.seed.ui.SourceProperty;
 
 /**
  * @author Stephan Grundner
@@ -31,18 +31,11 @@ public class FragmentFormField extends Field<Fragment> implements HasTemplate {
     }
 
     @Override
-    public void setProperty(SourceProperty property) {
+    public void setProperty(BindingProperty<Fragment> property) {
         super.setProperty(property);
-        Fragment fragment = (Fragment) property.getValue();
+        Fragment fragment = property.getValue();
         form.setFragment(fragment);
     }
-//    public Fragment getFragment() {
-//        return form.getFragment();
-//    }
-//
-//    public void setFragment(Fragment fragment) {
-//        form.setFragment(fragment);
-//    }
 
     public FragmentFormField() {}
 }

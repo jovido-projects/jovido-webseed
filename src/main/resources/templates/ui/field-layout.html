@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<th:block th:with="field=${self}">
+    <div class="form-group"
+         th:each="value,valueItr : ${field.property.values}"
+         th:with="valueActionsFactory = ${field.valueActionsFactory},
+                  actions = ${valueActionsFactory.createActions(field,valueItr.index)}">
+        <div>
+            <strong th:text="${field?.bindingPath}">Label</strong>
+            <div class="btn-group btn-group-sm pull-right"
+                 th:with="moveUp = ${actions['moveUp']},
+                          moveDown = ${actions['moveDown']}">
+                <button class="btn btn-secondary"
+                        th:if="${moveUp != null}"
+                        th:formaction="${moveUp.url}"
+                        th:title="${moveUp.text}">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <button class="btn btn-secondary"
+                        th:if="${moveDown != null}"
+                        th:formaction="${moveDown.url}"
+                        th:title="${moveDown.text}">
+                    <i class="fa fa-arrow-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <th:block th:replace="${control} ?: _" />
+
+    </div>
+</th:block>
+
+<button type="submit" class="btn btn-secondary" th:formaction="@{append(field=${field.bindingPath})}">
+    <i class="fa fa-plus"></i>
+</button>
+
+</html>

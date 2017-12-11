@@ -2,22 +2,27 @@ package biz.jovido.seed.ui;
 
 import biz.jovido.seed.component.HasTemplate;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Stephan Grundner
  */
-public class Field<T> implements HasTemplate {
+public class Field<T> implements Invalidatable, HasTemplate {
 
-    private SourceProperty property;
+    private BindingProperty<T> property;
     private String bindingPath;
     private String template;
+//    private final List<Action> valueActions
 
-    public SourceProperty getProperty() {
+    private final Set<InvalidationListener<Field<T>>> invalidationListeners = new LinkedHashSet<>();
+
+    public BindingProperty getProperty() {
         return property;
     }
 
-    public void setProperty(SourceProperty property) {
+    public void setProperty(BindingProperty<T> property) {
         this.property = property;
     }
 
@@ -30,11 +35,11 @@ public class Field<T> implements HasTemplate {
     }
 
     public List<T> getValues() {
-        return (List<T>) property.getValues();
+        return property.getValues();
     }
 
     public T getValue() {
-        return (T) property.getValue();
+        return property.getValue();
     }
 
     public void setValue(T value) {
@@ -50,9 +55,20 @@ public class Field<T> implements HasTemplate {
         this.template = template;
     }
 
-    public Field() { }
+    public boolean addInvalidationListener(InvalidationListener<Field<T>> invalidationListener) {
+        return invalidationListeners.add(invalidationListener);
+    }
 
-    public Field(SourceProperty property) {
+    @Override
+    public void invalidate() {
+        for (InvalidationListener<Field<T>> invalidationListener : invalidationListeners) {
+            invalidationListener.invalidate(this);
+        }
+    }
+
+    public Field(BindingProperty<T> property) {
         this.property = property;
     }
+
+    public Field() { }
 }

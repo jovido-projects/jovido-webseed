@@ -3,10 +3,17 @@ package biz.jovido.seed.content;
 /**
  * @author Stephan Grundner
  */
-public class PayloadAttributeConfigurer<A extends PayloadAttribute> implements FragmentStructureConfiguration {
+public class PayloadAttributeConfigurer<A extends PayloadAttribute, C extends PayloadAttributeConfigurer<A, C>> implements FragmentStructureConfiguration {
 
     protected final FragmentStructureConfigurer structureConfigurer;
     protected final A attribute;
+
+    @SuppressWarnings("unchecked")
+    public C setCapacity(int capacity) {
+        attribute.setCapacity(capacity);
+
+        return (C) this;
+    }
 
     @Override
     public TextPayloadAttributeConfigurer configureTextAttribute(String attributeName) {

@@ -1,16 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:cp="http://www.getwebseed/dialect/cp"
-      th:remove="tag">
+      th:replace="ui/field-layout(control=~{::input})"
+      th:remove="tag" >
 
-<th:block th:with="field=${self}">
-    <div class="form-group" th:each="value,valueItr : ${field.property.values}">
-        <label th:text="${field?.bindingPath}">Label</label>
-        <input type="text" class="form-control" th:field="*{__${field?.bindingPath}__.values[__${valueItr.index}__]}">
-    </div>
-</th:block>
-
-<button type="submit" class="btn btn-secondary" th:formaction="@{append(field=${field.bindingPath})}">
-    <i class="fa fa-plus"></i>
-</button>
+<input type="text" class="form-control"
+       th:field="*{__${field?.bindingPath}__.values[__${valueItr.index}__]}">
 
 </html>
