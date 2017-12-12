@@ -18,37 +18,15 @@ import org.springframework.web.bind.annotation.SessionAttributes;
  */
 @Controller
 @RequestMapping("/admin/fragment")
-@SessionAttributes(types = FragmentEditorCotroller.FragmentEditor.class)
+@SessionAttributes(types = FragmentEditor.class)
 public class FragmentEditorCotroller {
-
-    public class FragmentEditor {
-
-        private FragmentForm form = new FragmentForm(fragmentService);
-
-        public FragmentForm getForm() {
-            return form;
-        }
-
-        public void setForm(FragmentForm form) {
-            this.form = form;
-        }
-
-        public Fragment getFragment() {
-            return form.getBinding().getFragment();
-        }
-
-        public void setFragment(Fragment fragment) {
-            form.setNestedPath("form");
-            form.setFragment(fragment);
-        }
-    }
 
     @Autowired
     private FragmentService fragmentService;
 
     @ModelAttribute
     protected FragmentEditor editor() {
-        FragmentEditor editor = new FragmentEditor();
+        FragmentEditor editor = new FragmentEditor(fragmentService);
 
         return editor;
     }
@@ -91,7 +69,7 @@ public class FragmentEditorCotroller {
                             @RequestParam(name = "field") String bindingPath) {
 
         BeanWrapper editorWrapper = new BeanWrapperImpl(editor);
-        Field<?> field = (Field<?>) editorWrapper.getPropertyValue(bindingPath);
+        Field field = (Field) editorWrapper.getPropertyValue(bindingPath);
 
         return "redirect:";
     }

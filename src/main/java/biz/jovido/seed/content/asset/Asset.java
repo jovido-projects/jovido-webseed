@@ -1,4 +1,4 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.asset;
 
 import biz.jovido.seed.AbstractUnique;
 

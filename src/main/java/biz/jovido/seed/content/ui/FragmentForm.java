@@ -2,113 +2,71 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.component.HasTemplate;
 import biz.jovido.seed.content.*;
-import biz.jovido.seed.ui.*;
+import biz.jovido.seed.content.structure.Structure;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Stephan Grundner
  */
-public class FragmentForm implements Form, HasTemplate {
+public class FragmentForm implements HasTemplate {
 
     private final FragmentService fragmentService;
 
-    private String nestedPath;
-    private FragmentBinding binding;
+    private final Map<String, PayloadFieldGroup> fieldGroupByAttributeName = new IdentityHashMap<>();
 
+    private Fragment fragment;
     private String template = "admin/fragment/form";
+    private String nestedBindingPath;
 
-    private final Map<String, Field<?>> fieldByAttributeName = new HashMap<>();
-
-    private Field<?> createField(String attributeName) {
-        Fragment fragment = binding.fragment;
-        FragmentStructure structure = fragmentService.getStructure(fragment);
-        PayloadAttribute attribute = structure.getAttribute(attributeName);
-        String bindingPath = String.format("%s.fields[%s]", nestedPath, attributeName);
-
-        Field field;
-
-        if (attribute instanceof FragmentPayloadAttribute) {
-            field = new FormField<>();
-            field.setTemplate("admin/fragment/field");
-            FragmentForm nestedForm = new FragmentForm(fragmentService);
-            nestedForm.setNestedPath(bindingPath + ".form");
-            ((FormField<?>) field).setForm(nestedForm);
-        } else {
-
-            field = new Field<>();
-            field.setTemplate("ui/field/text");
-
-            if (attribute instanceof TextPayloadAttribute) {
-
-                if (((TextPayloadAttribute) attribute).isMultiline()) {
-                    field.setTemplate("ui/field/multiline-text");
-                }
-
-            }
-        }
-
-        field.setBindingPath(bindingPath);
-        field.addInvalidationListener(new InvalidationListener<Field<?>>() {
-            @Override
-            public void invalidate(Field<?> field) {
-
-            }
-        });
-
-        return field;
+    public Map<String, PayloadFieldGroup> getFieldGroups() {
+        return Collections.unmodifiableMap(fieldGroupByAttributeName);
     }
 
     public Fragment getFragment() {
-        if (binding != null) {
-            return binding.fragment;
-        }
+        return fragment;
+    }
 
-        return null;
+    private void payloadsAdded(List<Payload> payloads) {
+        for (Payload payload : payloads) {
+            PayloadSequence payloadList = payload.getSequence();
+            String attributeName = payloadList.getAttributeName();
+            PayloadFieldGroup fieldList = fieldGroupByAttributeName.get(attributeName);
+            if (fieldList == null) {
+                fieldList = new PayloadFieldGroup(this, attributeName);
+                fieldGroupByAttributeName.put(attributeName, fieldList);
+            }
+
+            fieldList.payloadAdded(payload);
+        }
+    }
+
+    private void fragmentChanged(FragmentChange change) {
+        payloadsAdded(change.getPayloadsAdded());
     }
 
     public void setFragment(Fragment fragment) {
+        this.fragment = fragment;
+
+        fieldGroupByAttributeName.clear();
+
         if (fragment != null) {
-            FragmentBinding binding = new FragmentBinding(fragmentService, fragment);
-            setBinding(binding);
-
-            FragmentStructure structure = fragmentService.getStructure(fragment);
+            Structure structure = fragmentService.getStructure(fragment);
             for (String attributeName : structure.getAttributeNames()) {
-                Field<?> field = fieldByAttributeName.get(attributeName);
-                if (field == null) {
-                    field = createField(attributeName);
-                    fieldByAttributeName.put(attributeName, field);
-                }
-
-                FieldUtils.bind(field, binding, attributeName);
+                PayloadSequence sequence = fragment.getSequence(attributeName);
+                payloadsAdded(sequence.getPayloads());
             }
 
-
+            fragment.addChangeListener(new FragmentChangeListener() {
+                @Override
+                public void fragmentChanged(FragmentChange change) {
+                    FragmentForm.this.fragmentChanged(change);
+                }
+            });
         }
-    }
-
-    public String getNestedPath() {
-        return nestedPath;
-    }
-
-    @Override
-    public FragmentBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public void setBinding(Binding binding) {
-        this.binding = (FragmentBinding) binding;
-    }
-
-    public void setNestedPath(String nestedPath) {
-        this.nestedPath = nestedPath;
-    }
-
-    public Map<String, Field<?>> getFields() {
-        return Collections.unmodifiableMap(fieldByAttributeName);
     }
 
     @Override
@@ -118,6 +76,14 @@ public class FragmentForm implements Form, HasTemplate {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public String getNestedBindingPath() {
+        return nestedBindingPath;
+    }
+
+    public void setNestedBindingPath(String nestedBindingPath) {
+        this.nestedBindingPath = nestedBindingPath;
     }
 
     public FragmentForm(FragmentService fragmentService) {

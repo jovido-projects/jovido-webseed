@@ -1,5 +1,6 @@
 package biz.jovido.seed.content;
 
+import biz.jovido.seed.content.structure.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,9 @@ public class FragmentService {
     private EntityManager entityManager;
 
     @Autowired
-    private FragmentStructureService structureService;
+    private StructureService structureService;
 
-    public FragmentStructure getStructure(Fragment fragment) {
+    public Structure getStructure(Fragment fragment) {
         if (fragment != null) {
             String structureName = fragment.getStructureName();
             return structureService.getStructure(structureName);
@@ -27,9 +28,9 @@ public class FragmentService {
         return null;
     }
 
-    public PayloadAttribute getAttribute(Fragment fragment, String attributeName) {
+    public Attribute getAttribute(Fragment fragment, String attributeName) {
         if (fragment != null) {
-            FragmentStructure structure = getStructure(fragment);
+            Structure structure = getStructure(fragment);
             if (structure != null) {
                 return structure.getAttribute(attributeName);
             }
@@ -38,7 +39,7 @@ public class FragmentService {
         return null;
     }
 
-    public PayloadAttribute getAttribute(PayloadList list) {
+    public Attribute getAttribute(PayloadSequence list) {
         if (list != null) {
             Fragment fragment = list.getFragment();
             String attributeName = list.getAttributeName();
@@ -48,24 +49,25 @@ public class FragmentService {
         return null;
     }
 
-    public void applyPayloadLists(Fragment fragment) {
-        FragmentStructure structure = getStructure(fragment);
+    public void applySequences(Fragment fragment) {
+        Structure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
-            PayloadAttribute attribute = structure.getAttribute(attributeName);
-            PayloadList list = fragment.getPayloadList(attributeName);
-            if (list == null) {
-                list = new PayloadList();
-                fragment.setPayloadList(attributeName, list);
+
+            PayloadSequence sequence = fragment.getSequence(attributeName);
+            if (sequence == null) {
+                sequence = new PayloadSequence();
+                fragment.setSequence(attributeName, sequence);
             }
 
-            int remaining = attribute.getRequired() - list.size();
+            Attribute attribute = structure.getAttribute(attributeName);
+            int remaining = attribute.getRequired() - sequence.size();
             while (remaining-- > 0) {
-                list.add(new Payload());
+                sequence.addPayload(new Payload());
             }
         }
     }
 
-    public Fragment createFragment(FragmentStructure structure) {
+    public Fragment createFragment(Structure structure) {
         Fragment fragment = new Fragment();
 
         FragmentHistory history = new FragmentHistory();
@@ -74,31 +76,34 @@ public class FragmentService {
 
         fragment.setStructureName(structure.getName());
 
-        applyPayloadLists(fragment);
+        applySequences(fragment);
 
         return fragment;
     }
 
     public Fragment createFragment(String structureName) {
-        FragmentStructure structure = structureService.getStructure(structureName);
+        Structure structure = structureService.getStructure(structureName);
         return createFragment(structure);
     }
 
     public Payload getPayload(Fragment fragment, String attributeName, int index) {
-        List<Payload> list = fragment.getPayloadList(attributeName);
-        if (list != null) {
-            return list.get(index);
+        PayloadSequence sequence = fragment.getSequence(attributeName);
+        if (sequence != null) {
+            List<Payload> payloads = sequence.getPayloads();
+            if (payloads != null) {
+                return payloads.get(index);
+            }
         }
 
         return null;
     }
 
     public Object getValue(Payload payload) {
-        PayloadList list = payload.getList();
-        PayloadAttribute attribute = getAttribute(list);
-        if (attribute instanceof TextPayloadAttribute) {
+        PayloadSequence list = payload.getSequence();
+        Attribute attribute = getAttribute(list);
+        if (attribute instanceof TextAttribute) {
             return payload.getText();
-        } else if (attribute instanceof FragmentPayloadAttribute) {
+        } else if (attribute instanceof FragmentAttribute) {
             return payload.getFragment();
         } else {
             throw new RuntimeException(String.format("Unexpected attribute type [%s]",
@@ -112,11 +117,11 @@ public class FragmentService {
     }
 
     public void setValue(Payload payload, Object value) {
-        PayloadList list = payload.getList();
-        PayloadAttribute attribute = getAttribute(list);
-        if (attribute instanceof TextPayloadAttribute) {
+        PayloadSequence list = payload.getSequence();
+        Attribute attribute = getAttribute(list);
+        if (attribute instanceof TextAttribute) {
             payload.setText((String) value);
-        } else if (attribute instanceof FragmentPayloadAttribute) {
+        } else if (attribute instanceof FragmentAttribute) {
             payload.setFragment((Fragment) value);
         } else {
             throw new RuntimeException(String.format("Unexpected attribute type [%s]",

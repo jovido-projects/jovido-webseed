@@ -1,0 +1,12 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<fieldset th:with="fieldGroup = ${self}">
+    <legend th:text="${fieldGroup.attributeName}"></legend>
+    <th:block th:each="field : ${fieldGroup.fields}">
+        <th:block cp:replace="${field}" />
+    </th:block>
+</fieldset>
+
+</html>

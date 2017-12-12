@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<div class="form-group">
+    <div>
+        <strong>Label</strong>
+        <div class="btn-group btn-group-sm pull-right">
+            <button class="btn btn-secondary">
+                <i class="fa fa-arrow-up"></i>
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fa fa-arrow-down"></i>
+            </button>
+            <button class="btn btn-secondary" th_formaction="@{move-up()}">
+                <i class="fa fa-remove"></i>
+            </button>
+        </div>
+    </div>
+
+    <th:block th:replace="${control} ?: _" />
+</div>
+
+</html>

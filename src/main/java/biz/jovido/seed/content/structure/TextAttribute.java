@@ -1,9 +1,9 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.structure;
 
 /**
  * @author Stephan Grundner
  */
-public class TextPayloadAttribute extends PayloadAttribute {
+public class TextAttribute extends Attribute {
 
     private boolean multiline;
 

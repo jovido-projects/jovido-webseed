@@ -9,9 +9,6 @@ import java.util.Map;
  */
 public interface Form extends HasTemplate {
 
-    Map<String, Field<?>> getFields();
+//    Map<String, Field<?>> getFields();
     String getNestedPath();
-
-    Binding getBinding();
-    void setBinding(Binding binding);
 }

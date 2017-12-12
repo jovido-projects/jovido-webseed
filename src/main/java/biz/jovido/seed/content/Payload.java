@@ -1,8 +1,10 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
+import biz.jovido.seed.content.asset.Asset;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -12,26 +14,28 @@ import java.util.Date;
 public class Payload extends AbstractUnique {
 
     @ManyToOne(targetEntity = Payload.class, optional = false)
-    private PayloadList list;
+    private PayloadSequence sequence;
 
-    private int ordinal;
+    private int ordinal = -1;
 
-    @Column(name = "text_value")
+    @Lob
     private String text;
+
     private Date date;
+    private BigDecimal number;
 
     @ManyToOne
     private Fragment fragment;
 
     @ManyToOne
-    private Image image;
+    private Asset asset;
 
-    public PayloadList getList() {
-        return list;
+    public PayloadSequence getSequence() {
+        return sequence;
     }
 
-    protected void setList(PayloadList list) {
-        this.list = list;
+    protected void setSequence(PayloadSequence sequence) {
+        this.sequence = sequence;
     }
 
     public int getOrdinal() {
@@ -58,6 +62,14 @@ public class Payload extends AbstractUnique {
         this.date = date;
     }
 
+    public BigDecimal getNumber() {
+        return number;
+    }
+
+    public void setNumber(BigDecimal number) {
+        this.number = number;
+    }
+
     public Fragment getFragment() {
         return fragment;
     }
@@ -66,11 +78,11 @@ public class Payload extends AbstractUnique {
         this.fragment = fragment;
     }
 
-    public Image getImage() {
-        return image;
+    public Asset getAsset() {
+        return asset;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setAsset(Asset asset) {
+        this.asset = asset;
     }
 }

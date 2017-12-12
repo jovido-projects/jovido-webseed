@@ -1,22 +1,22 @@
-package biz.jovido.seed.content;
+package biz.jovido.seed.content.structure;
 
 /**
  * @author Stephan Grundner
  */
-public abstract class PayloadAttribute {
+public abstract class Attribute {
 
-    private FragmentStructure structure;
+    private Structure structure;
     private String name;
     private int ordinal = -1;
 
     private int required = 1;
     private int capacity = 1;
 
-    public FragmentStructure getStructure() {
+    public Structure getStructure() {
         return structure;
     }
 
-    protected void setStructure(FragmentStructure structure) {
+    protected void setStructure(Structure structure) {
         this.structure = structure;
     }
 
