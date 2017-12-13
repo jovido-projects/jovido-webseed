@@ -6,10 +6,7 @@ import biz.jovido.seed.util.ListDecorator;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,8 +22,8 @@ public class PayloadSequence extends AbstractUnique {
     private String attributeName;
 
     @OneToMany(mappedBy = "sequence", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("ordinal")
-    private final List<Payload> payloads = new ArrayList<>();
+//    @OrderBy("ordinal")
+    private final Set<Payload> payloads = new LinkedHashSet<>();
 
     public Fragment getFragment() {
         return fragment;
@@ -46,7 +43,8 @@ public class PayloadSequence extends AbstractUnique {
 
     public List<Payload> getPayloads() {
         List<Payload> list = payloads.stream()
-                .sorted(Comparator.comparingInt(Payload::getOrdinal))
+                .sorted(Comparator.comparingInt(
+                        Payload::getOrdinal))
                 .collect(Collectors.toList());
 
         return Collections.unmodifiableList(list);
@@ -55,7 +53,7 @@ public class PayloadSequence extends AbstractUnique {
     public boolean addPayload(Payload payload) {
         if (payloads.add(payload)) {
             payload.setSequence(this);
-            payload.setOrdinal(payloads.size());
+            payload.setOrdinal(payloads.size() - 1);
             FragmentChange change = new FragmentChange(fragment,
                     Collections.singletonList(payload), new ArrayList<>());
             fragment.notifyFragmentChanged(change);
@@ -74,36 +72,14 @@ public class PayloadSequence extends AbstractUnique {
         return false;
     }
 
+    public void swapPayloads(int i, int j) {
+        Payload some = getPayloads().get(i);
+        Payload other = getPayloads().get(j);
+        some.setOrdinal(j);
+        other.setOrdinal(i);
+    }
+
     public int size() {
         return payloads.size();
     }
-
-//
-//    @Override
-//    protected List<Payload> decorated() {
-//        return payloads;
-//    }
-//
-//    @Override
-//    public Payload set(int index, Payload payload) {
-//        Assert.notNull(payload, "[payload] must not be null");
-//        return payloads.set(index, payload);
-//    }
-//
-//    @Override
-//    public void add(int index, Payload payload) {
-//        payloads.add(index, payload);
-//
-//        payload.setOrdinal(index);
-//        payload.setSequence(this);
-//
-//        FragmentChange change = new FragmentChange(fragment,
-//                Collections.singletonList(payload), new ArrayList<>());
-//        fragment.notifyFragmentChanged(change);
-//    }
-//
-//    @Override
-//    public Payload remove(int index) {
-//        return payloads.remove(index);
-//    }
 }

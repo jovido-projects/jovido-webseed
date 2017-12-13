@@ -3,7 +3,7 @@
       th:remove="tag">
 
 <th:block th:with="form = ${self}">
-    <th:block th:each="e : ${form.fieldGroups}" th:with="fieldGroup = ${e.value}">
+    <th:block th:each="fieldGroup : ${form.fieldGroups}">
         <th:block cp:replace="${fieldGroup}" />
     </th:block>
 </th:block>

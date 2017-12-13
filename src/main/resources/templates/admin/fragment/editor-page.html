@@ -3,7 +3,7 @@
       th:replace="admin/page(main=~{::main})"
       th:remove="tag">
 
-<th:block th:fragment="main">
+<th:block th:fragment="main" th:object="${fragmentEditor}">
 
 
     <form id="form" th:object="${fragmentEditor}" method="post"

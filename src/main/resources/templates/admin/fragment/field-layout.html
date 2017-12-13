@@ -2,17 +2,22 @@
       xmlns:cp="http://www.getwebseed/dialect/cp"
       th:remove="tag">
 
-<div class="form-group">
+<div class="form-group" th:with="field = ${self}">
     <div>
-        <strong>Label</strong>
+        <strong th:text="${field.bindingPath}">Label</strong>
         <div class="btn-group btn-group-sm pull-right">
-            <button class="btn btn-secondary">
-                <i class="fa fa-arrow-up"></i>
-            </button>
+            <th:block th:with="action = ${field.actions[moveUp]}" >
+                <button class="btn btn-secondary" th:disabled="${action?.disabled} ?: _"
+                        th:formaction="${action?.url}">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+            </th:block>
+
             <button class="btn btn-secondary">
                 <i class="fa fa-arrow-down"></i>
             </button>
-            <button class="btn btn-secondary" th_formaction="@{move-up()}">
+            <button class="btn btn-secondary"
+                    th_formaction="@{remove()}">
                 <i class="fa fa-remove"></i>
             </button>
         </div>

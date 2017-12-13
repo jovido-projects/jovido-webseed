@@ -1,39 +1,40 @@
 package biz.jovido.seed.ui;
 
-import biz.jovido.seed.component.HasTemplate;
+import java.util.UUID;
 
 /**
  * @author Stephan Grundner
  */
-public class Field implements HasTemplate {
+public abstract class Field<G extends FieldGroup<?, G>> implements HasId {
 
-    private String template;
-    private ValueAccessor valueAccessor;
+    private String id;
+    private G group;
+//    private String bindingPath;
 
     @Override
-    public String getTemplate() {
-        return template;
+    public String getId() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+
+        return id;
     }
 
-    public void setTemplate(String template) {
-        this.template = template;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public ValueAccessor getValueAccessor() {
-        return valueAccessor;
+    public G getGroup() {
+        return group;
     }
 
-    public void setValueAccessor(ValueAccessor valueAccessor) {
-        this.valueAccessor = valueAccessor;
+    public void setGroup(G group) {
+        this.group = group;
     }
 
-    public Object getValue() {
-        return valueAccessor.getValue();
-    }
+    public abstract String getBindingPath();
 
-    public void setValue(Object value) {
-        valueAccessor.setValue(value);
-    }
-
-    public Field() { }
+//    public void setBindingPath(String bindingPath) {
+//        this.bindingPath = bindingPath;
+//    }
 }

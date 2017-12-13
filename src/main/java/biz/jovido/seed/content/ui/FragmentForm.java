@@ -1,51 +1,30 @@
 package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.component.HasTemplate;
-import biz.jovido.seed.content.*;
+import biz.jovido.seed.content.Fragment;
+import biz.jovido.seed.content.FragmentService;
+import biz.jovido.seed.content.PayloadSequence;
 import biz.jovido.seed.content.structure.Structure;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
  */
 public class FragmentForm implements HasTemplate {
 
-    private final FragmentService fragmentService;
-
-    private final Map<String, PayloadFieldGroup> fieldGroupByAttributeName = new IdentityHashMap<>();
+    protected final FragmentService fragmentService;
 
     private Fragment fragment;
     private String template = "admin/fragment/form";
     private String nestedBindingPath;
 
-    public Map<String, PayloadFieldGroup> getFieldGroups() {
-        return Collections.unmodifiableMap(fieldGroupByAttributeName);
-    }
+    private Map<String, PayloadFieldGroup> fieldGroupByAttributeName = new HashMap<>();
 
     public Fragment getFragment() {
         return fragment;
-    }
-
-    private void payloadsAdded(List<Payload> payloads) {
-        for (Payload payload : payloads) {
-            PayloadSequence payloadList = payload.getSequence();
-            String attributeName = payloadList.getAttributeName();
-            PayloadFieldGroup fieldList = fieldGroupByAttributeName.get(attributeName);
-            if (fieldList == null) {
-                fieldList = new PayloadFieldGroup(this, attributeName);
-                fieldGroupByAttributeName.put(attributeName, fieldList);
-            }
-
-            fieldList.payloadAdded(payload);
-        }
-    }
-
-    private void fragmentChanged(FragmentChange change) {
-        payloadsAdded(change.getPayloadsAdded());
     }
 
     public void setFragment(Fragment fragment) {
@@ -55,17 +34,21 @@ public class FragmentForm implements HasTemplate {
 
         if (fragment != null) {
             Structure structure = fragmentService.getStructure(fragment);
+
+            int i = 0;
             for (String attributeName : structure.getAttributeNames()) {
                 PayloadSequence sequence = fragment.getSequence(attributeName);
-                payloadsAdded(sequence.getPayloads());
-            }
-
-            fragment.addChangeListener(new FragmentChangeListener() {
-                @Override
-                public void fragmentChanged(FragmentChange change) {
-                    FragmentForm.this.fragmentChanged(change);
+                PayloadFieldGroup fieldGroup = fieldGroupByAttributeName.get(attributeName);
+                if (fieldGroup == null) {
+                    fieldGroup = new PayloadFieldGroup(this);
+                    String bindingPath = String.format("%s.fieldGroups[%d]", nestedBindingPath, i);
+                    fieldGroup.setNestedBindingPath(bindingPath);
+                    fieldGroup.setOrdinal(i++);
+                    fieldGroup.setTemplate("admin/fragment/field-group");
+                    fieldGroup.setSequence(sequence);
+                    fieldGroupByAttributeName.put(attributeName, fieldGroup);
                 }
-            });
+            }
         }
     }
 
@@ -84,6 +67,25 @@ public class FragmentForm implements HasTemplate {
 
     public void setNestedBindingPath(String nestedBindingPath) {
         this.nestedBindingPath = nestedBindingPath;
+    }
+
+    public List<PayloadFieldGroup> getFieldGroups() {
+        List<PayloadFieldGroup> fieldGroups = fieldGroupByAttributeName.values().stream()
+                .sorted(Comparator.comparingInt(PayloadFieldGroup::getOrdinal)).distinct()
+                .collect(Collectors.toList());
+
+        return Collections.unmodifiableList(fieldGroups);
+    }
+
+    public PayloadField findField(Predicate<PayloadField> predicate) {
+        for (PayloadFieldGroup fieldGroup : getFieldGroups()) {
+            PayloadField field = fieldGroup.findField(predicate);
+            if (field != null) {
+                return field;
+            }
+        }
+
+        return null;
     }
 
     public FragmentForm(FragmentService fragmentService) {

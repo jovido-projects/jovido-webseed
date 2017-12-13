@@ -2,6 +2,7 @@ package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.content.Fragment;
 import biz.jovido.seed.content.FragmentService;
+import biz.jovido.seed.content.Payload;
 import biz.jovido.seed.ui.Field;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -63,13 +64,26 @@ public class FragmentEditorCotroller {
         return "redirect:";
     }
 
+    @RequestMapping("move-up")
+    protected String moveUp(@ModelAttribute FragmentEditor editor,
+                            BindingResult editorBindingResult,
+                            @RequestParam(name = "field") String fieldId) {
+
+        PayloadField field = editor.getForm().findField(it -> it.getId().equals(fieldId));
+        Payload current = field.getPayload();
+        int ordinal = current.getOrdinal();
+        current.getSequence().swapPayloads(ordinal, ordinal - 1);
+        field.getGroup().invalidate();
+
+        return "redirect:";
+    }
+
     @RequestMapping("append")
     protected String append(@ModelAttribute FragmentEditor editor,
                             BindingResult editorBindingResult,
-                            @RequestParam(name = "field") String bindingPath) {
+                            @RequestParam(name = "field") String fieldId) {
 
-        BeanWrapper editorWrapper = new BeanWrapperImpl(editor);
-        Field field = (Field) editorWrapper.getPropertyValue(bindingPath);
+        PayloadField field = editor.getForm().findField(it -> it.getId() == fieldId);
 
         return "redirect:";
     }

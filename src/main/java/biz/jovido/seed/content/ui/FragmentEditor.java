@@ -24,5 +24,6 @@ public class FragmentEditor {
 
     public FragmentEditor(FragmentService fragmentService) {
         form = new FragmentForm(fragmentService);
+        form.setNestedBindingPath("form");
     }
 }

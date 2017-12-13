@@ -3,7 +3,7 @@
       th:remove="tag">
 
 <fieldset th:with="fieldGroup = ${self}">
-    <legend th:text="${fieldGroup.attributeName}"></legend>
+    <legend th:text="${fieldGroup.sequence.attributeName}"></legend>
     <th:block th:each="field : ${fieldGroup.fields}">
         <th:block cp:replace="${field}" />
     </th:block>
