@@ -1,9 +1,12 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
+import biz.jovido.seed.content.event.FragmentChange;
+import biz.jovido.seed.content.event.FragmentChangeListener;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Stephan Grundner
@@ -70,6 +73,13 @@ public class Fragment extends AbstractUnique {
         }
 
         return replaced;
+    }
+
+    public Set<Payload> getAllPayloads() {
+        Set<Payload> payloads = sequenceByAttributeName.values().stream()
+                .flatMap(it -> it.getPayloads().stream())
+                .collect(Collectors.toSet());
+        return Collections.unmodifiableSet(payloads);
     }
 
     public boolean addChangeListener(FragmentChangeListener changeListener) {

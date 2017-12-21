@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:remove="tag">
+
+<div class="form-group" th:with="field = ${self}">
+    <div>
+        <strong th:text="'__${field.payload.sequence.attributeName}__#__${field.payload?.ordinal}__'">Label</strong>
+        <div class="btn-group btn-group-sm pull-right">
+            <button class="btn btn-secondary"
+                    th:remove="${field.moveUpAction == null} ? all : _"
+                    th:disabled="${field.moveUpAction?.disabled} ? disabled : _"
+                    th:formaction="${field.moveUpAction?.url}">
+                <i class="fa fa-arrow-up"></i>
+            </button>
+            <button class="btn btn-secondary"
+                    th:remove="${field.moveDownAction == null} ? all : _"
+                    th:disabled="${field.moveDownAction?.disabled} ? disabled : _"
+                    th:formaction="${field.moveDownAction?.url}">
+                <i class="fa fa-arrow-down"></i>
+            </button>
+            <button class="btn btn-secondary" th:remove="${field.removeAction == null} ? all : _"
+                    th:formaction="${field.removeAction?.url}">
+                <i class="fa fa-remove"></i>
+            </button>
+        </div>
+    </div>
+
+    <th:block th:replace="${control} ?: _" />
+</div>
+
+</html>

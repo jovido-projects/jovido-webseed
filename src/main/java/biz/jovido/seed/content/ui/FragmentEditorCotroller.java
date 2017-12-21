@@ -3,9 +3,10 @@ package biz.jovido.seed.content.ui;
 import biz.jovido.seed.content.Fragment;
 import biz.jovido.seed.content.FragmentService;
 import biz.jovido.seed.content.Payload;
-import biz.jovido.seed.ui.Field;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import biz.jovido.seed.content.structure.Attribute;
+import biz.jovido.seed.content.structure.FragmentAttribute;
+import biz.jovido.seed.content.structure.TextAttribute;
+import biz.jovido.seed.ui.BindingPathProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -28,13 +29,51 @@ public class FragmentEditorCotroller {
     @ModelAttribute
     protected FragmentEditor editor() {
         FragmentEditor editor = new FragmentEditor(fragmentService);
+        FragmentForm form = editor.getForm();
+        form.setNestedBindingPath("form");
+        form.setFieldFactory(new FragmentForm.PayloadFieldFactory() {
+            @Override
+            public PayloadField createPayloadField(FragmentForm form, Payload payload) {
+                PayloadField field = new PayloadField();
+                field.setPayload(payload);
+                field.setBindingPathProvider(new BindingPathProvider() {
+                    @Override
+                    public String getBindingPath() {
+                        return String.format("%s.fieldsById[%s]", form.getNestedBindingPath(), field.getId());
+                    }
+                });
+
+                Attribute attribute = fragmentService.getAttribute(payload);
+
+                if (attribute instanceof TextAttribute) {
+                    field.setTemplate("admin/fragment/text-field");
+                } else if (attribute instanceof FragmentAttribute) {
+                    field.setTemplate("admin/fragment/nested-fragment-field");
+                } else {
+                    field.setTemplate("admin/fragment/payload-field");
+                }
+
+                if (attribute instanceof FragmentAttribute) {
+                    FragmentForm nestedForm = new FragmentForm(fragmentService);
+                    nestedForm.setNestedBindingPathProvider(new BindingPathProvider() {
+                        @Override
+                        public String getBindingPath() {
+                            return String.format("%s.nestedForm", field.getBindingPath());
+                        }
+                    });
+                    nestedForm.setFragment(payload.getFragment());
+                    field.setNestedForm(nestedForm);
+                }
+
+                return field;
+            }
+        });
 
         return editor;
     }
 
     @RequestMapping
     protected String index(@ModelAttribute FragmentEditor editor) {
-
 
         return "admin/fragment/editor-page";
     }
@@ -69,21 +108,49 @@ public class FragmentEditorCotroller {
                             BindingResult editorBindingResult,
                             @RequestParam(name = "field") String fieldId) {
 
-        PayloadField field = editor.getForm().findField(it -> it.getId().equals(fieldId));
+        PayloadField field = (PayloadField) editor.getForm().findField(it -> it.getId().equals(fieldId));
         Payload current = field.getPayload();
         int ordinal = current.getOrdinal();
         current.getSequence().swapPayloads(ordinal, ordinal - 1);
-        field.getGroup().invalidate();
 
         return "redirect:";
     }
 
-    @RequestMapping("append")
+    @RequestMapping("move-down")
+    protected String moveDown(@ModelAttribute FragmentEditor editor,
+                              BindingResult editorBindingResult,
+                              @RequestParam(name = "field") String fieldId) {
+
+        PayloadField field = (PayloadField) editor.getForm().findField(it -> it.getId().equals(fieldId));
+        Payload current = field.getPayload();
+        int ordinal = current.getOrdinal();
+        current.getSequence().swapPayloads(ordinal, ordinal + 1);
+
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "append", params = {"!structure"})
     protected String append(@ModelAttribute FragmentEditor editor,
                             BindingResult editorBindingResult,
                             @RequestParam(name = "field") String fieldId) {
 
-        PayloadField field = editor.getForm().findField(it -> it.getId() == fieldId);
+        PayloadField field = (PayloadField) editor.getForm().findField(it -> it.getId().equals(fieldId));
+
+        return "redirect:";
+    }
+
+    @RequestMapping(path = "append", params = {"structure"})
+    protected String append(@ModelAttribute FragmentEditor editor,
+                            BindingResult editorBindingResult,
+                            @RequestParam(name = "structure") String structureName,
+                            @RequestParam(name = "field") String fieldId) {
+
+//        PayloadSequenceFormField field = (PayloadSequenceFormField) editor.getForm().findField(it -> it.getId().equals(fieldId));
+//        PayloadSequence sequence = field.getSequence();
+//        Fragment fragment = fragmentService.createFragment(structureName);
+//        Payload payload = new Payload();
+//        payload.setFragment(fragment);
+//        sequence.addPayload(payload);
 
         return "redirect:";
     }

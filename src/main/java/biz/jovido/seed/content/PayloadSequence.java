@@ -1,9 +1,10 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
-import biz.jovido.seed.Unique;
-import biz.jovido.seed.util.ListDecorator;
-import org.springframework.util.Assert;
+import biz.jovido.seed.content.event.FragmentChange;
+import biz.jovido.seed.content.event.PayloadAdded;
+import biz.jovido.seed.content.event.PayloadRemoved;
+import biz.jovido.seed.content.event.PayloadsSwapped;
 
 import javax.persistence.*;
 import java.util.*;
@@ -22,7 +23,6 @@ public class PayloadSequence extends AbstractUnique {
     private String attributeName;
 
     @OneToMany(mappedBy = "sequence", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("ordinal")
     private final Set<Payload> payloads = new LinkedHashSet<>();
 
     public Fragment getFragment() {
@@ -54,8 +54,7 @@ public class PayloadSequence extends AbstractUnique {
         if (payloads.add(payload)) {
             payload.setSequence(this);
             payload.setOrdinal(payloads.size() - 1);
-            FragmentChange change = new FragmentChange(fragment,
-                    Collections.singletonList(payload), new ArrayList<>());
+            FragmentChange change = new PayloadAdded(fragment, attributeName, payload.getOrdinal());
             fragment.notifyFragmentChanged(change);
             return true;
         }
@@ -64,8 +63,11 @@ public class PayloadSequence extends AbstractUnique {
     }
 
     public boolean removePayload(int ordinal) {
-        if (payloads.removeIf(it -> it.getOrdinal() == ordinal)) {
+        Payload payload = getPayloads().get(ordinal);
+        if (payloads.remove(payload)) {
 
+            FragmentChange change = new PayloadRemoved(fragment, payload);
+            fragment.notifyFragmentChanged(change);
             return true;
         }
 
@@ -77,6 +79,9 @@ public class PayloadSequence extends AbstractUnique {
         Payload other = getPayloads().get(j);
         some.setOrdinal(j);
         other.setOrdinal(i);
+
+        FragmentChange change = new PayloadsSwapped(fragment, attributeName, i, j);
+        fragment.notifyFragmentChanged(change);
     }
 
     public int size() {

@@ -3,7 +3,7 @@ package biz.jovido.seed.ui;
 /**
  * @author Stephan Grundner
  */
-public interface HasId {
+public interface BindingPathProvider {
 
-    String getId();
+    String getBindingPath();
 }

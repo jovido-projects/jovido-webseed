@@ -3,8 +3,16 @@
       th:remove="tag">
 
 <th:block th:with="form = ${self}">
-    <th:block th:each="fieldGroup : ${form.fieldGroups}">
-        <th:block cp:replace="${fieldGroup}" />
+    <th:block th:each="e : ${form.fieldsByAttributeName}"
+              th:with="fields = ${e.value}, attributeName = ${e.key}">
+
+        <fieldset>
+            <legend th:text="${attributeName}"></legend>
+            <th:block th:each="field : ${fields}">
+                <th:block cp:replace="${field}" />
+            </th:block>
+        </fieldset>
+
     </th:block>
 </th:block>
 </html>

@@ -8,7 +8,7 @@
 
             <div class="btn-group btn-group-xs pull-right">
                 <a href="#" class="btn btn-primary"
-                   th:data-formaction="@{add-node(hierarchy=${hierarchy.id}, parent=null)}">
+                   th:data-formaction="@{add-node(hierarchy=${hierarchy.id}, form=null)}">
                     <i class="fa fa-plus"></i>
                     Create menu entry
                 </a>
@@ -18,9 +18,9 @@
         <table class="table tree" style="margin-top:5px;"
                th:with="nodes = ${hierarchy.rootNodes}">
             <th:block th:fragment="tree-list(nodes)">
-                <th:block th:each="node : ${nodes}" th:with="parent = ${node.parent}">
+                <th:block th:each="node : ${nodes}" th:with="form = ${node.form}">
                     <tr th:class="treegrid-__${node.id}__"
-                        th:classappend="${parent != null} ? treegrid-parent-__${parent?.id}__ : _">
+                        th:classappend="${form != null} ? treegrid-form-__${form?.id}__ : _">
 
                         <td>
                             [[${@hierarchyService.getLabelText(node)}]]
@@ -40,7 +40,7 @@
                                     <i class="fa fa-arrow-down"></i>
                                 </button>
                                 <button class="btn btn-default"
-                                        th:formaction="@{add-node(hierarchy=${hierarchy.id}, parent=${node.id})}">
+                                        th:formaction="@{add-node(hierarchy=${hierarchy.id}, form=${node.id})}">
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 <button class="btn btn-default"

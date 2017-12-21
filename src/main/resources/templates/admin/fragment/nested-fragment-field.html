@@ -1,0 +1,13 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:replace="admin/fragment/payload-field(control=~{::control})" th:remove="tag">
+
+<th:block th:fragment="control" th:with="field = ${self}">
+    <div class="card">
+        <div class="card-body">
+            <th:block cp:replace="${field.nestedForm}" />
+        </div>
+    </div>
+</th:block>
+
+</html>

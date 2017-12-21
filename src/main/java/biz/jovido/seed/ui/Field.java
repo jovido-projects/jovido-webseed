@@ -1,19 +1,21 @@
 package biz.jovido.seed.ui;
 
+import biz.jovido.seed.component.HasTemplate;
+import org.springframework.util.StringUtils;
+
 import java.util.UUID;
 
 /**
  * @author Stephan Grundner
  */
-public abstract class Field<G extends FieldGroup<?, G>> implements HasId {
+public abstract class Field implements HasTemplate {
 
     private String id;
-    private G group;
-//    private String bindingPath;
+    private String template;
+    private BindingPathProvider bindingPathProvider;
 
-    @Override
     public String getId() {
-        if (id == null) {
+        if (StringUtils.isEmpty(id)) {
             id = UUID.randomUUID().toString();
         }
 
@@ -24,17 +26,32 @@ public abstract class Field<G extends FieldGroup<?, G>> implements HasId {
         this.id = id;
     }
 
-    public G getGroup() {
-        return group;
+    @Override
+    public String getTemplate() {
+        return template;
     }
 
-    public void setGroup(G group) {
-        this.group = group;
+    public void setTemplate(String template) {
+        this.template = template;
     }
 
-    public abstract String getBindingPath();
+    public BindingPathProvider getBindingPathProvider() {
+        return bindingPathProvider;
+    }
 
-//    public void setBindingPath(String bindingPath) {
-//        this.bindingPath = bindingPath;
-//    }
+    public void setBindingPathProvider(BindingPathProvider bindingPathProvider) {
+        this.bindingPathProvider = bindingPathProvider;
+    }
+
+    public String getBindingPath() {
+        if (bindingPathProvider != null) {
+            return bindingPathProvider.getBindingPath();
+        }
+
+        return null;
+    }
+
+    public void setBindingPath(String bindingPath) {
+        bindingPathProvider = new FixedBindingPathProvider(bindingPath);
+    }
 }

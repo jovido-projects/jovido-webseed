@@ -5,17 +5,9 @@ package biz.jovido.seed.ui;
  */
 public class Action {
 
-    private String text;
     private String url;
+    private Text text;
     private boolean disabled;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
 
     public String getUrl() {
         return url;
@@ -23,6 +15,14 @@ public class Action {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Text getText() {
+        return text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
     }
 
     public boolean isDisabled() {

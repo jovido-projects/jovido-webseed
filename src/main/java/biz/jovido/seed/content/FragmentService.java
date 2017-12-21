@@ -49,6 +49,15 @@ public class FragmentService {
         return null;
     }
 
+    public Attribute getAttribute(Payload payload) {
+        PayloadSequence sequence = payload.getSequence();
+        if (sequence != null) {
+            return getAttribute(sequence);
+        }
+
+        return null;
+    }
+
     public void applySequences(Fragment fragment) {
         Structure structure = getStructure(fragment);
         for (String attributeName : structure.getAttributeNames()) {
@@ -62,7 +71,16 @@ public class FragmentService {
             Attribute attribute = structure.getAttribute(attributeName);
             int remaining = attribute.getRequired() - sequence.size();
             while (remaining-- > 0) {
-                sequence.addPayload(new Payload());
+                Payload payload = new Payload();
+                sequence.addPayload(payload);
+
+//                if (attribute instanceof FragmentAttribute) {
+//                    Structure preferredStructure = ((FragmentAttribute) attribute).getPreferredStructure();
+//                    if (preferredStructure != null) {
+//                        Fragment nestedFragment = createFragment(preferredStructure);
+//                        payload.setFragment(nestedFragment);
+//                    }
+//                }
             }
         }
     }

@@ -2,10 +2,13 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
 import biz.jovido.seed.content.asset.Asset;
+import biz.jovido.seed.content.event.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Stephan Grundner
@@ -30,6 +33,9 @@ public class Payload extends AbstractUnique {
     @ManyToOne
     private Asset asset;
 
+    @Transient
+    private final Set<PayloadChangeListener> changeListeners = new LinkedHashSet<>();
+
     public PayloadSequence getSequence() {
         return sequence;
     }
@@ -44,6 +50,8 @@ public class Payload extends AbstractUnique {
 
     protected void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
+
+        notifyPayloadChanged(new OrdinalSet(this));
     }
 
     public String getText() {
@@ -84,5 +92,19 @@ public class Payload extends AbstractUnique {
 
     public void setAsset(Asset asset) {
         this.asset = asset;
+    }
+
+    public boolean addChangeListener(PayloadChangeListener changeListener) {
+        return changeListeners.add(changeListener);
+    }
+
+    public boolean removeChangeListener(PayloadChangeListener changeListener) {
+        return changeListeners.remove(changeListener);
+    }
+
+    protected void notifyPayloadChanged(PayloadChange change) {
+        for (PayloadChangeListener changeListener : changeListeners) {
+            changeListener.payloadChanged(change);
+        }
     }
 }

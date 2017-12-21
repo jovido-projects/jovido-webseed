@@ -1,8 +1,11 @@
 package biz.jovido.seed.ui;
 
+import java.util.function.Predicate;
+
 /**
  * @author Stephan Grundner
  */
-public interface Form<F extends Field<G>, G extends FieldGroup<F, G>> extends FieldGroup<F, G> {
+public interface Form {
 
+//    Field findField(Predicate<Field> predicate);
 }

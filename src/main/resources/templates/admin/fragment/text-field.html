@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:cp="http://www.getwebseed/dialect/cp"
-      th:replace="admin/fragment/field-layout(control=~{::control})" th:remove="tag">
+      th:replace="admin/fragment/payload-field(control=~{::control})" th:remove="tag">
 
 <input th:fragment="control" type="text" class="form-control" th:field="*{__${field.bindingPath}__.payload.text}">
 
