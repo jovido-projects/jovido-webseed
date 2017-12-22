@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.event;
+package biz.jovido.seed.content;
 
 import biz.jovido.seed.content.Fragment;
 

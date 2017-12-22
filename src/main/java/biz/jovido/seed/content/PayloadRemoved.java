@@ -1,11 +1,9 @@
-package biz.jovido.seed.content.event;
-
-import biz.jovido.seed.content.Payload;
+package biz.jovido.seed.content;
 
 /**
  * @author Stephan Grundner
  */
-public abstract class PayloadChange {
+public class PayloadRemoved extends FragmentChange {
 
     private final Payload payload;
 
@@ -13,7 +11,8 @@ public abstract class PayloadChange {
         return payload;
     }
 
-    public PayloadChange(Payload payload) {
+    public PayloadRemoved(Fragment fragment, Payload payload) {
+        super(fragment);
         this.payload = payload;
     }
 }

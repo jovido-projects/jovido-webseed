@@ -1,13 +1,10 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
-import biz.jovido.seed.content.event.FragmentChange;
-import biz.jovido.seed.content.event.PayloadAdded;
-import biz.jovido.seed.content.event.PayloadRemoved;
-import biz.jovido.seed.content.event.PayloadsSwapped;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +59,18 @@ public class PayloadSequence extends AbstractUnique {
         return false;
     }
 
-    public boolean removePayload(int ordinal) {
-        Payload payload = getPayloads().get(ordinal);
-        if (payloads.remove(payload)) {
+    private void recalculateOrdinals() {
+        List<Payload> payloads = getPayloads();
+        for (int i = 0; i < payloads.size(); i++) {
+            Payload payload = payloads.get(i);
+            payload.setOrdinal(i);
+        }
+    }
+
+    public boolean removePayload(Payload payload) {
+        if (payloads.removeIf(it -> Objects.equals(payload, it))) {
+
+            recalculateOrdinals();
 
             FragmentChange change = new PayloadRemoved(fragment, payload);
             fragment.notifyFragmentChanged(change);

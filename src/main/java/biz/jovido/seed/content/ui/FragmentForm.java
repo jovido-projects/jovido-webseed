@@ -1,13 +1,8 @@
 package biz.jovido.seed.content.ui;
 
 import biz.jovido.seed.component.HasTemplate;
-import biz.jovido.seed.content.Fragment;
-import biz.jovido.seed.content.FragmentService;
-import biz.jovido.seed.content.Payload;
-import biz.jovido.seed.content.PayloadSequence;
-import biz.jovido.seed.content.event.*;
+import biz.jovido.seed.content.*;
 import biz.jovido.seed.ui.BindingPathProvider;
-import biz.jovido.seed.ui.Field;
 import biz.jovido.seed.ui.FixedBindingPathProvider;
 
 import java.util.*;
@@ -17,12 +12,7 @@ import java.util.stream.Collectors;
 /**
  * @author Stephan Grundner
  */
-public class FragmentForm implements HasTemplate {
-
-    public interface FragmentChangeHandler {
-
-        void fragmentChanged(FragmentForm form, Fragment previous);
-    }
+public class FragmentForm implements HasTemplate, FragmentChangeListener {
 
     public interface PayloadFieldFactory {
 
@@ -34,7 +24,7 @@ public class FragmentForm implements HasTemplate {
     private Fragment fragment;
     private String template = "admin/fragment/form";
     private BindingPathProvider nestedBindingPathProvider;
-    private FragmentChangeHandler fragmentChangeHandler;
+
     private PayloadFieldFactory fieldFactory;
 
     private Map<String, PayloadField> fields = new HashMap<>();
@@ -44,36 +34,46 @@ public class FragmentForm implements HasTemplate {
         fields.put(field.getId(), field);
     }
 
+
+    @Override
+    public void fragmentChanged(FragmentChange change) {
+        if (change instanceof PayloadsSwapped) {
+            PayloadsSwapped payloadsSwapped = (PayloadsSwapped) change;
+
+        } else if (change instanceof PayloadAdded) {
+            PayloadAdded payloadAdded = (PayloadAdded) change;
+            PayloadSequence sequence = fragment.getSequence(payloadAdded.getAttributeName());
+            Payload payload = sequence.getPayloads().get(payloadAdded.getOrdinal());
+            addFieldFor(payload);
+
+        } else if (change instanceof PayloadRemoved) {
+            PayloadRemoved payloadRemoved = (PayloadRemoved) change;
+            PayloadField field = findField(it -> it.getPayload() == payloadRemoved.getPayload());
+            if (field != null) {
+                fields.remove(field.getId());
+            }
+
+        } else {
+            throw new RuntimeException("Unexpected event type " + change.getClass());
+        }
+    }
+
     public Fragment getFragment() {
         return fragment;
     }
 
     public void setFragment(Fragment fragment) {
+        Fragment previous = this.fragment;
+        if (previous != null) {
+            previous.removeChangeListener(this);
+        }
+
         this.fragment = fragment;
 
         clear();
 
         if (fragment != null) {
-            fragment.addChangeListener(new FragmentChangeListener() {
-                @Override
-                public void fragmentChanged(FragmentChange change) {
-                    if (change instanceof PayloadsSwapped) {
-                        PayloadsSwapped payloadsSwapped = (PayloadsSwapped) change;
-
-                    } else if (change instanceof PayloadAdded) {
-                        PayloadAdded payloadAdded = (PayloadAdded) change;
-                        PayloadSequence sequence = fragment.getSequence(payloadAdded.getAttributeName());
-                        Payload payload = sequence.getPayloads().get(payloadAdded.getOrdinal());
-                        addFieldFor(payload);
-
-                    } else if (change instanceof PayloadRemoved) {
-                        PayloadRemoved payloadRemoved = (PayloadRemoved) change;
-
-                    } else {
-                        throw new RuntimeException("Unexpected event type " + change.getClass());
-                    }
-                }
-            });
+            fragment.addChangeListener(this);
 
             for (Payload payload : fragment.getAllPayloads()) {
                 addFieldFor(payload);
@@ -108,14 +108,6 @@ public class FragmentForm implements HasTemplate {
 
     public void setNestedBindingPath(String nestedBindingPath) {
         nestedBindingPathProvider = new FixedBindingPathProvider(nestedBindingPath);
-    }
-
-    public FragmentChangeHandler getFragmentChangeHandler() {
-        return fragmentChangeHandler;
-    }
-
-    public void setFragmentChangeHandler(FragmentChangeHandler fragmentChangeHandler) {
-        this.fragmentChangeHandler = fragmentChangeHandler;
     }
 
     public PayloadFieldFactory getFieldFactory() {
@@ -155,7 +147,7 @@ public class FragmentForm implements HasTemplate {
         return x;
     }
 
-    public Field findField(Predicate<Field> predicate) {
+    public PayloadField findField(Predicate<PayloadField> predicate) {
         for (PayloadField field : fields.values()) {
             if (predicate.test(field)) {
                 return field;
@@ -163,7 +155,7 @@ public class FragmentForm implements HasTemplate {
 
             FragmentForm nestedForm = field.getNestedForm();
             if (nestedForm != null) {
-                Field found = nestedForm.findField(predicate);
+                PayloadField found = nestedForm.findField(predicate);
                 if (found != null) {
                     return found;
                 }

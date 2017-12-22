@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.event;
+package biz.jovido.seed.content;
 
 import java.util.EventListener;
 

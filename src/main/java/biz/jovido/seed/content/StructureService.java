@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.structure;
+package biz.jovido.seed.content;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

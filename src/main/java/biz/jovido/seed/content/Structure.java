@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.structure;
+package biz.jovido.seed.content;
 
 import java.util.*;
 import java.util.stream.Collectors;

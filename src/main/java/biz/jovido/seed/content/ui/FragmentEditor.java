@@ -8,21 +8,21 @@ import biz.jovido.seed.content.FragmentService;
  */
 public class FragmentEditor {
 
-    private final FragmentForm form;
+    private FragmentForm form;
 
     public FragmentForm getForm() {
         return form;
     }
 
+    public void setForm(FragmentForm form) {
+        this.form = form;
+    }
+
     public Fragment getFragment() {
-        return form.getFragment();
+        return getForm().getFragment();
     }
 
     public void setFragment(Fragment fragment) {
-        form.setFragment(fragment);
-    }
-
-    public FragmentEditor(FragmentService fragmentService) {
-        form = new FragmentForm(fragmentService);
+        getForm().setFragment(fragment);
     }
 }

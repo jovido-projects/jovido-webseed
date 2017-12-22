@@ -1,8 +1,6 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
-import biz.jovido.seed.content.event.FragmentChange;
-import biz.jovido.seed.content.event.FragmentChangeListener;
 
 import javax.persistence.*;
 import java.util.*;

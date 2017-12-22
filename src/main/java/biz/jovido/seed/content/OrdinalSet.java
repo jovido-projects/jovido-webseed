@@ -1,6 +1,4 @@
-package biz.jovido.seed.content.event;
-
-import biz.jovido.seed.content.Payload;
+package biz.jovido.seed.content;
 
 /**
  * @author Stephan Grundner

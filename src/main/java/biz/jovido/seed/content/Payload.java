@@ -2,7 +2,6 @@ package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
 import biz.jovido.seed.content.asset.Asset;
-import biz.jovido.seed.content.event.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

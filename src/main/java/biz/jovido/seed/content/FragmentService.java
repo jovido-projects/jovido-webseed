@@ -1,6 +1,5 @@
 package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.structure.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

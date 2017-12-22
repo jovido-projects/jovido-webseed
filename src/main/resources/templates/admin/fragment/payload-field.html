@@ -18,7 +18,8 @@
                     th:formaction="${field.moveDownAction?.url}">
                 <i class="fa fa-arrow-down"></i>
             </button>
-            <button class="btn btn-secondary" th:remove="${field.removeAction == null} ? all : _"
+            <button class="btn btn-secondary"
+                    th:remove="${field.removeAction == null} ? all : _"
                     th:formaction="${field.removeAction?.url}">
                 <i class="fa fa-remove"></i>
             </button>
@@ -26,6 +27,36 @@
     </div>
 
     <th:block th:replace="${control} ?: _" />
+
+
+    <th:block th:if="${field.last}" th:with="actions = ${field.appendActions},primary = ${actions.primary}">
+        <br />
+
+        <div class="btn-group" th:if="${!actions.empty}">
+            <th:block th:if="${primary != null}">
+                <button type="button" class="btn btn-secondary">
+                    <span th:text="${primary.text?.value}">Action</span>
+                </button>
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+            </th:block>
+            <th:block th:if="${primary == null}">
+                <button type="button" class="btn btn-secondary dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-plus"></i>
+                    <!--<span class="sr-only">Toggle Dropdown</span>-->
+                </button>
+            </th:block>
+            <div class="dropdown-menu">
+                <button th:each="action : ${field.appendActions}" th:formaction="${action.url}"
+                        class="dropdown-item" href="#">
+                    <span th:text="${action?.text?.value}">Text</span>
+                </button>
+
+            </div>
+        </div>
+    </th:block>
+
 </div>
 
 </html>
