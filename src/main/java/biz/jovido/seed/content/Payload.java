@@ -1,7 +1,6 @@
 package biz.jovido.seed.content;
 
 import biz.jovido.seed.AbstractUnique;
-import biz.jovido.seed.content.asset.Asset;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -50,7 +49,7 @@ public class Payload extends AbstractUnique {
     protected void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
 
-        notifyPayloadChanged(new OrdinalSet(this));
+        notifyPayloadChanged(new PayloadChange.OrdinalSet(this));
     }
 
     public String getText() {

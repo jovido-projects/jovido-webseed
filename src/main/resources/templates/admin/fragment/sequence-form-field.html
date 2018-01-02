@@ -2,42 +2,44 @@
       xmlns:cp="http://www.getwebseed/dialect/cp"
       th:remove="tag">
 
-<th:block th:with="form = ${self}">
-    <th:block th:each="field : ${form.fields}">
+<div class="form-group" th:with="field = ${self}">
+    <!--[[${field.sequence.attributeName}]]-->
+    <th:block th:each="field : ${field.fields}">
         <th:block cp:replace="${field}" />
     </th:block>
 
-
-
-
-    <th:block th:with="actions = ${form.actions},primary = ${actions.primary}">
-        <div class="btn-group" th:if="${!actions.empty}">
-            <th:block th:if="${primary != null}">
-                <button type="button" class="btn btn-secondary">
+    <th:block th:with="actions = ${field.appendActions},primary = ${actions.primary}">
+        <div class="" th:if="${!actions.empty}">
+            <th:block th:if="${primary != null}"
+                      th:remove="${primary.disabled} ? all : _">
+                <button type="submit" th:formaction="${primary.url}"
+                        class="btn btn-secondary">
+                    <i class="fa fa-plus"></i>
                     <span th:text="${primary.text?.value}">Action</span>
-                </button>
-                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
                 </button>
             </th:block>
             <th:block th:if="${primary == null}">
-                <button type="button" class="btn btn-secondary dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button"
+                        class="btn btn-secondary dropdown-toggle "
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
                     <i class="fa fa-plus"></i>
-                    <!--<span class="sr-only">Toggle Dropdown</span>-->
+                    <!--<span th:text="${actions.text?.value}">Action</span>-->
                 </button>
             </th:block>
             <div class="dropdown-menu">
-                <button th:each="action : ${form.actions}" th:formaction="${action.url}"
+                <button th:each="action : ${field.appendActions}"
+                        th:formaction="${action.url}"
                         class="dropdown-item" href="#">
                     <span th:text="${action?.text?.value}">Text</span>
                 </button>
-
             </div>
         </div>
+
+        <br />
     </th:block>
 
-
-
-</th:block>
+</div>
 
 </html>

@@ -1,4 +1,4 @@
-package biz.jovido.seed.content.asset;
+package biz.jovido.seed.content;
 
 import javax.persistence.Entity;
 

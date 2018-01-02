@@ -1,0 +1,32 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:cp="http://www.getwebseed/dialect/cp"
+      th:replace="admin/fragment/payload-field(control=~{::control})" th:remove="tag">
+
+<th:block th:fragment="control">
+    <th:block th:with="id=${#ids.seq('foobar')}">
+    <textarea th:id="${id}" class="form-control"
+              th:field="*{__${field.bindingPath}__.payload.text}"></textarea>
+
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            var id = '#[[${id}]]';
+            $(id).summernote({
+                height:125,
+                toolbar:[
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'hr']],
+                    ['view', ['fullscreen', 'codeview']]
+                ],
+                onCreateLink : function(originalLink) {
+                    return originalLink; // return original link
+                }
+            });
+        });
+
+        </script>
+    </th:block>
+</th:block>
+
+</html>

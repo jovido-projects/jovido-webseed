@@ -1,7 +1,4 @@
-package biz.jovido.seed.content.ui;
-
-import biz.jovido.seed.content.Fragment;
-import biz.jovido.seed.content.FragmentService;
+package biz.jovido.seed.content;
 
 /**
  * @author Stephan Grundner

@@ -1,44 +1,51 @@
-package biz.jovido.seed.content.ui;
+package biz.jovido.seed.content;
 
-import biz.jovido.seed.content.Payload;
-import biz.jovido.seed.content.PayloadSequence;
 import biz.jovido.seed.ui.Action;
-import biz.jovido.seed.ui.Actions;
 import biz.jovido.seed.ui.Field;
 
 /**
  * @author Stephan Grundner
  */
-public class PayloadField extends Field {
+public class PayloadField extends Field implements PayloadChangeListener {
 
-    public interface PayloadChangeHandler {
-
-        void payloadChanged(PayloadField field, Payload previous);
-    }
-
-    private Payload payload;
+    private final PayloadSequenceField parent;
+    private final Payload payload;
 
     private Action moveUpAction;
     private Action moveDownAction;
     private Action removeAction;
-    private Actions appendActions;
 
     private FragmentForm nestedForm;
 
-    private PayloadChangeHandler payloadChangeHandler;
+    public PayloadSequenceField getParent() {
+        return parent;
+    }
+
+    protected void updateActions() {
+        Action moveUp = getMoveUpAction();
+        moveUp.setDisabled(isFirst());
+
+        Action moveDown = getMoveDownAction();
+        moveDown.setDisabled(isLast());
+    }
+
+    @Override
+    public void payloadChanged(PayloadChange change) {
+        if (change instanceof PayloadChange.OrdinalSet) {
+
+            PayloadSequenceField parent = getParent();
+            for (PayloadField field : parent.getFields()) {
+                field.updateActions();
+            }
+        }
+    }
 
     public Payload getPayload() {
         return payload;
     }
 
-    public void setPayload(Payload payload) {
-        Payload previous = this.payload;
-
-        this.payload = payload;
-
-        if (payloadChangeHandler != null) {
-            payloadChangeHandler.payloadChanged(this, previous);
-        }
+    public int getOrdinal() {
+        return getPayload().getOrdinal();
     }
 
     public Action getMoveUpAction() {
@@ -65,28 +72,12 @@ public class PayloadField extends Field {
         this.removeAction = removeAction;
     }
 
-    public Actions getAppendActions() {
-        return appendActions;
-    }
-
-    public void setAppendActions(Actions appendActions) {
-        this.appendActions = appendActions;
-    }
-
     public FragmentForm getNestedForm() {
         return nestedForm;
     }
 
     public void setNestedForm(FragmentForm nestedForm) {
         this.nestedForm = nestedForm;
-    }
-
-    public PayloadChangeHandler getPayloadChangeHandler() {
-        return payloadChangeHandler;
-    }
-
-    public void setPayloadChangeHandler(PayloadChangeHandler payloadChangeHandler) {
-        this.payloadChangeHandler = payloadChangeHandler;
     }
 
     public boolean isFirst() {
@@ -96,5 +87,12 @@ public class PayloadField extends Field {
     public boolean isLast() {
         PayloadSequence sequence = payload.getSequence();
         return payload.getOrdinal() == sequence.size() - 1;
+    }
+
+    public PayloadField(PayloadSequenceField parent, Payload payload) {
+        this.parent = parent;
+        this.payload = payload;
+
+        payload.addChangeListener(this);
     }
 }

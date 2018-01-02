@@ -4,7 +4,6 @@ import biz.jovido.seed.AbstractUnique;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +50,7 @@ public class PayloadSequence extends AbstractUnique {
         if (payloads.add(payload)) {
             payload.setSequence(this);
             payload.setOrdinal(payloads.size() - 1);
-            FragmentChange change = new PayloadAdded(fragment, attributeName, payload.getOrdinal());
+            FragmentChange change = new PayloadChange.PayloadAdded(fragment, attributeName, payload.getOrdinal());
             fragment.notifyFragmentChanged(change);
             return true;
         }
@@ -72,7 +71,7 @@ public class PayloadSequence extends AbstractUnique {
 
             recalculateOrdinals();
 
-            FragmentChange change = new PayloadRemoved(fragment, payload);
+            FragmentChange change = new PayloadChange.PayloadRemoved(fragment, payload);
             fragment.notifyFragmentChanged(change);
             return true;
         }
@@ -86,7 +85,7 @@ public class PayloadSequence extends AbstractUnique {
         some.setOrdinal(j);
         other.setOrdinal(i);
 
-        FragmentChange change = new PayloadsSwapped(fragment, attributeName, i, j);
+        FragmentChange change = new PayloadChange.PayloadsSwapped(fragment, attributeName, i, j);
         fragment.notifyFragmentChanged(change);
     }
 

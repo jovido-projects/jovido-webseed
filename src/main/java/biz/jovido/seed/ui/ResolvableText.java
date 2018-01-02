@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * @author Stephan Grundner
  */
-public class MessageSourceResolvableText implements Text {
+public class ResolvableText implements Text {
 
     private MessageSource messageSource;
 
@@ -67,18 +67,18 @@ public class MessageSourceResolvableText implements Text {
         return messageSource.getMessage(messageCode, messageArgs, defaultMessage, locale);
     }
 
-    public MessageSourceResolvableText(String messageCode, Object[] messageArgs, String defaultMessage, Locale locale) {
+    public ResolvableText(String messageCode, Object[] messageArgs, String defaultMessage, Locale locale) {
         this.messageCode = messageCode;
         this.messageArgs = messageArgs;
         this.defaultMessage = defaultMessage;
         this.locale = locale;
     }
 
-    public MessageSourceResolvableText(String messageCode, Object[] messageArgs, String defaultMessage) {
+    public ResolvableText(String messageCode, Object[] messageArgs, String defaultMessage) {
         this(messageCode, messageArgs, defaultMessage, null);
     }
 
-    public MessageSourceResolvableText(String messageCode, String defaultMessage) {
+    public ResolvableText(String messageCode, String defaultMessage) {
         this(messageCode, null, defaultMessage);
     }
 }
