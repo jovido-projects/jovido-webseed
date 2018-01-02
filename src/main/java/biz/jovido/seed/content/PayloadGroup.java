@@ -77,6 +77,7 @@ public class PayloadGroup extends AbstractUnique {
 //            payload.setOrdinal(-1);
 
             int i = 0;
+            List<Payload> payloads = getPayloads();
             Iterator<Payload> payloadItr = payloads.iterator();
             while (payloadItr.hasNext()) {
                 Payload next = payloadItr.next();
