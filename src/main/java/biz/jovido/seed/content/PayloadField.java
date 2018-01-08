@@ -78,6 +78,8 @@ public class PayloadField extends Field implements PayloadChangeListener {
 
     public void setNestedForm(FragmentForm nestedForm) {
         this.nestedForm = nestedForm;
+
+//        nestedForm.sePa
     }
 
     public boolean isFirst() {
