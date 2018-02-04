@@ -59,6 +59,8 @@ public class DeprecatedModelFactory implements ModelFactory {
                 } else if (attribute instanceof TextAttribute) {
                     TextPayload textPayload = ((TextPayload) payload);
                     String value = textPayload.getText();
+                    value = value.replace("<p></p>", "");
+
                     map.put("value", value);
                 } else if (attribute instanceof YesNoAttribute) {
                     YesNoPayload yesNo = ((YesNoPayload) payload);

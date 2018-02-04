@@ -20,7 +20,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group "biz.jovido"
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
 repositories {
@@ -92,7 +92,7 @@ uploadArchives {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
             }
 
-            pom.artifactId = 'jovido-webseed'
+            pom.artifactId = 'jovido-webseed-fenicesfa'
 
             pom.project {
                 name 'JOVIDO WebSeed Framework'
